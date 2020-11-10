@@ -1,0 +1,114 @@
+<html>
+
+  <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script type="text/javascript" src="simulation.js"></script>
+    <!--script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-darkness/jquery-ui.css" />
+    <style type="text/css">
+      body {
+	  font-family: sans-serif;
+      }
+      
+      .message {
+	  height: 400px;
+	  width: 800px;
+	  margin: 50px;
+	  
+
+	  border: 1px solid black;
+	  background-color: red;
+      }
+
+      table, td {
+	  border: 1px solid black;
+      }
+
+      .button {
+	  width: 200px;
+	  height: 70px;
+	  margin: 20px;
+	  padding-top: 20px;
+	  
+	  text-align: center;
+	  vertical-align: middle;
+	  background-color: lightgray;
+      }
+
+      .selected {
+	  color: white;
+	  background-color: blue;
+      }
+
+      .overlay {
+	  //position: absolute;
+	  //top: 0;
+	  //left: 0;
+	  //bottom: 0;
+	  //right: 0;
+	  width: 100%;
+	  height: 100%;
+
+	  text-align: center;
+	  vertical-align: middle;
+	  padding-top: 200px;
+	  font-size: 48pt;
+	  color: gray;
+	  
+      }
+
+      .start-pause {
+	  position: absolute;
+	  top: 10px;
+	  right: 220px;
+	  width: 200px;
+	  height: 50px;
+	  padding: 20px;
+	  font-size: 24pt;
+
+	  text-align: center;
+	  color: white;
+      }
+      
+      .start {
+	  background-color: green;
+      }
+
+      .pause {
+	  background-color: gray;
+      }
+    </style>
+
+    <script type="text/javascript" src="game-animation.js"></script>
+  </head>
+
+  <body onload="runGame()">
+    <div class="start-pause start">
+      <!--div id="start" class="button">Start</div--> Start
+    </div>
+    <div id="header">
+      <table>
+	<tr>
+	  <td>Day</td>
+	  <td>Current Infectious</td>
+	  <td>Deaths</td>
+	  <td>Economic Loss</td>
+	</tr>
+	<tr>
+	  <td id="day">0</td>
+	  <td id="infectious_current">0</td>
+	  <td id="deaths_total">0</td>
+	  <td id="cost_total">0</td>
+	</tr>
+      </table>
+      
+    </div>
+
+    <div id="body">
+      <div id="close" class="button">Close Everything</div>
+      <div id="new-normal" class="button">Ban Large Gatherings</div>
+      <div id="open" class="button">Stay Open</div>
+    </div>
+  </body>
+
+</html>
