@@ -1,7 +1,4 @@
-import PandemicEnv from '../lib/simulation.js';
-
 day = 0;
-
 
 results_display = {
     infected_current: 0,
@@ -23,28 +20,14 @@ results_display = {
     cost_all_total: 0
 };
 
+window.next_action_r = 1.07;
 
-function runGame() {
+function runGame(env) {
     // Initialize pandemic simulator:
-
-    var params = {
-	num_population: 400000000, // 400 million people -- i.e. approximate US population
-	init_num_infected: 1,
-	R_0: 1.07, // infections double every 10 days
-	imported_cases_per_step: 0,
-	hospital_capacity: 1000000 // 1 million hospital beds -- https://www.aha.org/statistics/fast-facts-us-hospitals
-    }
-    
-    var env = new PandemicEnv(
-	params['num_population'],
-	params['init_num_infected'],
-	params['R_0'],
-	params['imported_cases_per_step'],
-	params['hospital_capacity']
-    );
 
     var results = [];
 
+    
     
     // Initialize lock-down controls
     
@@ -53,17 +36,17 @@ function runGame() {
     $('#close').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	next_action_r = 0.98;
+	window.next_action_r = 0.98;
     });
     $('#new-normal').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	next_action_r = 1.0;
+	window.next_action_r = 1.0;
     });
     $('#open').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	next_action_r = 1.07;
+	window.next_action_r = 1.07;
     });
 
     
@@ -75,12 +58,14 @@ function runGame() {
     }
     
     function step_simulation() {
-	day += 1;
+	var days_per_step = 10;
+	
+	day += days_per_step;
 	if (day > 365) {
 	    clearInterval(interval); // game over after 365 days
 	}
 	
-	var result_obj = env.step(next_action_r);
+	var result_obj = env.step(window.next_action_r ** days_per_step);
 	var history = env.history;
 
 	
@@ -105,9 +90,7 @@ function runGame() {
 	};
 
 	
-	infectious_current += rate;
-	deaths_total += rate;
-	cost_total += rate;
+
     }
 
     function update_display() {
