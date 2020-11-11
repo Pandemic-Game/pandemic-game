@@ -1,14 +1,3 @@
-function createMessageStream() {
-    for (var i = 0; i < 10; ++i) {
-	var new_element = $("<div class='message'>Message " + i + "</div>");
-	$(".body").append(new_element);
-	console.log("Message " + i);
-	// new_element.scrollIntoView();
-    }
-}
-
-
-
 day = 0;
 infectious_current = 0;
 deaths_total = 0;
@@ -17,7 +6,7 @@ cost_total = 0;
 rate = 3;
 
 function runGame() {
-    $("#open").addClass("selected");
+    // Initialize pandemic simulator:
 
     var params = {
 	num_population: 400000000,
@@ -35,25 +24,42 @@ function runGame() {
 	params['hospital_capacity']
     );
 
+    var results = [];
+
+    
+    // Initialize lock-down controls
+    
+    $("#open").addClass("selected");
+    
     $('#close').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	rate = 0;
+	next_action_r = 0.7;
     });
     $('#new-normal').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	rate = 1;
+	next_action_r = 1.0;
     });
     $('#open').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	rate = 3;
+	next_action_r = 2.5;
     });
 
     
+    // Logic for running 1 time step:
+
+    function step() {
+	step_simulation();
+	update_display();
+    }
+    
     function step_simulation() {
 	day += 1;
+
+	var result_obj = env.step(next_action_r);
+	
 	infectious_current += rate;
 	deaths_total += rate;
 	cost_total += rate;
@@ -66,13 +72,9 @@ function runGame() {
 	$("#cost_total").html(cost_total);
     }
 
-    function step() {
-	console.log("In step()");
-	console.log("infectious_current: " + infectious_current);
-	step_simulation();
-	update_display();
-    }
-
+    
+    // Make "Start" button start the game, "Pause" button pause it.
+    
     $('.start-pause').click(function() {
 	if ($(this).hasClass('start')) {
 	    $(this).removeClass('start');
@@ -86,8 +88,5 @@ function runGame() {
 	    $(this).html('Start');
 	    clearInterval(interval);
 	}
-
-	
-	
     });
 }
