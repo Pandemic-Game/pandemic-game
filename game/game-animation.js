@@ -36,7 +36,7 @@ function runGame(env) {
     $('#close').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	window.next_action_r = 0.98;
+	window.next_action_r = 0.95;
     });
     $('#new-normal').click(function() {
 	$(".button").removeClass("selected");
@@ -59,14 +59,14 @@ function runGame(env) {
     }
     
     function step_simulation() {
-	var days_per_step = 10;
+	var days_per_step = 2;
 	
 	day += days_per_step;
 	if (day > 365) {
 	    clearInterval(interval); // game over after 365 days
 	}
 	
-	env.step(window.next_action_r ** days_per_step);
+	env.step(window.next_action_r, days_per_step);
     }
 
     function update_display() {
@@ -115,7 +115,7 @@ function runGame(env) {
 	    $(this).removeClass('start');
 	    $(this).addClass('pause');
 	    $(this).html('Pause');
-	    interval = setInterval(step, 1000);
+	    interval = setInterval(step, 2000);
 	}
 	else {
 	    $(this).removeClass('pause');
