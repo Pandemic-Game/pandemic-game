@@ -59,7 +59,7 @@ function runGame(env) {
     }
     
     function step_simulation() {
-	var days_per_step = 2;
+	var days_per_step = 10;
 	
 	day += days_per_step;
 	if (day > 365) {
