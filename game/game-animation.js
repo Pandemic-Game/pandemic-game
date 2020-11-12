@@ -100,11 +100,11 @@ function runGame(env) {
 	for (var i = 0; i < result_keys.length; ++i) {
 	    var key = result_keys[i];
 	    var quantity = results_display[key];
-	    var string = "" + quantity;
+	    var formatted = nFormatter(quantity, 1);
 	    if (key.indexOf("cost") > -1) {
-		string = "$" + quantity;
+		formatted = "$" + formatted;
 	    }
-	    $("#" + key).html(string);
+	    $("#" + key).html(formatted);
 	}
     }
 
