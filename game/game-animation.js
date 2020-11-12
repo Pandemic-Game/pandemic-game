@@ -31,7 +31,7 @@ function runGame(env) {
     
     // Initialize lock-down controls
     
-    $("#open").addClass("selected");
+    //$("#open").addClass("selected");
     
     $('#close').click(function() {
 	$(".button").removeClass("selected");
@@ -49,6 +49,7 @@ function runGame(env) {
 	window.next_action_r = 1.08;
     });
 
+    $('#new-normal').click();
     
     // Logic for running 1 time step:
 
@@ -65,11 +66,16 @@ function runGame(env) {
 	    clearInterval(interval); // game over after 365 days
 	}
 	
-	var result_obj = env.step(window.next_action_r ** days_per_step);
-	var history = env.history;
+	env.step(window.next_action_r ** days_per_step);
+    }
 
+    function update_display() {
+	$("#day").html(day);
+
+	var history = env.history;
+	var result_obj = history[history.length - 1];
 	
-	results_display = {
+	var results_display = {
 	    infected_current: result_obj["num_infected"],
 	    infected_total: sum(history.map( (obj) => obj["num_infected"] )),
 
@@ -88,13 +94,6 @@ function runGame(env) {
 	    cost_all_current: result_obj["cost_all"],
 	    cost_all_total:sum(history.map( (obj) => obj["cost_all"] )),
 	};
-
-	
-
-    }
-
-    function update_display() {
-	$("#day").html(day);
 
 	var result_keys = Object.keys(results_display);
 	for (var i = 0; i < result_keys.length; ++i) {
@@ -125,4 +124,7 @@ function runGame(env) {
 	    clearInterval(interval);
 	}
     });
+
+    // Run 1 step of game, just to display initial numbers
+    update_display();
 }
