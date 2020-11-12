@@ -20,7 +20,7 @@ results_display = {
     cost_all_total: 0
 };
 
-window.next_action_r = 1.07;
+window.next_action_r = 1.08;
 
 function runGame(env) {
     // Initialize pandemic simulator:
@@ -46,7 +46,7 @@ function runGame(env) {
     $('#open').click(function() {
 	$(".button").removeClass("selected");
 	$(this).addClass("selected");
-	window.next_action_r = 1.07;
+	window.next_action_r = 1.08;
     });
 
     
