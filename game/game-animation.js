@@ -99,7 +99,12 @@ function runGame(env) {
 	var result_keys = Object.keys(results_display);
 	for (var i = 0; i < result_keys.length; ++i) {
 	    var key = result_keys[i];
-	    $("#" + key).html(results_display[key]);
+	    var quantity = results_display[key];
+	    var string = "" + quantity;
+	    if (key.indexOf("cost") > -1) {
+		string = "$" + quantity;
+	    }
+	    $("#" + key).html(string);
 	}
     }
 
