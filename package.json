@@ -4,9 +4,9 @@
   "description": "A simple web game / policy simulator to build intuition around the best way to respond to a pandemic",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --mode=development --config webpack.config.js",
-    "build": "webpack",
-    "lint-fix": "eslint \"./src/**/*.js\""
+    "dev": "webpack serve --config webpack.config.js",
+    "build": "webpack --mode=production --config webpack.config.js",
+    "lint": "eslint --fix \"./src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -39,10 +39,13 @@
     "eslint-plugin-react-hooks": "^4.0.0",
     "prettier": "^2.1.2",
     "webpack": "^5.4.0",
-    "webpack-cli": "^4.2.0"
+    "webpack-cli": "^4.2.0",
+    "copy-webpack-plugin": "^6.3.1"
   },
   "dependencies": {
-    "@stdlib/stdlib": "0.0.92",
+    "@babel/polyfill": "^7.2.5",
+    "css-loader": "^2.1.0",
+    "style-loader": "^0.23.1",
     "jquery": "^3.5.1",
     "jstat": "^1.9.4"
   }
