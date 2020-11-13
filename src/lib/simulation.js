@@ -1,5 +1,4 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable camelcase, no-underscore-dangle */
+/* eslint-disable camelcase, no-underscore-dangle, class-methods-use-this */
 
 import jStat from 'jstat';
 
