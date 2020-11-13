@@ -1,0 +1,27 @@
+{
+  "name": "pandemic-game",
+  "version": "1.0.0",
+  "description": "A simple web game / policy simulator to build intuition around the best way to respond to a pandemic",
+  "main": "game/index.html",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blakeelias/pandemic-game.git"
+  },
+  "keywords": [
+    "covid-19",
+    "game",
+    "pandemic"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/blakeelias/pandemic-game/issues"
+  },
+  "homepage": "https://github.com/blakeelias/pandemic-game#readme"
+}
