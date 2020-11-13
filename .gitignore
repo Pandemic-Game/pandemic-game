@@ -1,3 +1,6 @@
+### Builds
+dist
+
 ### Visual Studio Code ###
 .vscode/*
 !.vscode/tasks.json
