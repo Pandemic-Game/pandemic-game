@@ -3,7 +3,6 @@
 import jStat from 'jstat';
 
 // Probability Distributions
-
 class FakeNegativeBinomial {
     constructor(r, p) {
         this.r = r;

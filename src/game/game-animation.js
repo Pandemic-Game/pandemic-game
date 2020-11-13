@@ -2,13 +2,12 @@
 import $ from 'jquery';
 import { nFormatter, sum } from '../lib/util';
 
-window.next_action_r = 1.08;
-
 export default function runGame(env) {
     // Initialize pandemic simulator:
 
     let interval;
     let day = 0;
+    let nextActionR = 1.08;
 
     // Initialize lock-down controls
 
@@ -18,19 +17,19 @@ export default function runGame(env) {
         const target = $(e.target);
         $('.button').removeClass('selected');
         $(target).addClass('selected');
-        window.next_action_r = 0.95;
+        nextActionR = 0.95;
     });
     $('#new-normal').click((e) => {
         const target = $(e.target);
         $('.button').removeClass('selected');
         $(target).addClass('selected');
-        window.next_action_r = 1.0;
+        nextActionR = 1.0;
     });
     $('#open').click((e) => {
         const target = $(e.target);
         $('.button').removeClass('selected');
         $(target).addClass('selected');
-        window.next_action_r = 1.08;
+        nextActionR = 1.08;
     });
 
     // Logic for running 1 time step:
@@ -43,7 +42,7 @@ export default function runGame(env) {
             clearInterval(interval); // game over after 365 days
         }
 
-        env.step(window.next_action_r, daysPerStep);
+        env.step(nextActionR, daysPerStep);
     }
 
     function updateDisplay() {

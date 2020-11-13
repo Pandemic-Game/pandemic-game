@@ -1,6 +1,5 @@
 ### Builds
-dist/main.js
-dist/main.js*
+dist
 
 ### Visual Studio Code ###
 .vscode/*
