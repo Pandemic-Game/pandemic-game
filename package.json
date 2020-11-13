@@ -6,9 +6,6 @@
   "directories": {
     "lib": "lib"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blakeelias/pandemic-game.git"
@@ -23,5 +20,25 @@
   "bugs": {
     "url": "https://github.com/blakeelias/pandemic-game/issues"
   },
-  "homepage": "https://github.com/blakeelias/pandemic-game#readme"
+  "homepage": "https://github.com/blakeelias/pandemic-game#readme",
+  "scripts": {
+    "dev": "webpack-dev-server --mode=development --config webpack.config.js",
+    "build": "webpack --mode=production -p --config webpack.config.js"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "css-loader": "^2.1.0",
+    "style-loader": "^0.23.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
+  }
 }
