@@ -4,7 +4,7 @@
   "description": "A simple web game / policy simulator to build intuition around the best way to respond to a pandemic",
   "private": true,
   "scripts": {
-    "dev": "webpack serve --config webpack.config.js",
+    "start:dev": "webpack serve --config webpack.config.js",
     "build": "webpack --mode=production --config webpack.config.js",
     "lint": "eslint --fix \"./src/**/*.js\""
   },
