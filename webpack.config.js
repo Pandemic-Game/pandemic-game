@@ -1,39 +1,36 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-require("@babel/register");
+const CopyPlugin = require('copy-webpack-plugin');
 
-const config = {
-    entry: ['@babel/polyfill', './src/index.js'],
+module.exports = {
+    entry: './src/index.js',
     output: {
-        path: path.join(__dirname, '/public'),
-        filename: 'bundle.js'
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist'),
     },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'src/public/index.html', to: 'index.html' },
+                { from: 'src/public/style.css', to: 'style.css' },
+            ],
+        }),
+    ],
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.m?js$/,
                 exclude: /node_modules/,
-                use: ['babel-loader']
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [['@babel/preset-env', { targets: 'defaults' }]],
+                    },
+                },
             },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            }
-        ]
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            hash: true
-        })
-    ],
-    resolve: {
-        modules: [
-            path.resolve('./src'),
-            path.resolve('./node_modules')
-        ]
+        ],
     },
     devServer: {
-        contentBase: path.join(__dirname, '/public'),
+        contentBase: path.resolve(__dirname, 'dist'),
         compress: true,
         port: 9000,
         open: true,
@@ -48,10 +45,8 @@ const config = {
             modules: false,
             timings: false,
             version: false,
-        }
+        },
     },
     watch: false,
     devtool: 'source-map',
 };
-
-module.exports = config;
