@@ -1,7 +1,11 @@
 # pandemic-game
 
 ## Getting started
+### Installing `npm`
 
+On Ubuntu, run: `sudo apt install npm webpack`.
+
+You will then be able to run the commands below.
 ### Running in development mode
 Run: `npm run start:dev`
 
