@@ -1,3 +1,6 @@
+import { CapabilityImprovements, ContainmentDoctrine, ContainmentPolicy } from "./PlayerActions";
+import { RandomEvent } from "./RandomEvents";
+
 /**
  * Represents the initial state of the game world.
  */
@@ -18,7 +21,7 @@ export interface GameWorld {
 /**
  * Represents the state of the simulation on a given turn.
  */
-export interface WorldState {
+export interface Indicators {
     days: number  // Number of days since the start of the simulation
     totalPopulation: number
     numInfected: number
@@ -30,4 +33,32 @@ export interface WorldState {
     economicCosts: number
     deathCosts: number
     wellbeing: number
+}
+
+/**
+ * Represents the set of player actions in effect at a given point in time
+ */
+export interface PlayerAction {
+    doctrine: ContainmentDoctrine
+    containmentPolicies: ContainmentPolicy[]
+    capabilityImprovements: CapabilityImprovements[]
+}
+
+/**
+ * Snapshot of the full world state for a given point in time
+ */
+export interface WorldState {
+    days: number
+    indicators: Indicators
+    randomEvents: RandomEvent[]
+    playerActions: PlayerAction[]
+}
+
+/**
+ * Full simulator state
+ */
+export interface SimulatorState {
+    initialState: GameWorld
+    currentState: WorldState
+    history: WorldState[]
 }

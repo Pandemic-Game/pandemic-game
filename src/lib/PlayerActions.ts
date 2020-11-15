@@ -1,48 +1,48 @@
-import { WorldState } from "./SimulatorState";
+import { Indicators, SimulatorState } from "./SimulatorState";
 /**
  * Doctrines are mutually exclusive high level containment policies. Example: "full lockdown" and "business as usual" are
  * two fundamentally different approaches to pandemic management.
  */
 export interface ContainmentDoctrine {
     name: string,
-    immediateEffect: (worldState: WorldState) => WorldState
-    recurringEffect: (worldState: WorldState) => WorldState
+    immediateEffect: (context: SimulatorState) => Indicators
+    recurringEffect: (context: SimulatorState) => Indicators
 }
 
 export const doctrines: ContainmentDoctrine[] = [
     {
         name: "Full lockdown",
-        immediateEffect: (worldState) => {
-            const updatedWorldState = { ...worldState };
-            updatedWorldState.wellbeing = updatedWorldState.wellbeing * 0.5
-            return updatedWorldState;
+        immediateEffect: (context) => {
+            const updatedIndicators = { ...context.currentState.indicators };
+            updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.5
+            return updatedIndicators;
         },
-        recurringEffect: (worldState) => {
-            const updatedWorldState = { ...worldState };
-            updatedWorldState.r = 0.95
-            return updatedWorldState;
+        recurringEffect: (context) => {
+            const updatedIndicators = { ...context.currentState.indicators };
+            updatedIndicators.r = 0.95
+            return updatedIndicators;
         }
     },
     {
         name: "New normal",
-        immediateEffect: (worldState) => {
-            const updatedWorldState = { ...worldState };
-            updatedWorldState.wellbeing = updatedWorldState.wellbeing * 0.8
-            return updatedWorldState;
+        immediateEffect: (context) => {
+            const updatedIndicators = { ...context.currentState.indicators };
+            updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.8
+            return updatedIndicators;
         },
-        recurringEffect: (worldState) => {
-            const updatedWorldState = { ...worldState };
+        recurringEffect: (context) => {
+            const updatedWorldState = { ...context.currentState.indicators };
             updatedWorldState.r = 1.0
             return updatedWorldState;
         }
     },
     {
         name: "Business as usual",
-        immediateEffect: (worldState) => worldState,
-        recurringEffect: (worldState) => {
-            const updatedWorldState = { ...worldState };
-            updatedWorldState.r = 1.08
-            return updatedWorldState;
+        immediateEffect: (context) => context.currentState.indicators,
+        recurringEffect: (context) => {
+            const updatedIndicators = { ...context.currentState.indicators };
+            updatedIndicators.r = 1.08
+            return updatedIndicators;
         }
     },
 ]
@@ -55,8 +55,8 @@ export interface ContainmentPolicy {
     doctrine: ContainmentDoctrine
     requirements: CapabilityImprovements[]
     name: string
-    immediateEffect: (worldState: WorldState) => WorldState
-    recurringEffect: (worldState: WorldState) => WorldState
+    immediateEffect: (worldState: Indicators) => Indicators
+    recurringEffect: (worldState: Indicators) => Indicators
 }
 
 /**
@@ -64,7 +64,7 @@ export interface ContainmentPolicy {
  */
 export interface CapabilityImprovements {
     name: string,
-    immediateEffect: (worldState: WorldState) => WorldState
-    recurringEffect: (worldState: WorldState) => WorldState
+    immediateEffect: (worldState: Indicators) => Indicators
+    recurringEffect: (worldState: Indicators) => Indicators
 }
 
