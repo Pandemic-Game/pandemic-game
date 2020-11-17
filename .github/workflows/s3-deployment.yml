@@ -17,6 +17,6 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_TARGET_REGION }}
+          aws-region: us-east-2
       - name: Updload results of /dist to S3
-        run: aws s3 sync ./dist s3://{{ AWS_BUCKET_NAME }}
+        run: aws s3 sync ./dist s3://pandemic-game-prod
