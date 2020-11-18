@@ -1,17 +1,20 @@
-import { Indicators, SimulatorState } from "./SimulatorState";
+import { Indicators, SimulatorState, WorldState } from "./SimulatorState";
+
 /**
- * Doctrines are mutually exclusive high level containment policies. Example: "full lockdown" and "business as usual" are
- * two fundamentally different approaches to pandemic management.
+ * Containment policies are specific actions that can be taken in conjunction, in the context of a containment doctrine,
+ * assuming the required capability improvement requirements are met.
  */
-export interface ContainmentDoctrine {
-    name: string,
+export interface ContainmentPolicy {
+    requirements: CapabilityImprovements[]
+    name: string
     immediateEffect: (context: SimulatorState) => Indicators
     recurringEffect: (context: SimulatorState) => Indicators
 }
 
-export const doctrines: ContainmentDoctrine[] = [
+export const containmentPolicies: ContainmentPolicy[] = [
     {
         name: "Full lockdown",
+        requirements: [],
         immediateEffect: (context) => {
             const updatedIndicators = { ...context.currentState.indicators };
             updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.5
@@ -25,6 +28,7 @@ export const doctrines: ContainmentDoctrine[] = [
     },
     {
         name: "New normal",
+        requirements: [],
         immediateEffect: (context) => {
             const updatedIndicators = { ...context.currentState.indicators };
             updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.8
@@ -38,6 +42,7 @@ export const doctrines: ContainmentDoctrine[] = [
     },
     {
         name: "Business as usual",
+        requirements: [],
         immediateEffect: (context) => context.currentState.indicators,
         recurringEffect: (context) => {
             const updatedIndicators = { ...context.currentState.indicators };
@@ -47,24 +52,13 @@ export const doctrines: ContainmentDoctrine[] = [
     },
 ]
 
-/**
- * Containment policies are specific actions that can be taken in conjunction, in the context of a containment doctrine,
- * assuming the required capability improvement requirements are met.
- */
-export interface ContainmentPolicy {
-    doctrine: ContainmentDoctrine
-    requirements: CapabilityImprovements[]
-    name: string
-    immediateEffect: (worldState: Indicators) => Indicators
-    recurringEffect: (worldState: Indicators) => Indicators
-}
 
 /**
  * Represents specific improvements to the healthcare sector (e.g. contact tracing infrastructure)
  */
 export interface CapabilityImprovements {
     name: string,
-    immediateEffect: (worldState: Indicators) => Indicators
-    recurringEffect: (worldState: Indicators) => Indicators
+    immediateEffect: (context: SimulatorState) => Indicators
+    recurringEffect: (context: SimulatorState) => Indicators
 }
 
