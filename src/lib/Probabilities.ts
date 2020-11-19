@@ -1,4 +1,4 @@
-import jStat from 'jstat';
+import jStat from 'jstat'
 
 // Probability Distributions
 export class FakeNegativeBinomial {

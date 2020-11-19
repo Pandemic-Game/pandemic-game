@@ -6,7 +6,6 @@ import { RandomEvent } from "./RandomEvents";
  */
 export interface WorldSetup {
     totalPopulation: number
-    wellbeing: number
     initialNumInfected: number
     importedCasesPerDay: number
     r0: number
@@ -23,7 +22,6 @@ export interface WorldSetup {
  * Represents the state of the simulation on a given turn.
  */
 export interface Indicators {
-    days: number  // Number of days since the start of the simulation
     totalPopulation: number
     numInfected: number
     numDead: number

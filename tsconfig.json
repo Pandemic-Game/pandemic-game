@@ -10,10 +10,11 @@
         "maxNodeModuleJsDepth": 1,
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "decs.d.ts"
     ],
     "exclude": [
         "node_modules",
-        "dist"
-    ]
+        "dist",
+    ],
 }

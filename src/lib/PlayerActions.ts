@@ -1,4 +1,4 @@
-import { Indicators, SimulatorState, WorldState } from "./SimulatorState";
+import { Indicators, WorldState } from "./SimulatorState";
 
 /**
  * Containment policies are specific actions that can be taken in conjunction, in the context of a containment doctrine,
@@ -7,21 +7,17 @@ import { Indicators, SimulatorState, WorldState } from "./SimulatorState";
 export interface ContainmentPolicy {
     requirements: CapabilityImprovements[]
     name: string
-    immediateEffect: (context: SimulatorState) => Indicators
-    recurringEffect: (context: SimulatorState) => Indicators
+    immediateEffect: (context: WorldState) => Indicators
+    recurringEffect: (context: WorldState) => Indicators
 }
 
 export const containmentPolicies: ContainmentPolicy[] = [
     {
         name: "Full lockdown",
         requirements: [],
-        immediateEffect: (context) => {
-            const updatedIndicators = { ...context.currentState.indicators };
-            updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.5
-            return updatedIndicators;
-        },
+        immediateEffect: (context) => context.indicators,
         recurringEffect: (context) => {
-            const updatedIndicators = { ...context.currentState.indicators };
+            const updatedIndicators = { ...context.indicators };
             updatedIndicators.r = 0.95
             return updatedIndicators;
         }
@@ -29,13 +25,9 @@ export const containmentPolicies: ContainmentPolicy[] = [
     {
         name: "New normal",
         requirements: [],
-        immediateEffect: (context) => {
-            const updatedIndicators = { ...context.currentState.indicators };
-            updatedIndicators.wellbeing = updatedIndicators.wellbeing * 0.8
-            return updatedIndicators;
-        },
+        immediateEffect: (context) => context.indicators,
         recurringEffect: (context) => {
-            const updatedWorldState = { ...context.currentState.indicators };
+            const updatedWorldState = { ...context.indicators };
             updatedWorldState.r = 1.0
             return updatedWorldState;
         }
@@ -43,9 +35,9 @@ export const containmentPolicies: ContainmentPolicy[] = [
     {
         name: "Business as usual",
         requirements: [],
-        immediateEffect: (context) => context.currentState.indicators,
+        immediateEffect: (context) => context.indicators,
         recurringEffect: (context) => {
-            const updatedIndicators = { ...context.currentState.indicators };
+            const updatedIndicators = { ...context.indicators };
             updatedIndicators.r = 1.08
             return updatedIndicators;
         }
@@ -58,7 +50,7 @@ export const containmentPolicies: ContainmentPolicy[] = [
  */
 export interface CapabilityImprovements {
     name: string,
-    immediateEffect: (context: SimulatorState) => Indicators
-    recurringEffect: (context: SimulatorState) => Indicators
+    immediateEffect: (context: WorldState) => Indicators
+    recurringEffect: (context: WorldState) => Indicators
 }
 
