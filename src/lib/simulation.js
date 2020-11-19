@@ -1,21 +1,5 @@
 /* eslint-disable camelcase, no-underscore-dangle, class-methods-use-this */
-
-import jStat from 'jstat';
-
-// Probability Distributions
-class FakeNegativeBinomial {
-    constructor(r, p) {
-        this.r = r;
-        this.p = p;
-
-        this.mean = (this.p * this.r) / (1 - this.p);
-        this.variance = (this.p * this.r) / ((1 - this.p) * (1 - this.p));
-    }
-
-    sample() {
-        return Math.max(0, Math.floor(jStat.normal.sample(this.mean, this.variance ** 0.5)));
-    }
-}
+import { FakeNegativeBinomial } from './Probabilities.ts';
 
 // Simulation Parameters
 const GDP_US = 2e13; // 20 trillion dollars: annual US GDP

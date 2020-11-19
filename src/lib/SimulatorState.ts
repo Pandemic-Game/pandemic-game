@@ -15,6 +15,7 @@ export interface WorldSetup {
     power: number
     distr_family: string
     dynamics: string
+    mortality: number //0.01
     time_lumping: boolean
 }
 
@@ -32,13 +33,13 @@ export interface Indicators {
     medicalCosts: number
     economicCosts: number
     deathCosts: number
-    wellbeing: number
+    totalCost: number
 }
 
 /**
  * Represents the set of player actions in effect at a given point in time
  */
-export interface PlayerAction {
+export interface PlayerActions {
     containmentPolicies: ContainmentPolicy[]
     capabilityImprovements: CapabilityImprovements[]
 }
@@ -51,7 +52,7 @@ export interface WorldState {
     days: number
     indicators: Indicators
     randomEvents: RandomEvent[]
-    playerActions: PlayerAction
+    playerActions: PlayerActions
 }
 
 /**
