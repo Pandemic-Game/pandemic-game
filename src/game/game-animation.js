@@ -19,14 +19,14 @@ export default function runGame(env) {
 		"steps":40,
 		"x_axis":{
 			"name":"days",
-			"start":0,
-			"end":400,
+			"min":0,
+			"max":400,
 			"step":10,
 		},
 		"y_axis":{
 			"name":"humans",
-			"start":0,
-			"end":50000,
+			"min":0,
+			"max":50000,
 		},
 		"lines":[{
 			"name":"Infected",
@@ -42,14 +42,14 @@ export default function runGame(env) {
 		"steps":40,
 		"x_axis":{
 			"name":"days",
-			"start":0,
-			"end":400,
+			"min":0,
+			"max":400,
 			"step":10,
 		},
 		"y_axis":{
 			"name":"$",
-			"start":0,
-			"end":120000000000,
+			"min":0,
+			"max":120000000000,
 		},
 		"lines":[{
 			"name":"Cost of Hospitalizations",

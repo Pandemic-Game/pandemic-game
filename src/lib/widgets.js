@@ -2,11 +2,50 @@
 This file contains all classes for frontend components.
 */
 
+/*
+	The plot class represents a normal line plot.
+	
+	How to use:
+	If we want to use a plot, we need a div-tag and a
+	model object. The model must contain objects for
+	 - x-axis with name, min, max and step
+	 - y-axis with name, min, and max
+	 - lines: array of objects with name, color
+	 - formatter: fuction to parse int to string
+	 
+	example:
+	HTML-code:
+	<div id="plot_id" class="plot"></div>
+	
+	JS-code:
+	let model_humans = {
+		"x_axis":{
+			"name":"x",
+			"min":0,
+			"max":100,
+			"step":10,
+		},
+		"y_axis":{
+			"name":"f(x)",
+			"min":0,
+			"max":100,
+		},
+		"lines":[{
+			"name":"time series 1",
+			"color":"#4060FF",
+		},{
+			"name":"time series 2",
+			"color":"#E00000",
+		}],
+		"formatter":(value => nFormatter(value,1)),
+	};
+*/
 export default class Plot{
 	
 	drawAxes(){
 		let currentValue;
 		let startValue;
+		let range;
 		let stepssize = 1;
 		
 		//draw lines for axis
@@ -27,21 +66,23 @@ export default class Plot{
 		this.context.fillText(this.model.y_axis.name, 5 ,13);
 		
 		//write values of axis
-		while((Math.floor(stepssize/(this.model.x_axis.end-this.model.x_axis.start)*(this.width-30)))<40){
+		range = this.model.x_axis.max-this.model.x_axis.min;
+		while((Math.floor(stepssize/range*(this.width-30)))<40){
 			stepssize*=10;
 		}
-		startValue = this.model.x_axis.start-(this.model.x_axis.start%stepssize)+stepssize;
-		for(let i1=startValue; i1<this.model.x_axis.end; i1+=stepssize){
-			currentValue = Math.floor(40+(i1-this.model.x_axis.start)/(this.model.x_axis.end-this.model.x_axis.start)*(this.width-40));
+		startValue = this.model.x_axis.min-(this.model.x_axis.min%stepssize)+stepssize;
+		for(let i1=startValue; i1<this.model.x_axis.max; i1+=stepssize){
+			currentValue = Math.floor(40+(i1-this.model.x_axis.min)/range*(this.width-40));
 			this.context.fillText(this.model.formatter(i1), currentValue, this.height-15);
 		}
 		stepssize = 1;
-		while((Math.floor(stepssize/(this.model.y_axis.end-this.model.y_axis.start)*(this.height-30)))<15){
+		range = this.model.y_axis.max-this.model.y_axis.min;
+		while((Math.floor(stepssize/range*(this.height-30)))<15){
 			stepssize*=10;
 		}
-		startValue = this.model.y_axis.start-(this.model.y_axis.start%stepssize)+stepssize;
-		for(let i1=startValue; i1<this.model.y_axis.end; i1+=stepssize){
-			currentValue = this.height-30-Math.floor((i1-this.model.y_axis.start)/(this.model.y_axis.end-this.model.y_axis.start)*(this.height-30));
+		startValue = this.model.y_axis.min-(this.model.y_axis.min%stepssize)+stepssize;
+		for(let i1=startValue; i1<this.model.y_axis.max; i1+=stepssize){
+			currentValue = this.height-30-Math.floor((i1-this.model.y_axis.min)/range*(this.height-30));
 			this.context.fillText(this.model.formatter(i1), 5, currentValue);
 		}
 	}
@@ -82,11 +123,11 @@ export default class Plot{
 				break;
 			}
 			this.context.strokeStyle = this.model.lines[i1].color;
-			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.y_axis.start)/(this.model.y_axis.end-this.model.y_axis.start)*(this.height-30));
+			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
 			current_x = Math.floor(40+(this.history.length-1)/this.model.steps*(this.width-40));
 			this.context.beginPath();
 			this.context.moveTo(current_x,current_y);
-			current_y = Math.floor((this.height-30)-(values[i1]-this.model.y_axis.start)/(this.model.y_axis.end-this.model.y_axis.start)*(this.height-30));
+			current_y = Math.floor((this.height-30)-(values[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
 			current_x = Math.floor(40+this.history.length/this.model.steps*(this.width-40));
 			this.context.lineTo(current_x,current_y);
 			this.context.stroke();
