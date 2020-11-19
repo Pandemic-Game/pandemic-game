@@ -1,6 +1,7 @@
 /* eslint-disable no-plusplus */
 import $ from 'jquery';
 import { nFormatter, sum } from '../lib/util';
+import Plot from '../lib/widgets';
 
 export default function runGame(env) {
     // Initialize pandemic simulator:
@@ -10,9 +11,61 @@ export default function runGame(env) {
     let nextActionR = 1.08;
 
     // Initialize lock-down controls
-
-    // $("#open").addClass("selected");
-
+	// $("#open").addClass("selected");
+	 
+	// Initialize plots
+	let model_humans = {
+		"valuerange":[0,50000],
+		"steps":40,
+		"x_axis":{
+			"name":"days",
+			"start":0,
+			"end":400,
+			"step":10,
+		},
+		"y_axis":{
+			"name":"humans",
+			"start":0,
+			"end":50000,
+		},
+		"lines":[{
+			"name":"Infected",
+			"color":"#4060FF",
+		},{
+			"name":"Deaths",
+			"color":"#E00000",
+		}],
+		"formatter":(value => nFormatter(value,1)),
+	};
+	let model_costs = {
+		"valuerange":[0,120000000000],
+		"steps":40,
+		"x_axis":{
+			"name":"days",
+			"start":0,
+			"end":400,
+			"step":10,
+		},
+		"y_axis":{
+			"name":"$",
+			"start":0,
+			"end":120000000000,
+		},
+		"lines":[{
+			"name":"Cost of Hospitalizations",
+			"color":"#4060FF",
+		},{
+			"name":"Cost of Deaths",
+			"color":"#E00000",
+		},{
+			"name":"Lost Economic Activity",
+			"color":"#00C000",
+		}],
+		"formatter":(value => nFormatter(value,1)),
+	};
+	let plot_humans = new Plot(	"plot_humans", model_humans);
+	let plot_costs = new Plot("plot_costs", model_costs);
+   
     $('#close').click((e) => {
         const target = $(e.target);
         $('.button').removeClass('selected');
@@ -81,18 +134,23 @@ export default function runGame(env) {
             }
             $(`#${key}`).html(formatted);
         }
+		
+		plot_humans.appendValues([resultObj.num_infected,resultObj.num_deaths]);
+		plot_costs.appendValues([resultObj.cost_medical,resultObj.cost_death,resultObj.cost_economic]);
     }
 
     function step() {
         stepSimulation();
         updateDisplay();
     }
+	
+	
 
     // Make "Start" button start the game, "Pause" button pause it.
     $('.start-pause').click((e) => {
         const target = $(e.target);
         if (target.hasClass('start')) {
-            target.removeClass('start');
+			target.removeClass('start');
             target.addClass('pause');
             target.html('Pause');
             interval = setInterval(step, 2000);
