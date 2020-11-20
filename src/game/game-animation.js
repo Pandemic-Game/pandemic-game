@@ -2,6 +2,7 @@
 import $ from 'jquery';
 import { nFormatter, sum } from '../lib/util';
 import Plot from '../lib/widgets';
+import PeoplePlot from '../lib/PeoplePlot';
 
 export default function runGame(env) {
     // Initialize pandemic simulator:
@@ -64,6 +65,7 @@ export default function runGame(env) {
 		"formatter":(value => nFormatter(value,1)),
 	};
 	let plot_humans = new Plot(	"plot_humans", model_humans);
+	//let plot_humans = new PeoplePlot("plot_humans", model_humans);
 	let plot_costs = new Plot("plot_costs", model_costs);
    
     $('#close').click((e) => {
