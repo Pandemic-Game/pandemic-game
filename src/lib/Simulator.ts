@@ -1,34 +1,56 @@
 import { CapabilityImprovements, ContainmentPolicy } from "./PlayerActions"
 import { RandomEvent } from "./RandomEvents"
-import { NexTurnState, PlayerActions, SimulatorState, WorldSetup, WorldState } from "./SimulatorState"
+import { NexTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from "./SimulatorState"
 import { FakeNegativeBinomial } from "./Probabilities"
+import { Scenario } from "./Scenarios"
+import { VictoryCondition } from "./VictoryConditon"
 
 export class Simulator {
 
-    private initialState: WorldSetup
+    private scenario: Scenario
     private scaleFactor: number
     private daysPerTurn: number
     private currentState: WorldState
     private history: WorldState[]
-    private availableRandomEvents: RandomEvent[]
 
-    constructor(initialState: WorldSetup) {
-        this.initialState = initialState
-        this.daysPerTurn = 10
+    constructor(initialState: Scenario, daysPerTurn = 10) {
+        this.scenario = initialState
+        this.daysPerTurn = daysPerTurn
         this.scaleFactor = initialState.gdpPerDay * 0.2
         this.currentState = this.computeInitialWorldState()
         this.history = []
-        this.availableRandomEvents = initialState.randomEvents
     }
 
     /**
-     * Processes
-     */
-    nextTurn(actionsInTurn: PlayerActions): NexTurnState {
+ * Allows the caller to obtain a snapshot of the current simulator state.
+ */
+    state(): SimulatorState {
+        const simulatorStateSnapshot: SimulatorState = {
+            initialState: this.scenario,
+            currentState: this.currentState,
+            history: this.history
+        }
+        // Return an immutable copy of the state.
+        return this.clone(simulatorStateSnapshot)
+    }
 
+    /**
+     * Processes the next turn by computing the effects of player actions, random events and the natural 
+     * progression of the epidemic.
+     */
+    nextTurn(actionsInTurn: PlayerActions): NexTurnState | VictoryState {
+        const nextTurn = this.prepareNextTurn(actionsInTurn)
+        const victoryCondition = this.isVictorious()
+        if (victoryCondition) {
+            this.computeVictory(victoryCondition)
+        } else {
+            return nextTurn
+        }
+    }
+
+    private prepareNextTurn(actionsInTurn: PlayerActions): NexTurnState {
         // TODO: add guards to guarantee that player actions and capability improvements match the expectations.
         // Assumption: The frontend returns ALL the player actions that are enabled and that should be factored in.
-
         // Create a new copy of the current state to avoid side effects that can pollute the history
         const nextStateCandidate = this.clone(this.currentState)
 
@@ -68,17 +90,18 @@ export class Simulator {
         });
     }
 
-    /**
-     * Allows the caller to obtain a snapshot of the current simulator state.
-     */
-    state(): SimulatorState {
-        const simulatorStateSnapshot: SimulatorState = {
-            initialState: this.initialState,
-            currentState: this.currentState,
-            history: this.history
+
+    private isVictorious(): VictoryCondition | undefined {
+        const simulatorState = this.state()
+        return this.scenario.victoryConditions.find(it => it.isMet(simulatorState))
+    }
+
+    private computeVictory(victoryCondition: VictoryCondition): VictoryState {
+        return {
+            simulatorState: this.state(),
+            score: this.currentState.indicators.totalCost,
+            victoryCondition: victoryCondition
         }
-        // Return an immutable copy of the state.
-        return this.clone(simulatorStateSnapshot)
     }
 
     private computeNextWorldState(candidateState: WorldState): WorldState {
@@ -95,12 +118,12 @@ export class Simulator {
         // Compute next state
         let new_num_infected = this.generateNewCasesFromDistribution(prev_cases, action_r);
         new_num_infected = Math.max(Math.floor(new_num_infected), 0);
-        new_num_infected = Math.min(new_num_infected, this.initialState.totalPopulation);
+        new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
 
         const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
         const long_enough = this.history.length > lag;
-        const mortality = this.initialState.mortality
+        const mortality = this.scenario.mortality
         const new_deaths_lagging = long_enough ? this.history[this.history.length - lag].indicators.numInfected * mortality : 0;
 
         const currentDay = last_result.days + this.daysPerTurn
@@ -109,10 +132,10 @@ export class Simulator {
             indicators: {
                 numDead: new_deaths_lagging,
                 numInfected: new_num_infected,
-                totalPopulation: this.initialState.totalPopulation,
-                hospitalCapacity: this.initialState.hospitalCapacity,
-                r: this.initialState.r0,
-                importedCases: this.initialState.importedCasesPerDay,
+                totalPopulation: this.scenario.totalPopulation,
+                hospitalCapacity: this.scenario.hospitalCapacity,
+                r: this.scenario.r0,
+                importedCasesPerDay: this.scenario.importedCasesPerDay,
                 deathCosts: this.computeDeathCost(new_deaths_lagging),
                 economicCosts: this.computeEconomicCosts(action_r, currentDay),
                 medicalCosts: this.computeHospitalizationCosts(new_num_infected),
@@ -132,15 +155,15 @@ export class Simulator {
             days: 0,
             indicators: {
                 numDead: 0,
-                numInfected: this.initialState.initialNumInfected,
-                totalPopulation: this.initialState.totalPopulation,
-                hospitalCapacity: this.initialState.hospitalCapacity,
-                r: this.initialState.r0,
-                importedCases: this.initialState.importedCasesPerDay,
+                numInfected: this.scenario.initialNumInfected,
+                totalPopulation: this.scenario.totalPopulation,
+                hospitalCapacity: this.scenario.hospitalCapacity,
+                r: this.scenario.r0,
+                importedCasesPerDay: this.scenario.importedCasesPerDay,
                 deathCosts: this.computeDeathCost(0),
-                economicCosts: this.computeEconomicCosts(this.initialState.r0, 0),
-                medicalCosts: this.computeHospitalizationCosts(this.initialState.initialNumInfected),
-                totalCost: this.computeTotalCosts(this.initialState.initialNumInfected, 0, this.initialState.r0, 0)
+                economicCosts: this.computeEconomicCosts(this.scenario.r0, 0),
+                medicalCosts: this.computeHospitalizationCosts(this.scenario.initialNumInfected),
+                totalCost: this.computeTotalCosts(this.scenario.initialNumInfected, 0, this.scenario.r0, 0)
             },
             playerActions: {
                 capabilityImprovements: [],
@@ -164,10 +187,10 @@ export class Simulator {
     }
 
     private computeEconomicCosts(r: number, days: number): number {
-        if (r >= this.initialState.r0) {
+        if (r >= this.scenario.r0) {
             return 0;
         }
-        return ((this.scaleFactor * (this.initialState.r0 ** 10 - r ** 10)) / this.initialState.r0 ** 10) * days;
+        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * days;
     }
 
     private computeTotalCosts(numInfected: number, numDead: number, r: number, days: number): number {
@@ -186,7 +209,7 @@ export class Simulator {
 
     private generateNewCases(num_infected: number, r: number) {
         const fraction_susceptible = 1; // immune population?
-        const expected_new_cases = num_infected * r * fraction_susceptible + this.currentState.indicators.importedCases;
+        const expected_new_cases = num_infected * r * fraction_susceptible + this.currentState.indicators.importedCasesPerDay;
         return expected_new_cases;
     }
 
@@ -202,7 +225,7 @@ export class Simulator {
 
     private pickRandomEvents(simulatorState: WorldState): RandomEvent[] {
         const eventsThatHappened = simulatorState.randomEvents.map(it => it.name)
-        return this.availableRandomEvents.filter(it => {
+        return this.scenario.randomEvents.filter(it => {
             const canOnlyHappenOnceButHasntHappened = it.happensOnce && it.name in eventsThatHappened
             return it.minDaysBeforeAppear > simulatorState.days &&  // Event can appear
                 (!it.happensOnce || canOnlyHappenOnceButHasntHappened) &&   // Event can happen multiple times or it hasn't happened yet

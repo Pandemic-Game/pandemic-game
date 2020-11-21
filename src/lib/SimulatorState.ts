@@ -1,23 +1,7 @@
 import { CapabilityImprovements, ContainmentPolicy } from "./PlayerActions";
 import { RandomEvent } from "./RandomEvents";
-
-/**
- * Represents the initial state of the game world.
- */
-export interface WorldSetup {
-    totalPopulation: number
-    initialNumInfected: number
-    importedCasesPerDay: number
-    r0: number
-    hospitalCapacity: number
-    gdpPerDay: number
-    power: number
-    distr_family: string
-    dynamics: string
-    mortality: number // A number between 0 and 1 representing the mortality
-    time_lumping: boolean,
-    randomEvents: RandomEvent[]
-}
+import { Scenario } from "./Scenarios";
+import { VictoryCondition } from "./VictoryConditon";
 
 /**
  * Represents the state of the simulation on a given turn.
@@ -26,7 +10,7 @@ export interface Indicators {
     totalPopulation: number
     numInfected: number
     numDead: number
-    importedCases: number
+    importedCasesPerDay: number
     r: number
     hospitalCapacity: number
     medicalCosts: number
@@ -58,7 +42,7 @@ export interface WorldState {
  * Full simulator state
  */
 export interface SimulatorState {
-    initialState: WorldSetup
+    initialState: Scenario
     currentState: WorldState
     history: WorldState[]
 }
@@ -69,4 +53,13 @@ export interface SimulatorState {
 export interface NexTurnState {
     currentState: WorldState,
     newRandomEvents: RandomEvent[]
+}
+
+/**
+ * Models the state where the game ends due to a victory condition being met
+ */
+export interface VictoryState {
+    simulatorState: SimulatorState,
+    victoryCondition: VictoryCondition,
+    score: number
 }
