@@ -1,24 +1,23 @@
-import { RandomEvent } from "./RandomEvents";
-import { VictoryCondition } from "./VictoryConditon";
+import { RandomEvent } from './RandomEvents';
+import { VictoryCondition } from './VictoryConditon';
 /**
  * Represents the initial state of the game world.
  */
 export interface Scenario {
-    totalPopulation: number
-    initialNumInfected: number
-    importedCasesPerDay: number
-    r0: number
-    hospitalCapacity: number
-    gdpPerDay: number
-    power: number
-    distr_family: string
-    dynamics: string
-    mortality: number // A number between 0 and 1 representing the mortality
-    time_lumping: boolean,
-    randomEvents: RandomEvent[]
-    victoryConditions: VictoryCondition[]
+    totalPopulation: number;
+    initialNumInfected: number;
+    importedCasesPerDay: number;
+    r0: number;
+    hospitalCapacity: number;
+    gdpPerDay: number;
+    power: number;
+    distr_family: string;
+    dynamics: string;
+    mortality: number; // A number between 0 and 1 representing the mortality
+    time_lumping: boolean;
+    randomEvents: RandomEvent[];
+    victoryConditions: VictoryCondition[];
 }
-
 
 const GDP_US = 2e13; // 20 trillion dollars: annual US GDP
 export const US: Scenario = {
@@ -35,4 +34,4 @@ export const US: Scenario = {
     time_lumping: false,
     randomEvents: [],
     victoryConditions: []
-} 
+};

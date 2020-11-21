@@ -1,50 +1,49 @@
-import { CapabilityImprovements, ContainmentPolicy } from "./PlayerActions"
-import { RandomEvent } from "./RandomEvents"
-import { NexTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from "./SimulatorState"
-import { FakeNegativeBinomial } from "./Probabilities"
-import { Scenario } from "./Scenarios"
-import { VictoryCondition } from "./VictoryConditon"
+import { CapabilityImprovements, ContainmentPolicy } from './PlayerActions';
+import { RandomEvent } from './RandomEvents';
+import { NexTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from './SimulatorState';
+import { FakeNegativeBinomial } from './Probabilities';
+import { Scenario } from './Scenarios';
+import { VictoryCondition } from './VictoryConditon';
 
 export class Simulator {
-
-    private scenario: Scenario
-    private scaleFactor: number
-    private daysPerTurn: number
-    private currentState: WorldState
-    private history: WorldState[]
+    private scenario: Scenario;
+    private scaleFactor: number;
+    private daysPerTurn: number;
+    private currentState: WorldState;
+    private history: WorldState[];
 
     constructor(initialState: Scenario, daysPerTurn = 10) {
-        this.scenario = initialState
-        this.daysPerTurn = daysPerTurn
-        this.scaleFactor = initialState.gdpPerDay * 0.2
-        this.currentState = this.computeInitialWorldState()
-        this.history = []
+        this.scenario = initialState;
+        this.daysPerTurn = daysPerTurn;
+        this.scaleFactor = initialState.gdpPerDay * 0.2;
+        this.currentState = this.computeInitialWorldState();
+        this.history = [];
     }
 
     /**
- * Allows the caller to obtain a snapshot of the current simulator state.
- */
+     * Allows the caller to obtain a snapshot of the current simulator state.
+     */
     state(): SimulatorState {
         const simulatorStateSnapshot: SimulatorState = {
             initialState: this.scenario,
             currentState: this.currentState,
             history: this.history
-        }
+        };
         // Return an immutable copy of the state.
-        return this.clone(simulatorStateSnapshot)
+        return this.clone(simulatorStateSnapshot);
     }
 
     /**
-     * Processes the next turn by computing the effects of player actions, random events and the natural 
+     * Processes the next turn by computing the effects of player actions, random events and the natural
      * progression of the epidemic.
      */
     nextTurn(actionsInTurn: PlayerActions): NexTurnState | VictoryState {
-        const nextTurn = this.prepareNextTurn(actionsInTurn)
-        const victoryCondition = this.isVictorious()
+        const nextTurn = this.prepareNextTurn(actionsInTurn);
+        const victoryCondition = this.isVictorious();
         if (victoryCondition) {
-            this.computeVictory(victoryCondition)
+            this.computeVictory(victoryCondition);
         } else {
-            return nextTurn
+            return nextTurn;
         }
     }
 
@@ -52,37 +51,41 @@ export class Simulator {
         // TODO: add guards to guarantee that player actions and capability improvements match the expectations.
         // Assumption: The frontend returns ALL the player actions that are enabled and that should be factored in.
         // Create a new copy of the current state to avoid side effects that can pollute the history
-        const nextStateCandidate = this.clone(this.currentState)
+        const nextStateCandidate = this.clone(this.currentState);
 
         // Factor in the recurring effects of player actions.
         for (const containmentPolicy of actionsInTurn.containmentPolicies) {
-            nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate)
+            nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
         }
 
         for (const capabilityImprovement of actionsInTurn.capabilityImprovements) {
-            nextStateCandidate.indicators = capabilityImprovement.recurringEffect(nextStateCandidate)
+            nextStateCandidate.indicators = capabilityImprovement.recurringEffect(nextStateCandidate);
         }
 
         // Factor in any new player actions and random events.
-        const newPlayerActions: ContainmentPolicy[] = this.findNewContainmentPolicies(actionsInTurn.containmentPolicies)
+        const newPlayerActions: ContainmentPolicy[] = this.findNewContainmentPolicies(
+            actionsInTurn.containmentPolicies
+        );
         for (const containmentPolicy of newPlayerActions) {
-            nextStateCandidate.indicators = containmentPolicy.immediateEffect(nextStateCandidate)
+            nextStateCandidate.indicators = containmentPolicy.immediateEffect(nextStateCandidate);
         }
 
-        const newCapabilities: CapabilityImprovements[] = this.findNewCapabilities(actionsInTurn.capabilityImprovements)
+        const newCapabilities: CapabilityImprovements[] = this.findNewCapabilities(
+            actionsInTurn.capabilityImprovements
+        );
         for (const capability of newCapabilities) {
-            actionsInTurn
-            nextStateCandidate.indicators = capability.immediateEffect(nextStateCandidate)
+            actionsInTurn;
+            nextStateCandidate.indicators = capability.immediateEffect(nextStateCandidate);
         }
 
         // Add any new random events that happen
-        const newRandomEvents = this.pickRandomEvents(nextStateCandidate)
+        const newRandomEvents = this.pickRandomEvents(nextStateCandidate);
         for (const randomEvent of newRandomEvents) {
-            nextStateCandidate.indicators = randomEvent.immediateEffect(nextStateCandidate)
+            nextStateCandidate.indicators = randomEvent.immediateEffect(nextStateCandidate);
         }
 
         // Save the candidate state as the new current state
-        this.commitState(this.computeNextWorldState(nextStateCandidate), actionsInTurn, newRandomEvents)
+        this.commitState(this.computeNextWorldState(nextStateCandidate), actionsInTurn, newRandomEvents);
 
         return this.clone({
             newRandomEvents: newRandomEvents,
@@ -90,10 +93,9 @@ export class Simulator {
         });
     }
 
-
     private isVictorious(): VictoryCondition | undefined {
-        const simulatorState = this.state()
-        return this.scenario.victoryConditions.find(it => it.isMet(simulatorState))
+        const simulatorState = this.state();
+        return this.scenario.victoryConditions.find((it) => it.isMet(simulatorState));
     }
 
     private computeVictory(victoryCondition: VictoryCondition): VictoryState {
@@ -101,16 +103,16 @@ export class Simulator {
             simulatorState: this.state(),
             score: this.currentState.indicators.totalCost,
             victoryCondition: victoryCondition
-        }
+        };
     }
 
     private computeNextWorldState(candidateState: WorldState): WorldState {
-        let action_r = candidateState.indicators.r ** this.daysPerTurn // compounding effect of a repeated action
-        const last_result = this.currentState
-        const prev_cases = last_result.indicators.numInfected
+        let action_r = candidateState.indicators.r ** this.daysPerTurn; // compounding effect of a repeated action
+        const last_result = this.currentState;
+        const prev_cases = last_result.indicators.numInfected;
 
         // Don't allow cases to exceed hospital capacity
-        const hospitalCapacity = this.currentState.indicators.hospitalCapacity
+        const hospitalCapacity = this.currentState.indicators.hospitalCapacity;
         const lockdown_ratio = hospitalCapacity / prev_cases;
         const capped_action_r = prev_cases * action_r >= hospitalCapacity ? lockdown_ratio : action_r;
         action_r = capped_action_r;
@@ -123,10 +125,12 @@ export class Simulator {
 
         const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
         const long_enough = this.history.length > lag;
-        const mortality = this.scenario.mortality
-        const new_deaths_lagging = long_enough ? this.history[this.history.length - lag].indicators.numInfected * mortality : 0;
+        const mortality = this.scenario.mortality;
+        const new_deaths_lagging = long_enough
+            ? this.history[this.history.length - lag].indicators.numInfected * mortality
+            : 0;
 
-        const currentDay = last_result.days + this.daysPerTurn
+        const currentDay = last_result.days + this.daysPerTurn;
         return {
             days: currentDay,
             indicators: {
@@ -146,7 +150,7 @@ export class Simulator {
                 containmentPolicies: []
             },
             randomEvents: []
-        }
+        };
     }
 
     private computeInitialWorldState(): WorldState {
@@ -170,7 +174,7 @@ export class Simulator {
                 containmentPolicies: []
             },
             randomEvents: []
-        }
+        };
     }
 
     private computeDeathCost(numDead: number): number {
@@ -194,9 +198,11 @@ export class Simulator {
     }
 
     private computeTotalCosts(numInfected: number, numDead: number, r: number, days: number): number {
-        return this.computeHospitalizationCosts(numInfected) +
+        return (
+            this.computeHospitalizationCosts(numInfected) +
             this.computeEconomicCosts(r, days) +
             this.computeDeathCost(numDead)
+        );
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
@@ -209,41 +215,48 @@ export class Simulator {
 
     private generateNewCases(num_infected: number, r: number) {
         const fraction_susceptible = 1; // immune population?
-        const expected_new_cases = num_infected * r * fraction_susceptible + this.currentState.indicators.importedCasesPerDay;
+        const expected_new_cases =
+            num_infected * r * fraction_susceptible + this.currentState.indicators.importedCasesPerDay;
         return expected_new_cases;
     }
 
     private findNewContainmentPolicies(containmentPoliciesOfTurn: ContainmentPolicy[]): ContainmentPolicy[] {
-        const previousPolicies = this.currentState.playerActions.containmentPolicies.map(it => it.name)
-        return containmentPoliciesOfTurn.filter(containmentPolicy => previousPolicies.indexOf(containmentPolicy.name) != -1)
+        const previousPolicies = this.currentState.playerActions.containmentPolicies.map((it) => it.name);
+        return containmentPoliciesOfTurn.filter(
+            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.name) != -1
+        );
     }
 
     private findNewCapabilities(capabilityImprovementsInTurn: CapabilityImprovements[]): CapabilityImprovements[] {
-        const previousPolicies = this.currentState.playerActions.capabilityImprovements.map(it => it.name)
-        return capabilityImprovementsInTurn.filter(capabilityImprovement => previousPolicies.indexOf(capabilityImprovement.name) != -1)
+        const previousPolicies = this.currentState.playerActions.capabilityImprovements.map((it) => it.name);
+        return capabilityImprovementsInTurn.filter(
+            (capabilityImprovement) => previousPolicies.indexOf(capabilityImprovement.name) != -1
+        );
     }
 
     private pickRandomEvents(simulatorState: WorldState): RandomEvent[] {
-        const eventsThatHappened = simulatorState.randomEvents.map(it => it.name)
-        return this.scenario.randomEvents.filter(it => {
-            const canOnlyHappenOnceButHasntHappened = it.happensOnce && it.name in eventsThatHappened
-            return it.minDaysBeforeAppear > simulatorState.days &&  // Event can appear
-                (!it.happensOnce || canOnlyHappenOnceButHasntHappened) &&   // Event can happen multiple times or it hasn't happened yet
-                Math.random() <= it.probability // The probability of the event happening
+        const eventsThatHappened = simulatorState.randomEvents.map((it) => it.name);
+        return this.scenario.randomEvents.filter((it) => {
+            const canOnlyHappenOnceButHasntHappened = it.happensOnce && it.name in eventsThatHappened;
+            return (
+                it.minDaysBeforeAppear > simulatorState.days && // Event can appear
+                (!it.happensOnce || canOnlyHappenOnceButHasntHappened) && // Event can happen multiple times or it hasn't happened yet
+                Math.random() <= it.probability
+            ); // The probability of the event happening
         });
     }
 
     private commitState(nextStateCandidate: WorldState, actionsInTurn: PlayerActions, newRandomEvents: RandomEvent[]) {
         // Update the actions and random events.
-        nextStateCandidate.playerActions = actionsInTurn
-        nextStateCandidate.randomEvents = nextStateCandidate.randomEvents.concat(newRandomEvents)
+        nextStateCandidate.playerActions = actionsInTurn;
+        nextStateCandidate.randomEvents = nextStateCandidate.randomEvents.concat(newRandomEvents);
 
         // store the old previous state in the history
-        this.history.push(this.currentState)
-        this.currentState = nextStateCandidate
+        this.history.push(this.currentState);
+        this.currentState = nextStateCandidate;
     }
 
     private clone<T>(obj: T): T {
-        return JSON.parse(JSON.stringify(obj))
+        return JSON.parse(JSON.stringify(obj));
     }
 }

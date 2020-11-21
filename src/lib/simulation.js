@@ -143,7 +143,7 @@ function makeEnv() {
         init_num_infected: 10000, // 100,000 people infected -- we're in the middle of a pandemic!
         R_0: 1.08, // infections double every 10 days
         imported_cases_per_day: 0.1,
-        hospital_capacity: 1000000, // 1 million hospital beds -- https://www.aha.org/statistics/fast-facts-us-hospitals
+        hospital_capacity: 1000000 // 1 million hospital beds -- https://www.aha.org/statistics/fast-facts-us-hospitals
     };
 
     return new PandemicEnv(
@@ -156,5 +156,5 @@ function makeEnv() {
 }
 
 export default {
-    makeEnv,
+    makeEnv
 };
