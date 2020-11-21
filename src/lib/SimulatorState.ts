@@ -14,8 +14,9 @@ export interface WorldSetup {
     power: number
     distr_family: string
     dynamics: string
-    mortality: number //0.01
-    time_lumping: boolean
+    mortality: number // A number between 0 and 1 representing the mortality
+    time_lumping: boolean,
+    randomEvents: RandomEvent[]
 }
 
 /**

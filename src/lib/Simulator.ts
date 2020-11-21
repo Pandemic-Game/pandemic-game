@@ -10,6 +10,7 @@ export class Simulator {
     private daysPerTurn: number
     private currentState: WorldState
     private history: WorldState[]
+    private availableRandomEvents: RandomEvent[]
 
     constructor(initialState: WorldSetup) {
         this.initialState = initialState
@@ -17,6 +18,7 @@ export class Simulator {
         this.scaleFactor = initialState.gdpPerDay * 0.2
         this.currentState = this.computeInitialWorldState()
         this.history = []
+        this.availableRandomEvents = initialState.randomEvents
     }
 
     /**
@@ -91,7 +93,7 @@ export class Simulator {
         action_r = capped_action_r;
 
         // Compute next state
-        let new_num_infected = this._new_random_state(prev_cases, action_r);
+        let new_num_infected = this.generateNewCasesFromDistribution(prev_cases, action_r);
         new_num_infected = Math.max(Math.floor(new_num_infected), 0);
         new_num_infected = Math.min(new_num_infected, this.initialState.totalPopulation);
         // Deaths from infections started 20 days ago
@@ -174,17 +176,15 @@ export class Simulator {
             this.computeDeathCost(numDead)
     }
 
-    // TODO: rename
-    private _new_random_state(num_infected: number, action_r: number) {
-        const lam = this._expected_new_state(num_infected, action_r);
+    private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
+        const lam = this.generateNewCases(num_infected, action_r);
         const r = 50.0;
         const p = lam / (r + lam);
         const new_num_infected = new FakeNegativeBinomial(r, p).sample();
         return new_num_infected;
     }
 
-    // TODO: rename
-    private _expected_new_state(num_infected: number, r: number) {
+    private generateNewCases(num_infected: number, r: number) {
         const fraction_susceptible = 1; // immune population?
         const expected_new_cases = num_infected * r * fraction_susceptible + this.currentState.indicators.importedCases;
         return expected_new_cases;
@@ -200,9 +200,14 @@ export class Simulator {
         return capabilityImprovementsInTurn.filter(capabilityImprovement => previousPolicies.indexOf(capabilityImprovement.name) != -1)
     }
 
-    // TODO can random events repeat
     private pickRandomEvents(simulatorState: WorldState): RandomEvent[] {
-        return []
+        const eventsThatHappened = simulatorState.randomEvents.map(it => it.name)
+        return this.availableRandomEvents.filter(it => {
+            const canOnlyHappenOnceButHasntHappened = it.happensOnce && it.name in eventsThatHappened
+            return it.minDaysBeforeAppear > simulatorState.days &&  // Event can appear
+                (!it.happensOnce || canOnlyHappenOnceButHasntHappened) &&   // Event can happen multiple times or it hasn't happened yet
+                Math.random() <= it.probability // The probability of the event happening
+        });
     }
 
     private commitState(nextStateCandidate: WorldState, actionsInTurn: PlayerActions, newRandomEvents: RandomEvent[]) {

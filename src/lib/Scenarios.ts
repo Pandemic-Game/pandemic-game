@@ -12,5 +12,6 @@ export const US: WorldSetup = {
     distr_family: 'nbinom',
     dynamics: 'SIS',
     mortality: 0.01,
-    time_lumping: false
+    time_lumping: false,
+    randomEvents: []
 } 
