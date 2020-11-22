@@ -1,9 +1,9 @@
-import { CapabilityImprovements, ContainmentPolicy } from './PlayerActions';
-import { RandomEvent } from './RandomEvents';
+import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
+import { RandomEvent } from './random-events/RandomEvents';
 import { NexTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from './SimulatorState';
-import { FakeNegativeBinomial } from './Probabilities';
-import { Scenario } from './Scenarios';
-import { VictoryCondition } from './VictoryConditon';
+import { FakeNegativeBinomial } from '../lib/Probabilities';
+import { Scenario } from './scenarios/Scenarios';
+import { VictoryCondition } from './victory-conditions/VictoryConditon';
 
 export class Simulator {
     private scenario: Scenario;

@@ -8,10 +8,17 @@
         "allowJs": true,
         "checkJs": false,
         "maxNodeModuleJsDepth": 1,
+        "baseUrl": ".",
+        "paths": {
+            "@src/*": [
+                "src/*"
+            ]
+        }
     },
     "include": [
         "src/**/*",
-        "decs.d.ts",
+        "__tests__/**/*",
+        "decs.d.ts"
     ],
     "exclude": [
         "node_modules",

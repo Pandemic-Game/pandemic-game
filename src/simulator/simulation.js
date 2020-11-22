@@ -1,5 +1,5 @@
 /* eslint-disable camelcase, no-underscore-dangle, class-methods-use-this */
-import { FakeNegativeBinomial } from './Probabilities.ts';
+import { FakeNegativeBinomial } from '../lib/Probabilities.ts';
 
 // Simulation Parameters
 const GDP_US = 2e13; // 20 trillion dollars: annual US GDP

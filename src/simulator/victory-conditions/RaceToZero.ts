@@ -1,16 +1,5 @@
-import { SimulatorState } from './SimulatorState';
-
-export interface VictoryCondition {
-    name: string;
-    description: string;
-    isMet(simulatorState: SimulatorState): boolean;
-}
-
-export const TimeVictory: VictoryCondition = {
-    name: 'Time victory',
-    description: 'You managed to survice one year!',
-    isMet: (simulatorState: SimulatorState) => simulatorState.currentState.days >= 365
-};
+import { SimulatorState } from '../SimulatorState';
+import { VictoryCondition } from './VictoryConditon';
 
 export const RaceToZero: VictoryCondition = {
     name: 'Zero infections in the last 30 days',

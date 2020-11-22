@@ -1,4 +1,4 @@
-import { Indicators, WorldState } from './SimulatorState';
+import { Indicators, WorldState } from '../SimulatorState';
 
 /**
  * Represents a random event

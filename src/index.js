@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import $ from 'jquery';
 import runGame from './game/game-animation';
-import simulation from './lib/simulation';
-import { Simulator } from './lib/Simulator.ts';
-import { US } from './lib/Scenarios.ts';
+import simulation from './simulator/simulation';
+import { Simulator } from './simulator/Simulator.ts';
+import { US } from './simulator/scenarios/US.ts';
 
 $(window).on('load', () => {
     const simulator = new Simulator(US);

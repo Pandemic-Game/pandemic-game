@@ -1,7 +1,7 @@
-import { CapabilityImprovements, ContainmentPolicy } from './PlayerActions';
-import { RandomEvent } from './RandomEvents';
-import { Scenario } from './Scenarios';
-import { VictoryCondition } from './VictoryConditon';
+import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
+import { RandomEvent } from './random-events/RandomEvents';
+import { Scenario } from './scenarios/Scenarios';
+import { VictoryCondition } from './victory-conditions/VictoryConditon';
 
 /**
  * Represents the state of the simulation on a given turn.

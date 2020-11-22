@@ -1,5 +1,5 @@
-import { US } from "../src/lib/Scenarios";
-import { Indicators, SimulatorState, WorldState } from "../src/lib/SimulatorState";
+import { US } from "@src/simulator/scenarios/US";
+import { Indicators, SimulatorState, WorldState } from "@src/simulator/SimulatorState";
 
 export class SimulatorStateFactory {
     static empty(): SimulatorState {

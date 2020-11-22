@@ -1,5 +1,5 @@
-import { SimulatorState } from "../src/lib/SimulatorState"
-import { RaceToZero } from "../src/lib/VictoryConditon"
+import { SimulatorState } from "@src/simulator/SimulatorState"
+import { RaceToZero } from "@src/simulator/victory-conditions/RaceToZero"
 import { SimulatorStateFactory } from "./TestHelpers"
 
 describe("A race to zero victory condition", () => {
