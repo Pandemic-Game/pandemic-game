@@ -1,6 +1,6 @@
 import { SimulatorState } from "../src/lib/SimulatorState"
 import { TimeVictory } from "../src/lib/VictoryConditon"
-import { SimulatorStateFactory } from "./SimulatorStateFactory"
+import { SimulatorStateFactory } from "./TestHelpers"
 
 describe("A time victory condition", () => {
 
