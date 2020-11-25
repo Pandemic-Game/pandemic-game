@@ -1,5 +1,5 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
-import { RandomEvent } from './random-events/RandomEvents';
+import { EventChoice, InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 
@@ -25,6 +25,7 @@ export interface Indicators {
 export interface PlayerActions {
     containmentPolicies: ContainmentPolicy[];
     capabilityImprovements: CapabilityImprovements[];
+    inGameEventChoices: RecordedInGameEventChoice[];
 }
 
 /**
@@ -34,7 +35,11 @@ export interface PlayerActions {
 export interface WorldState {
     days: number;
     indicators: Indicators;
-    randomEvents: RandomEvent[];
+    availablePlayerActions: {
+        containmentPolicies: ContainmentPolicy[];
+        capabilityImprovements: CapabilityImprovements[];
+    };
+    nextInGameEvents: InGameEvent[];
     playerActions: PlayerActions;
 }
 
@@ -52,7 +57,7 @@ export interface SimulatorState {
  */
 export interface NexTurnState {
     currentState: WorldState;
-    newRandomEvents: RandomEvent[];
+    newInGameEvents: InGameEvent[];
 }
 
 /**

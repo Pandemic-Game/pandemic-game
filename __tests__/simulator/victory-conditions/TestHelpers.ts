@@ -8,10 +8,15 @@ export class SimulatorStateFactory {
             currentState: {
                 days: 0,
                 indicators: IndicatorFactory.empty(),
-                randomEvents: [],
+                availablePlayerActions: {
+                    capabilityImprovements: [],
+                    containmentPolicies: [],
+                },
+                nextInGameEvents: [],
                 playerActions: {
                     capabilityImprovements: [],
                     containmentPolicies: [],
+                    inGameEventChoices: []
                 }
             },
             history: []
@@ -31,10 +36,15 @@ export class SimulatorStateFactory {
             currentState: {
                 days: numHistoryEntries * daysPerTurn,
                 indicators: IndicatorFactory.empty(),
-                randomEvents: [],
+                availablePlayerActions: {
+                    capabilityImprovements: [],
+                    containmentPolicies: [],
+                },
+                nextInGameEvents: [],
                 playerActions: {
                     capabilityImprovements: [],
                     containmentPolicies: [],
+                    inGameEventChoices: []
                 }
             },
             history: history
@@ -64,10 +74,15 @@ export class WorldStateFactory {
         return {
             days: 0,
             indicators: IndicatorFactory.empty(),
-            randomEvents: [],
+            availablePlayerActions: {
+                capabilityImprovements: [],
+                containmentPolicies: [],
+            },
+            nextInGameEvents: [],
             playerActions: {
                 capabilityImprovements: [],
                 containmentPolicies: [],
+                inGameEventChoices: []
             }
         }
     }
