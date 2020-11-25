@@ -1,3 +1,7 @@
+import { BusinessAsUsual } from '../player-actions/BusinessAsUsual';
+import { FullLockdown } from '../player-actions/FullLockdown';
+import { NewNormal } from '../player-actions/NewNormal';
+import { TimeVictory } from '../victory-conditions/TimeVictory';
 import { Scenario } from './Scenarios';
 
 const GDP_US = 2e13; // 20 trillion dollars: annual US GDP
@@ -13,6 +17,8 @@ export const US: Scenario = {
     dynamics: 'SIS',
     mortality: 0.01,
     time_lumping: false,
-    randomEvents: [],
-    victoryConditions: []
+    initialContainmentPolicies: [FullLockdown, NewNormal, BusinessAsUsual],
+    initialCapabilityImprovements: [],
+    initialInGameEvents: [],
+    victoryConditions: [TimeVictory]
 };

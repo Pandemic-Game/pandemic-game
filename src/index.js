@@ -10,7 +10,8 @@ $(window).on('load', () => {
     console.log(simulator.state());
     simulator.nextTurn({
         containmentPolicies: [],
-        capabilityImprovements: []
+        capabilityImprovements: [],
+        inGameEventChoices: []
     });
     console.log(simulator.state());
 
