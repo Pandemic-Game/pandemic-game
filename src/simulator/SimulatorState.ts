@@ -55,7 +55,7 @@ export interface SimulatorState {
 /**
  * Models the updated state of the world at the start of a new turn
  */
-export interface NexTurnState {
+export interface NextTurnState {
     currentState: WorldState;
     newInGameEvents: InGameEvent[];
 }

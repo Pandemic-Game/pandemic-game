@@ -1,6 +1,6 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
 import { InGameEvent } from './in-game-events/InGameEvents';
-import { NexTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from './SimulatorState';
+import { NextTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
@@ -37,7 +37,7 @@ export class Simulator {
      * Processes the next turn by computing the effects of player actions, random events and the natural
      * progression of the epidemic.
      */
-    nextTurn(actionsInTurn: PlayerActions): NexTurnState | VictoryState {
+    nextTurn(actionsInTurn: PlayerActions): NextTurnState | VictoryState {
         const nextTurn = this.prepareNextTurn(actionsInTurn);
         const victoryCondition = this.isVictorious();
         if (victoryCondition) {
@@ -47,7 +47,7 @@ export class Simulator {
         }
     }
 
-    private prepareNextTurn(playerActions: PlayerActions): NexTurnState {
+    private prepareNextTurn(playerActions: PlayerActions): NextTurnState {
         // TODO: add guards to guarantee that player actions and capability improvements match the allowed set.
 
         // Create a new copy of the current state to avoid side effects that can pollute the history
