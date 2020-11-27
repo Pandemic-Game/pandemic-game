@@ -68,7 +68,7 @@ export default function runGame(env) {
             cost_economic_total: sum(history.map((obj) => obj.cost_economic)),
 
             cost_all_current: resultObj.cost_all,
-            cost_all_total: sum(history.map((obj) => obj.cost_all)),
+            cost_all_total: sum(history.map((obj) => obj.cost_all))
         };
 
         const resultKeys = Object.keys(resultsDisplay);
