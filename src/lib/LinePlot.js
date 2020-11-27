@@ -40,7 +40,7 @@ This file contains all classes for frontend components.
 		"formatter":(value => nFormatter(value,1)),
 	};
 */
-export default class Plot{
+export default class LinePlot{
 	
 	drawAxes(){
 		let currentValue;
@@ -73,7 +73,11 @@ export default class Plot{
 		startValue = this.model.x_axis.min-(this.model.x_axis.min%stepssize)+stepssize;
 		for(let i1=startValue; i1<this.model.x_axis.max; i1+=stepssize){
 			currentValue = Math.floor(40+(i1-this.model.x_axis.min)/range*(this.width-40));
-			this.context.fillText(this.model.formatter(i1), currentValue, this.height-15);
+			if(this.model.x_axis.formatter){
+				this.context.fillText(this.model.x_axis.formatter(i1), currentValue, this.height-15);
+			} else{
+				this.context.fillText(i1, currentValue, this.height-15);
+			}
 		}
 		stepssize = 1;
 		range = this.model.y_axis.max-this.model.y_axis.min;
@@ -83,7 +87,11 @@ export default class Plot{
 		startValue = this.model.y_axis.min-(this.model.y_axis.min%stepssize)+stepssize;
 		for(let i1=startValue; i1<this.model.y_axis.max; i1+=stepssize){
 			currentValue = this.height-30-Math.floor((i1-this.model.y_axis.min)/range*(this.height-30));
-			this.context.fillText(this.model.formatter(i1), 5, currentValue);
+			if(this.model.y_axis.formatter){
+				this.context.fillText(this.model.y_axis.formatter(i1), 5, currentValue);
+			} else{
+				this.context.fillText(i1, 5, currentValue);
+			}
 		}
 	}
 	
