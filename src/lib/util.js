@@ -14,7 +14,7 @@ export function nFormatter(num, digits) {
         { value: 1e9, symbol: 'B' },
         { value: 1e12, symbol: 'T' },
         { value: 1e15, symbol: 'Qua' },
-        { value: 1e18, symbol: 'Qui' },
+        { value: 1e18, symbol: 'Qui' }
     ];
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
     let i;
