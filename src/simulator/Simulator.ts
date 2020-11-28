@@ -12,12 +12,26 @@ export class Simulator {
     private currentState: WorldState;
     private history: WorldState[];
 
-    constructor(initialState: Scenario, daysPerTurn = 10) {
-        this.scenario = initialState;
+    constructor(scenario: Scenario, daysPerTurn = 10) {
+        this.scenario = scenario;
         this.daysPerTurn = daysPerTurn;
-        this.scaleFactor = initialState.gdpPerDay * 0.2;
+        this.scaleFactor = scenario.gdpPerDay * 0.2;
         this.currentState = this.computeInitialWorldState();
         this.history = [];
+    }
+
+    /**
+     * Restarts the scenario at a given turn (turn zero by default).
+     * Returns a new simulator instance.
+     */
+    reset(turn: number = 0): Simulator {
+        const newSimulator = new Simulator(this.scenario, this.daysPerTurn);
+        if (turn > 0 && this.history.length > 1) {
+            const maxTurn = Math.min(turn, this.history.length - 1);
+            newSimulator.history = this.history.slice(0, maxTurn);
+            newSimulator.currentState = newSimulator.history.pop();
+        }
+        return newSimulator;
     }
 
     /**
@@ -25,7 +39,7 @@ export class Simulator {
      */
     state(): SimulatorState {
         const simulatorStateSnapshot: SimulatorState = {
-            initialState: this.scenario,
+            scenario: this.scenario,
             currentState: this.currentState,
             history: this.history
         };
@@ -41,7 +55,7 @@ export class Simulator {
         const nextTurn = this.prepareNextTurn(actionsInTurn);
         const victoryCondition = this.isVictorious();
         if (victoryCondition) {
-            this.computeVictory(victoryCondition);
+            return this.computeVictory(victoryCondition);
         } else {
             return nextTurn;
         }
@@ -53,15 +67,6 @@ export class Simulator {
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
 
-        // Factor in the recurring effects of existing player actions.
-        for (const containmentPolicy of nextStateCandidate.playerActions.containmentPolicies) {
-            nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
-        }
-
-        for (const capabilityImprovement of nextStateCandidate.playerActions.capabilityImprovements) {
-            nextStateCandidate.indicators = capabilityImprovement.recurringEffect(nextStateCandidate);
-        }
-
         // Factor in any new player actions.
         const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
             playerActions.containmentPolicies
@@ -69,40 +74,17 @@ export class Simulator {
         for (const containmentPolicy of newContainmentPolicies) {
             nextStateCandidate.indicators = containmentPolicy.immediateEffect(nextStateCandidate);
         }
+
+        // Factor in the recurring effects of existing player actions.
+        for (const containmentPolicy of playerActions.containmentPolicies) {
+            nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
+        }
+
         // Add the new containment policies to the history of player actions
-        nextStateCandidate.playerActions.containmentPolicies = nextStateCandidate.playerActions.containmentPolicies.concat(
-            newContainmentPolicies
-        );
-
-        const newCapabilities: CapabilityImprovements[] = this.findNewCapabilities(
-            playerActions.capabilityImprovements
-        );
-        for (const capability of newCapabilities) {
-            playerActions;
-            nextStateCandidate.indicators = capability.immediateEffect(nextStateCandidate);
-        }
-        // Add the new capability improvements to the history of player actions
-        nextStateCandidate.playerActions.capabilityImprovements = nextStateCandidate.playerActions.capabilityImprovements.concat(
-            newCapabilities
-        );
-
-        // Factor in past in game event choices with recurring effects
-        for (let eventChoice of nextStateCandidate.playerActions.inGameEventChoices) {
-            nextStateCandidate = eventChoice.choice.recurringEffect(nextStateCandidate);
-        }
-
-        // Factor in immediate effects of new event choices
-        for (let eventChoice of playerActions.inGameEventChoices) {
-            nextStateCandidate = eventChoice.choice.immediateEffect(nextStateCandidate);
-        }
-
-        // Add new in game event choices
-        nextStateCandidate.playerActions.inGameEventChoices = nextStateCandidate.playerActions.inGameEventChoices.concat(
-            playerActions.inGameEventChoices
-        );
+        nextStateCandidate.playerActions.containmentPolicies = playerActions.containmentPolicies;
 
         // Add any new random events that will trigger on the next turn
-        nextStateCandidate.nextInGameEvents = this.pickRandomEvents(nextStateCandidate);
+        nextStateCandidate.nextInGameEvents = [];
 
         // Save the candidate state as the new current state
         this.commitState(this.computeNaturalPandemicEvolution(nextStateCandidate));
@@ -246,14 +228,14 @@ export class Simulator {
     private findNewContainmentPolicies(containmentPoliciesOfTurn: ContainmentPolicy[]): ContainmentPolicy[] {
         const previousPolicies = this.currentState.playerActions.containmentPolicies.map((it) => it.name);
         return containmentPoliciesOfTurn.filter(
-            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.name) != -1
+            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.name) == -1
         );
     }
 
     private findNewCapabilities(capabilityImprovementsInTurn: CapabilityImprovements[]): CapabilityImprovements[] {
         const previousPolicies = this.currentState.playerActions.capabilityImprovements.map((it) => it.name);
         return capabilityImprovementsInTurn.filter(
-            (capabilityImprovement) => previousPolicies.indexOf(capabilityImprovement.name) != -1
+            (capabilityImprovement) => previousPolicies.indexOf(capabilityImprovement.name) == -1
         );
     }
 
