@@ -84,16 +84,3 @@ body {
     .pause {
     background-color: gray;
     }
-	
-	div#body{
-		float:left;
-	}
-	
-	/*todo: find the right position and size*/
-	div.plot{
-		width:500px;
-		height:500px;
-		overflow:hidden;
-		padding:20px;
-		float:left;
-	}

@@ -1,9 +1,6 @@
 /* eslint-disable no-plusplus */
 import $ from 'jquery';
 import { nFormatter, sum } from '../lib/util';
-import LinePlot from '../lib/LinePlot';
-import PeoplePlot from '../lib/PeoplePlot';
-import BarPlot from '../lib/BarPlot';
 
 export default function runGame(env) {
     // Initialize pandemic simulator:
@@ -13,81 +10,9 @@ export default function runGame(env) {
     let nextActionR = 1.08;
 
     // Initialize lock-down controls
-	// $("#open").addClass("selected");
-	 
-	// Initialize plots
-	let model_humans = {
-		"x_axis":{
-			"name":"days",
-			"min":0,
-			"max":400,
-			"step":10,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"y_axis":{
-			"name":"humans",
-			"min":0,
-			"max":50000,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"lines":[{
-			"name":"Infected",
-			"color":"#0000F0",
-		},{
-			"name":"Deaths",
-			"color":"#E00000",
-		}],
-	};
-	let model_costs = {
-		"x_axis":{
-			"name":"days",
-			"min":0,
-			"max":400,
-			"step":10,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"y_axis":{
-			"name":"$",
-			"min":0,
-			"max":120000000000,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"lines":[{
-			"name":"Cost of Hospitalizations",
-			"color":"#0000F0",
-		},{
-			"name":"Cost of Deaths",
-			"color":"#E00000",
-		},{
-			"name":"Lost Economic Activity",
-			"color":"#00C000",
-		}],
-	};
-	
-	let model_bar_humans = {
-		"x_axis":{
-			"name":"days",
-			"min":0,
-			"max":400,
-			"step":10,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"y_axis":{
-			"name":"$",
-			"min":0,
-			"max":50000,
-			"formatter":(value => nFormatter(value,1)),
-		},
-		"lines":[{
-			"name":"Cost of Hospitalizations",
-			"color":"#0000F0",
-		}],
-	};
-	//let plot_humans = new LinePlot(	"plot_humans", model_humans);
-	let plot_humans = new PeoplePlot("plot_humans", model_humans);
-	let plot_costs = new LinePlot("plot_costs", model_costs);
-	let bar_humans = new BarPlot("bar_humans",model_bar_humans);
-   
+
+    // $("#open").addClass("selected");
+
     $('#close').click((e) => {
         const target = $(e.target);
         $('.button').removeClass('selected');
@@ -156,24 +81,18 @@ export default function runGame(env) {
             }
             $(`#${key}`).html(formatted);
         }
-		
-		plot_humans.appendValues([resultObj.num_infected,resultsDisplay.deaths_total]);
-		bar_humans.appendValues([resultsDisplay.deaths_total])
-		plot_costs.appendValues([resultObj.cost_medical,resultObj.cost_death,resultObj.cost_economic]);
     }
 
     function step() {
         stepSimulation();
         updateDisplay();
     }
-	
-	
 
     // Make "Start" button start the game, "Pause" button pause it.
     $('.start-pause').click((e) => {
         const target = $(e.target);
         if (target.hasClass('start')) {
-			target.removeClass('start');
+            target.removeClass('start');
             target.addClass('pause');
             target.html('Pause');
             interval = setInterval(step, 2000);

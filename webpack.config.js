@@ -15,7 +15,6 @@ module.exports = {
             patterns: [
                 { from: 'src/public/index.html', to: 'index.html' },
                 { from: 'src/public/style.css', to: 'style.css' },
-				{ from: 'src/public/person.png', to: 'person.png' },
             ],
         }),
     ],
