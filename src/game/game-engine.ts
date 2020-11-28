@@ -2,8 +2,8 @@ import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
 import { nFormatter } from '../lib/util';
 import * as $ from 'jquery';
-import { NextTurnState, PlayerActions, VictoryState, WorldState, isNextTurn } from '@src/simulator/SimulatorState';
-import { InGameEvent } from '@src/simulator/in-game-events/InGameEvents';
+import { NextTurnState, PlayerActions, VictoryState, WorldState, isNextTurn } from '../simulator/SimulatorState';
+import { InGameEvent } from '../simulator/in-game-events/InGameEvents';
 
 export class GameEngine {
     private scenario: Scenario;

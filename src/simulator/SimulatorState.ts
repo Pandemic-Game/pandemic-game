@@ -1,5 +1,5 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
-import { EventChoice, InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
+import { InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 

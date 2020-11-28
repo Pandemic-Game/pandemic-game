@@ -4,6 +4,7 @@ import { NextTurnState, PlayerActions, SimulatorState, VictoryState, WorldState 
 import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
+import cloneDeep from 'lodash/cloneDeep';
 
 export class Simulator {
     private scenario: Scenario;
@@ -257,6 +258,6 @@ export class Simulator {
     }
 
     private clone<T>(obj: T): T {
-        return JSON.parse(JSON.stringify(obj));
+        return cloneDeep(obj);
     }
 }

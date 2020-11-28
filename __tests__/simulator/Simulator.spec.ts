@@ -42,7 +42,7 @@ describe("The operation of the Simulator", () => {
             const s0 = simulator.state();
 
             expect(s0.history.length).toBe(0);
-            expect(JSON.stringify(s0.scenario)).toEqual(JSON.stringify(TestScenario));
+            expect(s0.scenario).toEqual(TestScenario);
             expect(s0.currentState.days).toBe(0)
         })
     })
