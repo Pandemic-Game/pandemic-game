@@ -13,6 +13,7 @@ Sets UI display given the player's in-game turn and actions
 //
 
 import * as $ from 'jquery';
+import { nFormatter } from '../lib/util';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -52,4 +53,15 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
+};
+
+export const updateIndicators = (currentCost, currentCases) => {
+    $(`#cases-current`).html(nFormatter(currentCases, 5));
+    $(`#cost-current`).html(nFormatter(currentCost, 5));
+};
+
+export const showWinScreen = (totalCost, totalCases) => {
+    $(`#win-total-cases`).html(nFormatter(totalCases, 5));
+    $(`#win-total-costs`).html(nFormatter(totalCost, 5));
+    $('#win-screen').modal('show');
 };

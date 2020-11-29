@@ -79,6 +79,7 @@ export class Simulator {
         // Factor in the recurring effects of existing player actions.
         for (const containmentPolicy of playerActions.containmentPolicies) {
             nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
+            console.log(`${containmentPolicy.name} -> R: ${nextStateCandidate.indicators.r}`);
         }
 
         // Add the new containment policies to the history of player actions
@@ -142,7 +143,7 @@ export class Simulator {
                 numInfected: new_num_infected,
                 totalPopulation: this.scenario.totalPopulation,
                 hospitalCapacity: this.scenario.hospitalCapacity,
-                r: this.scenario.r0,
+                r: candidateState.indicators.r,
                 importedCasesPerDay: this.scenario.importedCasesPerDay,
                 deathCosts: this.computeDeathCost(new_deaths_lagging),
                 economicCosts: this.computeEconomicCosts(action_r, currentDay),
