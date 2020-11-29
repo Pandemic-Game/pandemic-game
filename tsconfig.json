@@ -7,6 +7,7 @@
         "target": "es5",
         "allowJs": true,
         "checkJs": false,
+        "allowSyntheticDefaultImports": true,
         "maxNodeModuleJsDepth": 1,
         "baseUrl": ".",
         "paths": {
