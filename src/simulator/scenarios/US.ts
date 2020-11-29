@@ -4,7 +4,7 @@ import { NewNormal } from '../player-actions/NewNormal';
 import { TimeVictory } from '../victory-conditions/TimeVictory';
 import { Scenario } from './Scenarios';
 
-const GDP_US = 2e13; // 20 trillion dollars: annual US GDP
+export const GDP_US = 2e13; // 20 trillion dollars: annual US GDP
 export const US: Scenario = {
     totalPopulation: 400000000, // 400 million people -- i.e. approximate US population
     initialNumInfected: 10000, // 100,000 people infected -- we're in the middle of a pandemic!
