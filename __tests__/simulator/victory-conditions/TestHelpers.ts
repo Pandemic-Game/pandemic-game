@@ -4,7 +4,7 @@ import { Indicators, SimulatorState, WorldState } from "@src/simulator/Simulator
 export class SimulatorStateFactory {
     static empty(): SimulatorState {
         return {
-            initialState: US,
+            scenario: US,
             currentState: {
                 days: 0,
                 indicators: IndicatorFactory.empty(),
@@ -32,7 +32,7 @@ export class SimulatorStateFactory {
             history.push(entry)
         }
         return {
-            initialState: US,
+            scenario: US,
             currentState: {
                 days: numHistoryEntries * daysPerTurn,
                 indicators: IndicatorFactory.empty(),

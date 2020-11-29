@@ -1,5 +1,5 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
-import { EventChoice, InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
+import { InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 
@@ -47,7 +47,7 @@ export interface WorldState {
  * Full simulator state
  */
 export interface SimulatorState {
-    initialState: Scenario;
+    scenario: Scenario;
     currentState: WorldState;
     history: WorldState[];
 }
@@ -68,3 +68,7 @@ export interface VictoryState {
     victoryCondition: VictoryCondition;
     score: number;
 }
+
+export const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
+    return (nextTurn as any)?.currentState !== undefined;
+};

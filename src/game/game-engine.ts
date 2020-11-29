@@ -1,66 +1,93 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
-import { nFormatter, sum } from '../lib/util';
-import * as $ from 'jquery'
-import { NextTurnState, PlayerActions, VictoryState, WorldState } from '@src/simulator/SimulatorState';
-import { InGameEvent } from '@src/simulator/in-game-events/InGameEvents';
+import { nFormatter } from '../lib/util';
+import { NextTurnState, PlayerActions, VictoryState, isNextTurn } from '../simulator/SimulatorState';
+import { InGameEvent, RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
+import { createGameUI } from './createGameUI';
+import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
+import { setControlsToTurn } from './setGameUI';
 
-const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
-    return (nextTurn as any)?.currentState !== undefined;
+interface CurrentUISelection {
+    transit: boolean;
+    masks: boolean;
+    schools: boolean;
+    business: boolean;
 }
 
-export class GameEngine {
+type AvailableActions = 'transit' | 'masks' | 'schools' | 'business';
 
+export class GameEngine {
     private scenario: Scenario;
     private simulator: Simulator;
+    private currentlySelectedActions: CurrentUISelection;
+    private playerTurn: number;
 
-    constructor(scenario: Scenario) {
+    constructor(scenario: Scenario, daysPerTurn: number = 10) {
         this.scenario = scenario;
-        this.simulator = new Simulator(scenario);
+        this.simulator = new Simulator(scenario, daysPerTurn);
+        this.playerTurn = 0;
+        this.currentlySelectedActions = {
+            transit: false,
+            masks: false,
+            schools: false,
+            business: false
+        };
     }
 
     public start() {
-        this.initEventHandlers();
+        this.initUI();
         this.initFirstTurn();
     }
 
-    private initEventHandlers() {
-        $("#next-turn").on("click", (e: any) => {
+    private initUI() {
+        const onPlayerSelectsAction = (action: AvailableActions) => {
+            this.currentlySelectedActions[action] = !this.currentlySelectedActions[action];
+        };
+
+        const onEndTurn = () => {
+            this.playerTurn += 1;
             const playerActions = this.collectPlayerActions();
             const nextTurn = this.simulator.nextTurn(playerActions);
             this.onNextTurn(nextTurn);
-        });
+        };
+
+        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn);
+        setControlsToTurn(0, this.scenario.initialContainmentPolicies);
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         if (isNextTurn(nextTurn)) {
-            const totalCasesReducer = (acc: number, it: WorldState) => acc + it.indicators.numInfected
-            const totalCases = this.simulator.state().history.reduce(totalCasesReducer, 0)
-
-            const totalCostReducer = (acc: number, it: WorldState) => acc + it.indicators.totalCost
-            const totalCost = this.simulator.state().history.reduce(totalCostReducer, 0)
-            $("#current-day").html(`${nextTurn.currentState.days}`);
-            $("#total-cases").html(`${nFormatter(totalCases, 3)}`);
-            $("#total-cost").html(`${nFormatter(totalCost, 3)} USD`);
+            console.log(nextTurn);
+            setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
         } else {
-            alert("You win!");
+            alert('You win!');
         }
-
     }
 
     private initFirstTurn() {
         const emptyTurnState = {
             currentState: this.simulator.state().currentState,
             newInGameEvents: [] as InGameEvent[]
-        }
+        };
         this.onNextTurn(emptyTurnState);
     }
 
     private collectPlayerActions(): PlayerActions {
-        return {
-            containmentPolicies: [],
-            capabilityImprovements: [],
-            inGameEventChoices: []
+        const result = {
+            containmentPolicies: [] as ContainmentPolicy[],
+            capabilityImprovements: [] as CapabilityImprovements[],
+            inGameEventChoices: [] as RecordedInGameEventChoice[]
+        };
+
+        for (let k in this.currentlySelectedActions) {
+            if (this.currentlySelectedActions[k as AvailableActions]) {
+                const containmentPolicy = this.scenario.initialContainmentPolicies.find((cp) => cp.id === k);
+                if (containmentPolicy) {
+                    result.containmentPolicies.push(containmentPolicy);
+                }
+            }
         }
+
+        return result;
     }
 }
