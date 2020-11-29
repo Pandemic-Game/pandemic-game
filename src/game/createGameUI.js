@@ -123,7 +123,7 @@ export const createGameUI = (
         onEndTurn();
     };
 
-    $(`#restart-btn`).onclick = () => {
+    $(`#restart-btn`).on('click', () => {
         onRestart();
-    };
+    });
 };
