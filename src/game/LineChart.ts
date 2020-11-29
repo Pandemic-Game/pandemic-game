@@ -1,25 +1,48 @@
 import * as Highcharts from 'highcharts';
 
-const chart = Highcharts.chart('container', {
-    chart: {
-        type: 'bar'
-    },
-    title: {
-        text: 'Fruit Consumption'
-    },
-    xAxis: {
-        categories: ['Apples', 'Bananas', 'Oranges']
-    },
-    yAxis: {
+
+export const buildCasesChart = (containerId: string, values: number[]) => {
+    Highcharts.chart(containerId, {
+        chart: {
+            type: 'line'
+        },
         title: {
-            text: 'Fruit eaten'
-        }
-    },
-    series: [{
-        name: 'Jane',
-        data: [1, 0, 4]
-    }, {
-        name: 'John',
-        data: [5, 7, 3]
-    }]
-});
+            text: 'Number of infected'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Number of infected'
+            }
+        },
+        series: [{
+            name: 'Cases per month',
+            data: values
+        },]
+    });
+}
+
+export const buildCostChart = (containerId: string, values: number[]) => {
+    Highcharts.chart(containerId, {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Costs'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'USD'
+            }
+        },
+        series: [{
+            name: 'Costs per month',
+            data: values
+        },]
+    });
+}

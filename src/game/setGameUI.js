@@ -14,6 +14,8 @@ Sets UI display given the player's in-game turn and actions
 
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
+import { buildCostChart } from './LineChart';
+import { buildCasesChart } from './LineChart.ts';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -55,9 +57,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
     });
 };
 
-export const updateIndicators = (currentCost, currentCases) => {
+export const updateIndicators = (currentCost, currentCases, costHistory, caseHistory) => {
     $(`#cases-current`).html(nFormatter(currentCases, 5));
     $(`#cost-current`).html(nFormatter(currentCost, 5));
+    buildCasesChart('cases-graph', caseHistory);
+    buildCostChart('cost-graph', costHistory);
 };
 
 export const showWinScreen = (totalCost, totalCases) => {

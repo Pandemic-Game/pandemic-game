@@ -22,7 +22,9 @@ const createEle = (type, parentEle, id = null) => {
 };
 
 const createGraphPlaceholder = (parentEle, id) => {
-    return createEle('DIV', parentEle, id);
+    const graphHolder = createEle('DIV', parentEle, id);
+    graphHolder.style = 'width:100%; height:300px';
+    return graphHolder;
 };
 
 /*
