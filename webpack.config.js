@@ -13,10 +13,9 @@ module.exports = {
     plugins: [
         new CopyPlugin({
             patterns: [
-                { from: 'src/public/index.html', to: 'index.html' },
-                { from: 'src/public/style/style.css', to: 'style.css' },
-                { from: 'src/public/style/icons.css', to: 'icons.css' },
-                { from: 'src/public/webfonts/*.(eot|svg|ttf|woff|woff2)', to: 'webfonts' }
+                { from: 'public/index.html', to: 'index.html' },
+                { from: 'public/style/*.css' },
+                { from: 'public/webfonts/*.(eot|svg|ttf|woff|woff2)' }
             ]
         })
     ],

@@ -1,12 +1,11 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
 import { nFormatter } from '../lib/util';
-import * as $ from 'jquery';
 import { NextTurnState, PlayerActions, VictoryState, isNextTurn } from '../simulator/SimulatorState';
 import { InGameEvent, RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
-import { setControlsToTurn } from '../public/ui/setGameUI';
-import { createGameUI } from '../public/ui/createGameUI';
+import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
+import { setControlsToTurn } from './setGameUI';
 
 interface CurrentUISelection {
     transit: boolean;
