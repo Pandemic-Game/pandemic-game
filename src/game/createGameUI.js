@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-
+import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 /* 
 Shorthand functions to create DOM elements
 
@@ -37,7 +38,13 @@ Elements created by this method accessed by their IDs
 */
 
 // Create elements on DOM
-export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTurn, numberOfColumns = 12) => {
+export const createGameUI = (
+    listOfPlayerActions,
+    onPlayerSelectsAction,
+    onEndTurn,
+    onRestart,
+    numberOfColumns = 12
+) => {
     // Create container
     const container = createEle('DIV', document.body); // on = document.body
     container.className = 'p-5 d-flex flex-column';
@@ -50,11 +57,17 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const casesGraphTitle = createEle('H5', container); // on = container
     casesGraphTitle.innerHTML = 'COVID-19 cases';
     casesGraphTitle.className = 'p-2';
+    const casesCurrent = createEle('P', container); // on = container
+    casesCurrent.className = 'p-2';
+    casesCurrent.id = 'cases-current';
     createGraphPlaceholder(container, 'cases-graph');
 
     const costGraphTitle = createEle('H5', container); // on = container
     costGraphTitle.innerHTML = 'Cost per day';
     costGraphTitle.className = 'p-2';
+    const costCurrent = createEle('P', container); // on = container
+    costCurrent.className = 'p-2';
+    costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
 
     // Create row
@@ -105,8 +118,12 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const endTurnBtn = createEle('BUTTON', container, `end-turn`);
     endTurnBtn.className = `w-100 m-2 btn btn-lg btn-secondary`;
     endTurnBtn.innerHTML = `Click to simulate policy for the month <i class="fas fa-arrow-right"></i>`;
-    endTurnBtn.onclick = function () {
+    endTurnBtn.onclick = () => {
         // Call back to event on player making action
         onEndTurn();
     };
+
+    $(`#restart-btn`).on('click', () => {
+        onRestart();
+    });
 };
