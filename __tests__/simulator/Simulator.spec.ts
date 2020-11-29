@@ -1,8 +1,9 @@
 import { RecordedInGameEventChoice } from "@src/simulator/in-game-events/InGameEvents";
-import { BusinessAsUsual } from "@src/simulator/player-actions/BusinessAsUsual";
-import { FullLockdown } from "@src/simulator/player-actions/FullLockdown";
-import { NewNormal } from "@src/simulator/player-actions/NewNormal";
+import { CloseBusinesses } from "@src/simulator/player-actions/CloseBusinesses";
+import { CloseSchools } from "@src/simulator/player-actions/CloseSchools";
+import { CloseTransit } from "@src/simulator/player-actions/CloseTransit";
 import { CapabilityImprovements, ContainmentPolicy } from "@src/simulator/player-actions/PlayerActions";
+import { RequireMasks } from "@src/simulator/player-actions/RequireMasks";
 import { Scenario } from "@src/simulator/scenarios/Scenarios";
 import { GDP_US } from "@src/simulator/scenarios/US";
 import { Simulator } from "@src/simulator/Simulator"
@@ -21,7 +22,7 @@ export const TestScenario: Scenario = {
     dynamics: 'SIS',
     mortality: 0.01,
     time_lumping: false,
-    initialContainmentPolicies: [FullLockdown, NewNormal, BusinessAsUsual],
+    initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
     initialCapabilityImprovements: [],
     initialInGameEvents: [],
     victoryConditions: [TimeVictory]
@@ -123,7 +124,7 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario, 10);
 
             // When a new player action is added in a turn
-            const actionUnderTest = { ...FullLockdown }
+            const actionUnderTest = { ...CloseTransit }
             const spyImmediateEffect = jest.spyOn(actionUnderTest, 'immediateEffect')
             const spyRecurringEffect = jest.spyOn(actionUnderTest, 'recurringEffect')
             simulator.nextTurn({
@@ -146,13 +147,13 @@ describe("The operation of the Simulator", () => {
 
             // When a new player action is added in a turn
             simulator.nextTurn({
-                containmentPolicies: [FullLockdown],
+                containmentPolicies: [CloseTransit],
                 capabilityImprovements: [],
                 inGameEventChoices: []
             });
 
             // And it is active in the next turn as well
-            const actionUnderTest = { ...FullLockdown }
+            const actionUnderTest = { ...CloseTransit }
             const spyImmediateEffect = jest.spyOn(actionUnderTest, 'immediateEffect')
             const spyRecurringEffect = jest.spyOn(actionUnderTest, 'recurringEffect')
             simulator.nextTurn({
@@ -178,7 +179,7 @@ describe("The operation of the Simulator", () => {
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [FullLockdown],
+                    containmentPolicies: [CloseTransit],
                     capabilityImprovements: [],
                     inGameEventChoices: []
                 });
@@ -202,7 +203,7 @@ describe("The operation of the Simulator", () => {
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [FullLockdown],
+                    containmentPolicies: [CloseTransit],
                     capabilityImprovements: [],
                     inGameEventChoices: []
                 });
@@ -223,7 +224,7 @@ describe("The operation of the Simulator", () => {
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [FullLockdown],
+                    containmentPolicies: [CloseTransit],
                     capabilityImprovements: [],
                     inGameEventChoices: []
                 });
@@ -234,7 +235,7 @@ describe("The operation of the Simulator", () => {
             // Then the reset simulator works normally
             for (let i = 0; i < 6; i++) {
                 resetSimulator.nextTurn({
-                    containmentPolicies: [BusinessAsUsual],
+                    containmentPolicies: [CloseSchools],
                     capabilityImprovements: [],
                     inGameEventChoices: []
                 });
