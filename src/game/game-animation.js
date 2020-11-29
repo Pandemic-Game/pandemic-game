@@ -10,7 +10,30 @@ export default function runGame(env) {
     let nextActionR = 1.08;
 
     // Initialize lock-down controls
+	
+	model_total_cases={
+		"x_axis":{"name":"days","min":0,"max":400,"step":10,"formatter":(value => nFormatter(value,1)),},
+		"y_axis":{"name":"humans","min":0,"max":400000000,"formatter":(value => nFormatter(value,1)),},
+		"lines":[{"name":"total cases","color":"#000000",}],};
+	model_cases={
+		"x_axis":{"name":"days","min":0,"max":400,"step":10,"formatter":(value => nFormatter(value,1)),},
+		"y_axis":{"name":"humans","min":0,"max":100000,"formatter":(value => nFormatter(value,1)),},
+		"lines":[{"name":"cases","color":"#000000",}],};};
+	model_total_cost={
+		"x_axis":{"name":"days","min":0,"max":400,"step":10,"formatter":(value => nFormatter(value,1)),},
+		"y_axis":{"name":"humans","min":0,"max":1200000000000,"formatter":(value => nFormatter(value,1)),},
+		"lines":[{"name":"total costs","color":"#000000",}],};
+	};
+	model_cost={
+		"x_axis":{"name":"days","min":0,"max":400,"step":10,"formatter":(value => nFormatter(value,1)),},
+		"y_axis":{"name":"humans","min":0,"max":120000000000,"formatter":(value => nFormatter(value,1)),},
+		"lines":[{"name":"costs","color":"#000000",}],};
+	};
 
+	let bar_total_cases = new BarPlot("total-cases",model_total_cases);
+	let plot_cases = new LinePlot("cases-graph", model_cases);
+	let bar_total_cost = new BarPlot("total-cost",model_total_cost);
+	let plot_cost = new LinePlot("cost-graphs", model_cost);
     // $("#open").addClass("selected");
 
     $('#close').click((e) => {
@@ -70,6 +93,11 @@ export default function runGame(env) {
             cost_all_current: resultObj.cost_all,
             cost_all_total: sum(history.map((obj) => obj.cost_all))
         };
+		
+		bar_total_cases.appendValues([resultsDisplay.infected_total]);
+		plot_cases.appendValues([resultsDisplay.infected_current]);
+		bar_total_cost.appendValues([resultsDisplay.cost_all_total]);
+		plot_cost.appendValues([resultsDisplay.cost_all_current]);
 
         const resultKeys = Object.keys(resultsDisplay);
         for (let i = 0; i < resultKeys.length; ++i) {
