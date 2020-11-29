@@ -126,7 +126,7 @@ export class Simulator {
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
 
-        const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
+        const lag = Math.ceil(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
         const long_enough = this.history.length > lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough

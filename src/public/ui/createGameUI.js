@@ -96,7 +96,7 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
             btn.style.width = '100%';
             btn.setAttribute('data-action', action.id);
             btn.style.position = 'relative';
-            btn.innerHTML = `${action.icon} <br> <span style='font-size: 0.75rem;'>${action.name}</span>`;
+            btn.innerHTML = `<i class="fa ${action.icon}"></i> <br> <span style='font-size: 0.75rem;'>${action.name}</span>`;
             btn.onclick = (e) => {
                 // Style as active/inactive
                 const target = $(e.target);

@@ -5,6 +5,8 @@ import { Indicators, WorldState } from '../SimulatorState';
  * assuming the required capability improvement requirements are met.
  */
 export interface ContainmentPolicy {
+    id: string;
+    icon: string;
     requirements: CapabilityImprovements[];
     name: string;
     immediateEffect: (context: WorldState) => Indicators;
