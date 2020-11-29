@@ -8,7 +8,7 @@ export const CloseSchools: ContainmentPolicy = {
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
-        updatedWorldState.r = Math.min(updatedWorldState.r - 0.05, 0);
+        updatedWorldState.r = Math.max(updatedWorldState.r - 0.05, 0);
         return updatedWorldState;
     }
 };
