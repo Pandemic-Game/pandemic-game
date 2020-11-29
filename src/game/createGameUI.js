@@ -20,16 +20,8 @@ const createEle = (type, parentEle, id = null) => {
     return ele;
 };
 
-const createSVG = (parentEle, id) => {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('style', 'border: 0.5px solid #eee; border-radius: 5px');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100');
-    svg.setAttribute('id', id);
-    svg.setAttribute('class', 'm-2');
-    parentEle.appendChild(svg);
-
-    return svg;
+const createGraphPlaceholder = (parentEle, id) => {
+    return createEle('DIV', parentEle, id);
 };
 
 /*
@@ -58,12 +50,12 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const casesGraphTitle = createEle('H5', container); // on = container
     casesGraphTitle.innerHTML = 'COVID-19 cases';
     casesGraphTitle.className = 'p-2';
-    createSVG(container, 'cases-graph');
+    createGraphPlaceholder(container, 'cases-graph');
 
     const costGraphTitle = createEle('H5', container); // on = container
     costGraphTitle.innerHTML = 'Cost per day';
     costGraphTitle.className = 'p-2';
-    createSVG(container, 'cases-graph');
+    createGraphPlaceholder(container, 'cost-graph');
 
     // Create row
     const rowTitle = createEle('H5', container); // on = container
