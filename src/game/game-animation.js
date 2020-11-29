@@ -29,11 +29,11 @@ export default function runGame(env) {
 		"y_axis":{"name":"humans","min":0,"max":120000000000,"formatter":(value => nFormatter(value,1)),},
 		"lines":[{"name":"costs","color":"#000000",}],};
 	};
-
 	let bar_total_cases = new BarPlot("total-cases",model_total_cases);
 	let plot_cases = new LinePlot("cases-graph", model_cases);
 	let bar_total_cost = new BarPlot("total-cost",model_total_cost);
 	let plot_cost = new LinePlot("cost-graphs", model_cost);
+	
     // $("#open").addClass("selected");
 
     $('#close').click((e) => {
