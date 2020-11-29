@@ -12,6 +12,29 @@
 </head>
 
 <body>
+
+    <!-- Win screen modal-->
+    <div class="modal" tabindex="-1" id='win-screen'>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">You finished!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            <h5>The year is up, here's how you did:</h5>
+              <p>Total cases: <span id='total-cases'>300</span> (Best possible: 200/d)</p>
+              <p>Total costs: <span id='total-costs'>300</span> (Best possible: $200)</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Try again</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
     <script type='text/javascript' src="bundle.js"></script>
 </body>
 

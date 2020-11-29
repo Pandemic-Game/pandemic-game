@@ -50,11 +50,19 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const casesGraphTitle = createEle('H5', container); // on = container
     casesGraphTitle.innerHTML = 'COVID-19 cases';
     casesGraphTitle.className = 'p-2';
+    const casesCurrent = createEle('P', container); // on = container
+    casesCurrent.innerHTML = '200/d';
+    casesCurrent.className = 'p-2';
+    casesCurrent.id = 'cases-current';
     createGraphPlaceholder(container, 'cases-graph');
 
     const costGraphTitle = createEle('H5', container); // on = container
     costGraphTitle.innerHTML = 'Cost per day';
     costGraphTitle.className = 'p-2';
+    const costCurrent = createEle('P', container); // on = container
+    costCurrent.innerHTML = '$200';
+    costCurrent.className = 'p-2';
+    costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
 
     // Create row
