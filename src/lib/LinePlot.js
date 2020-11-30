@@ -52,6 +52,7 @@ export class LinePlot{
 		this.context.fillRect(40,15,this.width-40,this.height-45);
 		
 		//draw lines for axis
+		this.context.lineWidth = 1;
 		this.context.strokeStyle = this.axisColor;
 		this.context.fillStyle = this.axisColor;
 		this.context.beginPath();
@@ -154,13 +155,7 @@ export class LinePlot{
 		this.drawAxes();
 	}
 	
-	appendValues(values){
-		console.log(values[0]);
-		if(this.history.length == 0){
-			this.history.push(values);
-			return;
-		}
-		let oldvalues = this.history[this.history.length-1];
+	drawValues(offset,oldvalues,values){
 		let current_y;
 		let current_x;
 		this.context.lineWidth = 2;
@@ -170,16 +165,38 @@ export class LinePlot{
 			}
 			this.context.strokeStyle = this.model.lines[i1].color;
 			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+(this.history.length-1)/this.model.x_axis.step*(this.width-40));
-			console.log(current_y,current_x,this.model.x_axis.step,this.model.x_axis.step*(this.width-40));
+			current_x = Math.floor(40+(offset-1)/this.model.x_axis.step*(this.width-40));
 			this.context.beginPath();
 			this.context.moveTo(current_x,current_y);
 			current_y = Math.floor((this.height-30)-(values[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+this.history.length/this.model.x_axis.step*(this.width-40));
-			console.log(current_y,current_x);
+			current_x = Math.floor(40+offset/this.model.x_axis.step*(this.width-40));
 			this.context.lineTo(current_x,current_y);
 			this.context.stroke();
 		}
+	}
+	
+	appendValues(values){
+		if(this.model.scalable){
+			let maxChanged = false;
+			for(let i1=0; i1<values.length; i1++){
+				while(values[i1]>this.model.y_axis.max){
+					this.model.y_axis.max*=2;
+					maxChanged=true;
+				}
+			}
+			if(maxChanged){
+				this.context.clearRect(0,0,this.width,this.height);
+				this.drawAxes();
+				for(let i1=1; i1<this.history.length; i1++){
+					this.drawValues(i1,this.history[i1-1],this.history[i1]);
+				}
+			}
+		}
+		if(this.history.length == 0){
+			this.history.push(values);
+			return;
+		}
+		this.drawValues(this.history.length,this.history[this.history.length-1],values);
 		this.history.push(values);
 	}
 }

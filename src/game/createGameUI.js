@@ -64,6 +64,7 @@ export const createGameUI = (
     casesCurrent.id = 'cases-current';
 	createGraphPlaceholder(container, 'cases-graph');
 	const caseModel ={
+		"scalable":true,
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
@@ -81,6 +82,7 @@ export const createGameUI = (
     costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
 	const costModel ={
+		"scalable":true,
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
