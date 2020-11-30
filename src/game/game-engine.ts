@@ -60,7 +60,6 @@ export class GameEngine {
         if (isNextTurn(nextTurn)) {
             this.gameUI.casePlot.appendValues([nextTurn.currentState.indicators.numInfected]);
 			this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
-			console.log(nextTurn.currentState.indicators);
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
         } else {
             alert('You win!');
