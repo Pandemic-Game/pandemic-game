@@ -27,8 +27,9 @@ export const resetControls = () => {
         .removeClass('btn-success');
 };
 
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
-    // If game initialised or reset re-init controls
+export const setControlsToTurn = (playerTurn, dictOfActivePolicies, gameUI) => {
+    console.log("setControlsToTurn");
+	// If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
         resetControls();
