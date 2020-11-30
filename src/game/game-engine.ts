@@ -52,6 +52,9 @@ export class GameEngine {
         };
 
         this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
+		console.log(this.simulator);
+		this.gameUI.casePlot.appendValues([this.simulator.currentState.indicators.numInfected]);
+		this.gameUI.costPlot.appendValues([this.simulator.currentState.indicators.totalCost]);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
 
         updateIndicators(0, this.scenario.initialNumInfected);
@@ -61,9 +64,8 @@ export class GameEngine {
         const currentState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
             this.gameUI.casePlot.appendValues([nextTurn.currentState.indicators.numInfected]);
-			      this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
+			this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
             console.log(`State for day ${nextTurn.currentState.days}`);
-            console.log(nextTurn.currentState.indicators);
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
             updateIndicators(nextTurn.currentState.indicators.totalCost, nextTurn.currentState.indicators.numInfected);
         } else {

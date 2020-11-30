@@ -67,8 +67,8 @@ export const createGameUI = (
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
-		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
-		"y_axis":{"name":"","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
+		"x_axis":{"name":"","line":"none","min":0,"max":11,"step":11,"formatter":(value => (value+1)+"/20")},
+		"y_axis":{"name":"","line":"solid","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
 		"lines":[{"name":"cases","color":"#000000"}]
 	};
 	const casePlot = new LinePlot('cases-graph',caseModel);
@@ -84,8 +84,8 @@ export const createGameUI = (
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
-		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
-		"y_axis":{"name":"","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
+		"x_axis":{"name":"","line":"none","min":0,"max":11,"step":11,"formatter":(value => (value+1)+"/20")},
+		"y_axis":{"name":"","line":"solid","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
 		"lines":[{"name":"costs","color":"#000000"}]
 	};
 	const costPlot = new LinePlot('cost-graph',costModel);

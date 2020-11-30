@@ -81,6 +81,19 @@ export class LinePlot{
 			} else{
 				this.context.fillText(i1, currentValue, this.height-15);
 			}
+			if(this.model.y_axis.line=="dot"){
+				this.context.setLineDash([5,5]);
+				this.context.beginPath();
+				this.context.moveTo(currentValue,15);
+				this.context.lineTo(currentValue,this.height-30);
+				this.context.stroke();
+			}
+			if(this.model.x_axis.line=="solid"){
+				this.context.beginPath();
+				this.context.moveTo(currentValue,15);
+				this.context.lineTo(currentValue,this.height-30);
+				this.context.stroke();
+			}
 		}
 		stepssize = 1;
 		range = this.model.y_axis.max-this.model.y_axis.min;
@@ -94,6 +107,19 @@ export class LinePlot{
 				this.context.fillText(this.model.y_axis.formatter(i1), 5, currentValue);
 			} else{
 				this.context.fillText(i1, 5, currentValue);
+			}
+			if(this.model.y_axis.line=="dot"){
+				this.context.setLineDash([5,5]);
+				this.context.beginPath();
+				this.context.moveTo(40,currentValue);
+				this.context.lineTo(this.width-1,currentValue);
+				this.context.stroke();
+			}
+			if(this.model.y_axis.line=="solid"){
+				this.context.beginPath();
+				this.context.moveTo(40,currentValue);
+				this.context.lineTo(this.width-1,currentValue);
+				this.context.stroke();
 			}
 		}
 	}
