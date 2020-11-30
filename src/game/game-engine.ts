@@ -46,7 +46,6 @@ export class GameEngine {
             this.onNextTurn(nextTurn);
         };
 
-        this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn);
         const onRestart = () => {
             // Quick and dirty restart
             window.location.reload();
