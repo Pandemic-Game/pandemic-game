@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
 import { LinePlot } from '../lib/LinePlot';
 import { nFormatter } from '../lib/util';
-
+import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 /* 
 Shorthand functions to create DOM elements
 
@@ -39,7 +40,13 @@ Elements created by this method accessed by their IDs
 */
 
 // Create elements on DOM
-export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTurn, numberOfColumns = 12) => {
+export const createGameUI = (
+    listOfPlayerActions,
+    onPlayerSelectsAction,
+    onEndTurn,
+    onRestart,
+    numberOfColumns = 12
+) => {
     // Create container
     const container = createEle('DIV', document.body); // on = document.body
     container.className = 'p-5 d-flex flex-column';
@@ -53,7 +60,6 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     casesGraphTitle.innerHTML = 'COVID-19 cases';
     casesGraphTitle.className = 'p-2';
     const casesCurrent = createEle('P', container); // on = container
-    casesCurrent.innerHTML = '200/d';
     casesCurrent.className = 'p-2';
     casesCurrent.id = 'cases-current';
 	createGraphPlaceholder(container, 'cases-graph');
@@ -61,8 +67,8 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
-		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
-		"y_axis":{"name":"","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
+		"x_axis":{"name":"","line":"none","min":0,"max":11,"step":11,"formatter":(value => (value+1)+"/20")},
+		"y_axis":{"name":"","line":"solid","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
 		"lines":[{"name":"cases","color":"#000000"}]
 	};
 	const casePlot = new LinePlot('cases-graph',caseModel);
@@ -71,7 +77,6 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     costGraphTitle.innerHTML = 'Cost per day';
     costGraphTitle.className = 'p-2';
     const costCurrent = createEle('P', container); // on = container
-    costCurrent.innerHTML = '$200';
     costCurrent.className = 'p-2';
     costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
@@ -79,8 +84,8 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
 		"width":"100%",
 		"height":"200px",
 		"backgroundColor":"#E0E0E0",
-		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
-		"y_axis":{"name":"","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
+		"x_axis":{"name":"","line":"none","min":0,"max":11,"step":11,"formatter":(value => (value+1)+"/20")},
+		"y_axis":{"name":"","line":"solid","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
 		"lines":[{"name":"costs","color":"#000000"}]
 	};
 	const costPlot = new LinePlot('cost-graph',costModel);
@@ -99,10 +104,11 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
         const col = createEle('DIV', row);
         col.className = `col-${numberOfColumns / 12}`;
 
-        // Give date heading
-        const date = createEle('P', col);
+        // Give dates as heading for each column
+        const dateDiv = createEle('DIV', col)
+        dateDiv.className = 'pl-3 w-100 d-flex flex-row justify-content-center';
+        const date = createEle('P', dateDiv);
         date.innerHTML = `${i + 1}/20`;
-        date.style.textAlign = 'center';
 
         // Fill the column with UI
 
@@ -116,7 +122,7 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
             btn.style.width = '100%';
             btn.setAttribute('data-action', action.id);
             btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon}"></i> <br> <span style='font-size: 0.75rem;'>${action.name}</span>`;
+            btn.innerHTML = `<i class="fa ${action.icon} noselect"></i> <br> <span style='font-size: 0.75rem' class='noselect'>${action.name}</span>`;
             btn.onclick = (e) => {
                 // Style as active/inactive
                 const target = $(e.target);
@@ -133,10 +139,13 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const endTurnBtn = createEle('BUTTON', container, `end-turn`);
     endTurnBtn.className = `w-100 m-2 btn btn-lg btn-secondary`;
     endTurnBtn.innerHTML = `Click to simulate policy for the month <i class="fas fa-arrow-right"></i>`;
-    endTurnBtn.onclick = function () {
+    endTurnBtn.onclick = () => {
         // Call back to event on player making action
         onEndTurn();
     };
-	
-	return {"casePlot":casePlot,"costPlot":costPlot};
+    $(`#restart-btn`).on('click', () => {
+        onRestart();
+    });
+    // to use the line plots to update
+    return {"casePlot":casePlot,"costPlot":costPlot};
 };
