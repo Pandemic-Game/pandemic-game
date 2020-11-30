@@ -1,11 +1,10 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
-import { nFormatter } from '../lib/util';
-import { NextTurnState, PlayerActions, VictoryState, isNextTurn } from '../simulator/SimulatorState';
-import { InGameEvent, RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
+import { NextTurnState, PlayerActions, VictoryState, isNextTurn, WorldState } from '../simulator/SimulatorState';
+import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
-import { setControlsToTurn } from './setGameUI';
+import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 
 interface CurrentUISelection {
     transit: boolean;
@@ -35,12 +34,7 @@ export class GameEngine {
         };
     }
 
-    public start() {
-        this.initUI();
-        this.initFirstTurn();
-    }
-
-    private initUI() {
+    start() {
         const onPlayerSelectsAction = (action: AvailableActions) => {
             this.currentlySelectedActions[action] = !this.currentlySelectedActions[action];
         };
@@ -53,26 +47,34 @@ export class GameEngine {
         };
 
         this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn);
+        const onRestart = () => {
+            // Quick and dirty restart
+            window.location.reload();
+        };
+
+        this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
+
+        updateIndicators(0, this.scenario.initialNumInfected);
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
+        const currentState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
             this.gameUI.casePlot.appendValues([nextTurn.currentState.indicators.numInfected]);
-			this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
-			console.log(nextTurn.currentState.indicators);
+			      this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
+            console.log(`State for day ${nextTurn.currentState.days}`);
+            console.log(nextTurn.currentState.indicators);
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
+            updateIndicators(nextTurn.currentState.indicators.totalCost, nextTurn.currentState.indicators.numInfected);
         } else {
-            alert('You win!');
-        }
-    }
+            const totalCasesReducer = (acc: number, it: WorldState) => acc + it.indicators.numInfected;
+            const totalCases = currentState.history.reduce(totalCasesReducer, 0);
 
-    private initFirstTurn() {
-        const emptyTurnState = {
-            currentState: this.simulator.state().currentState,
-            newInGameEvents: [] as InGameEvent[]
-        };
-        this.onNextTurn(emptyTurnState);
+            const totalCostReducer = (acc: number, it: WorldState) => acc + it.indicators.totalCost;
+            const totalCost = currentState.history.reduce(totalCostReducer, 0);
+            showWinScreen(totalCost, totalCases);
+        }
     }
 
     private collectPlayerActions(): PlayerActions {

@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
 import { LinePlot } from '../lib/LinePlot';
 import { nFormatter } from '../lib/util';
-
+import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 /* 
 Shorthand functions to create DOM elements
 
@@ -39,7 +40,13 @@ Elements created by this method accessed by their IDs
 */
 
 // Create elements on DOM
-export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTurn, numberOfColumns = 12) => {
+export const createGameUI = (
+    listOfPlayerActions,
+    onPlayerSelectsAction,
+    onEndTurn,
+    onRestart,
+    numberOfColumns = 12
+) => {
     // Create container
     const container = createEle('DIV', document.body); // on = document.body
     container.className = 'p-5 d-flex flex-column';
@@ -53,7 +60,6 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     casesGraphTitle.innerHTML = 'COVID-19 cases';
     casesGraphTitle.className = 'p-2';
     const casesCurrent = createEle('P', container); // on = container
-    casesCurrent.innerHTML = '200/d';
     casesCurrent.className = 'p-2';
     casesCurrent.id = 'cases-current';
 	createGraphPlaceholder(container, 'cases-graph');
@@ -71,7 +77,6 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     costGraphTitle.innerHTML = 'Cost per day';
     costGraphTitle.className = 'p-2';
     const costCurrent = createEle('P', container); // on = container
-    costCurrent.innerHTML = '$200';
     costCurrent.className = 'p-2';
     costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
@@ -133,10 +138,13 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     const endTurnBtn = createEle('BUTTON', container, `end-turn`);
     endTurnBtn.className = `w-100 m-2 btn btn-lg btn-secondary`;
     endTurnBtn.innerHTML = `Click to simulate policy for the month <i class="fas fa-arrow-right"></i>`;
-    endTurnBtn.onclick = function () {
+    endTurnBtn.onclick = () => {
         // Call back to event on player making action
         onEndTurn();
     };
-	
-	return {"casePlot":casePlot,"costPlot":costPlot};
+    $(`#restart-btn`).on('click', () => {
+        onRestart();
+    });
+    // to use the line plots to update
+    return {"casePlot":casePlot,"costPlot":costPlot};
 };
