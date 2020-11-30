@@ -1,8 +1,29 @@
-.btn-danger, .btn-success{
+
+*{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+}
+h5{
+    font-weight: 400;
+}
+h4{
+    font-weight: 500;
+}
+.btn-danger, .btn-success, .btn-primary{
     text-shadow: 0 0 3px black;
 }
 .player-action{
     -webkit-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
 box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
+}
+.modal-body{
+    border: none !important;
+}.modal-footer{
+    border: none !important;
+}.modal-header{
+    border: none !important;
+}
+.noselect{
+    pointer-events: none;
 }
