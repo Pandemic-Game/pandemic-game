@@ -84,10 +84,11 @@ export const createGameUI = (
         const col = createEle('DIV', row);
         col.className = `col-${numberOfColumns / 12}`;
 
-        // Give date heading
-        const date = createEle('P', col);
+        // Give dates as heading for each column
+        const dateDiv = createEle('DIV', col)
+        dateDiv.className = 'pl-3 w-100 d-flex flex-row justify-content-center';
+        const date = createEle('P', dateDiv);
         date.innerHTML = `${i + 1}/20`;
-        date.style.textAlign = 'center';
 
         // Fill the column with UI
 
