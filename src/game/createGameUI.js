@@ -1,4 +1,6 @@
 import * as $ from 'jquery';
+import { LinePlot } from '../lib/LinePlot';
+import { nFormatter } from '../lib/util';
 
 /* 
 Shorthand functions to create DOM elements
@@ -11,7 +13,7 @@ Shorthand functions to create DOM elements
 */
 
 const createEle = (type, parentEle, id = null) => {
-    const ele = document.createElement(type);
+	const ele = document.createElement(type);
     if (id) {
         ele.id = id;
     }
@@ -54,7 +56,16 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     casesCurrent.innerHTML = '200/d';
     casesCurrent.className = 'p-2';
     casesCurrent.id = 'cases-current';
-    createGraphPlaceholder(container, 'cases-graph');
+	createGraphPlaceholder(container, 'cases-graph');
+	const caseModel ={
+		"width":"100%",
+		"height":"200px",
+		"backgroundColor":"#E0E0E0",
+		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
+		"y_axis":{"name":"","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
+		"lines":[{"name":"cases","color":"#000000"}]
+	};
+	const casePlot = new LinePlot('cases-graph',caseModel);
 
     const costGraphTitle = createEle('H5', container); // on = container
     costGraphTitle.innerHTML = 'Cost per day';
@@ -64,6 +75,15 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
     costCurrent.className = 'p-2';
     costCurrent.id = 'cost-current';
     createGraphPlaceholder(container, 'cost-graph');
+	const costModel ={
+		"width":"100%",
+		"height":"200px",
+		"backgroundColor":"#E0E0E0",
+		"x_axis":{"name":"days","min":0,"max":400,"step":11,"formatter":(value => nFormatter(value,1))},
+		"y_axis":{"name":"","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
+		"lines":[{"name":"costs","color":"#000000"}]
+	};
+	const costPlot = new LinePlot('cost-graph',costModel);
 
     // Create row
     const rowTitle = createEle('H5', container); // on = container
@@ -117,4 +137,6 @@ export const createGameUI = (listOfPlayerActions, onPlayerSelectsAction, onEndTu
         // Call back to event on player making action
         onEndTurn();
     };
+	
+	return {"casePlot":casePlot,"costPlot":costPlot};
 };

@@ -40,13 +40,16 @@ This file contains all classes for frontend components.
 		"formatter":(value => nFormatter(value,1)),
 	};
 */
-export default class LinePlot{
+export class LinePlot{
 	
 	drawAxes(){
 		let currentValue;
 		let startValue;
 		let range;
 		let stepssize = 1;
+		
+		this.context.fillStyle = this.model.backgroundColor;
+		this.context.fillRect(40,15,this.width-40,this.height-45);
 		
 		//draw lines for axis
 		this.context.strokeStyle = this.axisColor;
@@ -106,11 +109,19 @@ export default class LinePlot{
 		}
 		let canvas = document.createElement("canvas");
 		canvas.setAttribute("id", name+"_canvas");
-		canvas.style.width="100%";
-		canvas.style.height="100%";
-		canvas.width=this.htmlfield.offsetWidth;
-		canvas.height=this.htmlfield.offsetHeight;
+		if(model.width){
+			canvas.style.width = model.width;
+		} else{
+			canvas.style.width="100%";
+		}
+		if(model.height){
+			canvas.style.height = model.height;
+		} else{ 
+			canvas.style.height="100%";
+		}
 		this.htmlfield.appendChild(canvas);
+		canvas.width=canvas.clientWidth;
+		canvas.height=canvas.clientHeight;
 		this.width = canvas.clientWidth;
 		this.height = canvas.clientHeight;
 		this.context = canvas.getContext("2d");
@@ -118,6 +129,7 @@ export default class LinePlot{
 	}
 	
 	appendValues(values){
+		console.log(values[0]);
 		if(this.history.length == 0){
 			this.history.push(values);
 			return;
@@ -132,11 +144,13 @@ export default class LinePlot{
 			}
 			this.context.strokeStyle = this.model.lines[i1].color;
 			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+(this.history.length-1)/this.model.steps*(this.width-40));
+			current_x = Math.floor(40+(this.history.length-1)/this.model.x_axis.step*(this.width-40));
+			console.log(current_y,current_x,this.model.x_axis.step,this.model.x_axis.step*(this.width-40));
 			this.context.beginPath();
 			this.context.moveTo(current_x,current_y);
 			current_y = Math.floor((this.height-30)-(values[i1]-this.model.y_axis.min)/(this.model.y_axis.max-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+this.history.length/this.model.steps*(this.width-40));
+			current_x = Math.floor(40+this.history.length/this.model.x_axis.step*(this.width-40));
+			console.log(current_y,current_x);
 			this.context.lineTo(current_x,current_y);
 			this.context.stroke();
 		}

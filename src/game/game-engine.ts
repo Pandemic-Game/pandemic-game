@@ -17,10 +17,11 @@ interface CurrentUISelection {
 type AvailableActions = 'transit' | 'masks' | 'schools' | 'business';
 
 export class GameEngine {
-    private scenario: Scenario;
+	private scenario: Scenario;
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
     private playerTurn: number;
+	private gameUI: Object;
 
     constructor(scenario: Scenario, daysPerTurn: number = 10) {
         this.scenario = scenario;
@@ -51,13 +52,15 @@ export class GameEngine {
             this.onNextTurn(nextTurn);
         };
 
-        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn);
+        this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         if (isNextTurn(nextTurn)) {
-            console.log(nextTurn);
+            this.gameUI.casePlot.appendValues([nextTurn.currentState.indicators.numInfected]);
+			this.gameUI.costPlot.appendValues([nextTurn.currentState.indicators.totalCost]);
+			console.log(nextTurn.currentState.indicators);
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
         } else {
             alert('You win!');
