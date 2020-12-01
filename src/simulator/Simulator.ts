@@ -67,6 +67,10 @@ export class Simulator {
 
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
+        this.history.push(this.clone(this.currentState));
+
+        // Reset R
+        nextStateCandidate.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
         const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
@@ -89,7 +93,7 @@ export class Simulator {
         nextStateCandidate.nextInGameEvents = [];
 
         // Save the candidate state as the new current state
-        this.commitState(this.computeNaturalPandemicEvolution(nextStateCandidate));
+        this.currentState = this.computeNaturalPandemicEvolution(nextStateCandidate);
 
         return this.clone({
             newInGameEvents: nextStateCandidate.nextInGameEvents,
@@ -128,14 +132,13 @@ export class Simulator {
         // Deaths from infections started 20 days ago
 
         const lag = Math.ceil(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
-        const long_enough = this.history.length > lag;
+        const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough
             ? this.history[this.history.length - lag].indicators.numInfected * mortality
             : 0;
 
         const currentDay = last_result.days + this.daysPerTurn;
-
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(action_r, currentDay);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
@@ -250,12 +253,6 @@ export class Simulator {
                 (!it.happensOnce || canOnlyHappenOnceButHasntHappened)
             ); // Event can happen multiple times or it hasn't happened yet
         });
-    }
-
-    private commitState(nextStateCandidate: WorldState) {
-        // store the old previous state in the history
-        this.history.push(this.clone(this.currentState));
-        this.currentState = nextStateCandidate;
     }
 
     private clone<T>(obj: T): T {

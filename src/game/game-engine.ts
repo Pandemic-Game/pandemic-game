@@ -53,7 +53,7 @@ export class GameEngine {
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
 
-        updateIndicators(0, this.scenario.initialNumInfected, [], []);
+        updateIndicators(this.simulator.state().currentState.indicators, []);
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
@@ -62,14 +62,7 @@ export class GameEngine {
             console.log(`State for day ${nextTurn.currentState.days}`);
             console.log(nextTurn.currentState.indicators);
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
-
-            const costHistory = currentState.history.map(it => it.indicators.totalCost)
-            costHistory.push(nextTurn.currentState.indicators.totalCost)
-
-            const caseHistory = currentState.history.map(it => it.indicators.numInfected)
-            caseHistory.push(nextTurn.currentState.indicators.numInfected)
-
-            updateIndicators(nextTurn.currentState.indicators.totalCost, nextTurn.currentState.indicators.numInfected, costHistory, caseHistory);
+            updateIndicators(nextTurn.currentState.indicators, currentState.history);
         } else {
             const totalCasesReducer = (acc: number, it: WorldState) => acc + it.indicators.numInfected;
             const totalCases = currentState.history.reduce(totalCasesReducer, 0);

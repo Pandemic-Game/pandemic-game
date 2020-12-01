@@ -13,6 +13,23 @@
 
 <body>
 
+  <div class="p-2 d-flex flex-column">
+    <h2>Pandemic simulator</h2>
+    <!-- Cases panel -->
+    <h5 class="p-2">COVID-19 Cases/Month: <span class="p-2" id="cases-current"></span></h5>
+    <div id="cases-graph" style="width:100%;height:150px;"></div>
+
+    <!-- Costs panel -->
+    <h5 class="p-2">Costs/Month: <span class="p-2" id="cost-current"></span></h5>
+    <div id="cost-graph" style="width:100%;height:150px;"></div>
+
+    <h5 class="p-2">Policies</h5>
+    <div class="row" id="player-actions-container"></div>
+
+    <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Click to simulate policy for the month <i
+        class="fas fa-arrow-right"></i></button>
+  </div>
+
   <!-- Win screen modal-->
   <div class="modal" tabindex="-1" id='win-screen'>
     <div class="modal-dialog">

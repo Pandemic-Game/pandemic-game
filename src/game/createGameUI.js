@@ -21,12 +21,6 @@ const createEle = (type, parentEle, id = null) => {
     return ele;
 };
 
-const createGraphPlaceholder = (parentEle, id) => {
-    const graphHolder = createEle('DIV', parentEle, id);
-    graphHolder.style = 'width:100%; height:300px';
-    return graphHolder;
-};
-
 /*
 
 Create Game UI
@@ -47,38 +41,7 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
-    // Create container
-    const container = createEle('DIV', document.body); // on = document.body
-    container.className = 'p-5 d-flex flex-column';
-
-    // Create title
-    const title = createEle('H1', container); // on = container
-    title.innerHTML = 'Pandemic simulator';
-
-    // Create SVGs for graphs
-    const casesGraphTitle = createEle('H5', container); // on = container
-    casesGraphTitle.innerHTML = 'COVID-19 cases';
-    casesGraphTitle.className = 'p-2';
-    const casesCurrent = createEle('P', container); // on = container
-    casesCurrent.className = 'p-2';
-    casesCurrent.id = 'cases-current';
-    createGraphPlaceholder(container, 'cases-graph');
-
-    const costGraphTitle = createEle('H5', container); // on = container
-    costGraphTitle.innerHTML = 'Cost per day';
-    costGraphTitle.className = 'p-2';
-    const costCurrent = createEle('P', container); // on = container
-    costCurrent.className = 'p-2';
-    costCurrent.id = 'cost-current';
-    createGraphPlaceholder(container, 'cost-graph');
-
-    // Create row
-    const rowTitle = createEle('H5', container); // on = container
-    rowTitle.innerHTML = 'Lockdown policies';
-    rowTitle.className = 'p-2';
-    const row = createEle('DIV', container);
-    row.className = 'row';
-
+    const row = $(`#player-actions-container`)[0];
     // Create n columns in grid
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
@@ -116,14 +79,9 @@ export const createGameUI = (
         }
     }
 
-    // End turn button
-    const endTurnBtn = createEle('BUTTON', container, `end-turn`);
-    endTurnBtn.className = `w-100 m-2 btn btn-lg btn-secondary`;
-    endTurnBtn.innerHTML = `Click to simulate policy for the month <i class="fas fa-arrow-right"></i>`;
-    endTurnBtn.onclick = () => {
-        // Call back to event on player making action
+    $(`#end-turn-btn`).on('click', () => {
         onEndTurn();
-    };
+    });
 
     $(`#restart-btn`).on('click', () => {
         onRestart();

@@ -10,12 +10,9 @@ Sets UI display given the player's in-game turn and actions
 
 */
 
-//
-
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
-import { buildCostChart } from './LineChart';
-import { buildCasesChart } from './LineChart.ts';
+import { buildCasesChart, buildCostChart } from './LineChart.ts';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -57,11 +54,47 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
     });
 };
 
-export const updateIndicators = (currentCost, currentCases, costHistory, caseHistory) => {
-    $(`#cases-current`).html(nFormatter(currentCases, 5));
-    $(`#cost-current`).html(nFormatter(currentCost, 5));
-    buildCasesChart('cases-graph', caseHistory);
-    buildCostChart('cost-graph', costHistory);
+export const updateIndicators = (indicators, history) => {
+    $(`#cases-current`).html(nFormatter(indicators.numInfected, 5));
+    $(`#cost-current`).html(nFormatter(indicators.totalCost, 5));
+
+    const costHistory = history.map((it) => it.indicators.totalCost);
+    costHistory.push(indicators.totalCost);
+    while (costHistory.length < 12) {
+        costHistory.push(null);
+    }
+
+    const medicalCostHistory = history.map((it) => it.indicators.medicalCosts);
+    medicalCostHistory.push(indicators.medicalCosts);
+    while (medicalCostHistory.length < 12) {
+        medicalCostHistory.push(null);
+    }
+
+    const deathCostHistory = history.map((it) => it.indicators.deathCosts);
+    deathCostHistory.push(indicators.deathCosts);
+    while (deathCostHistory.length < 12) {
+        deathCostHistory.push(null);
+    }
+
+    const economicCostHistory = history.map((it) => it.indicators.economicCosts);
+    economicCostHistory.push(indicators.economicCosts);
+    while (economicCostHistory.length < 12) {
+        economicCostHistory.push(null);
+    }
+
+    const caseHistory = history.map((it) => it.indicators.numInfected);
+    caseHistory.push(indicators.numInfected);
+    while (caseHistory.length < 12) {
+        caseHistory.push(null);
+    }
+
+    const deathHistory = history.map((it) => it.indicators.numDead);
+    deathHistory.push(indicators.numDead);
+    while (deathHistory.length < 12) {
+        deathHistory.push(null);
+    }
+    buildCasesChart('cases-graph', caseHistory, deathHistory);
+    buildCostChart('cost-graph', costHistory, medicalCostHistory, deathCostHistory, economicCostHistory);
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
