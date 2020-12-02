@@ -10,7 +10,7 @@ This file contains all classes for frontend components.
 	model object. The model must contain objects for
 	 - x-axis with name, min, max and step
 	 - y-axis with name, min, and max
-	 - lines: array of objects with name, color
+	 - series: array of objects with name, color
 	 - formatter: fuction to parse int to string
 	 
 	example:
@@ -19,18 +19,18 @@ This file contains all classes for frontend components.
 	
 	JS-code:
 	let model_humans = {
-		"x_axis":{
+		"xAxis":{
 			"name":"x",
 			"min":0,
 			"max":100,
 			"step":10,
 		},
-		"y_axis":{
+		"yAxis":{
 			"name":"f(x)",
 			"min":0,
 			"max":100,
 		},
-		"lines":[{
+		"series":[{
 			"name":"time series 1",
 			"color":"#4060FF",
 		},{
@@ -51,7 +51,7 @@ export class LinePlot{
 		this.context.fillStyle = this.model.backgroundColor;
 		this.context.fillRect(40,0,this.width-40,this.height-30);
 		
-		//draw lines for axis
+		//draw series for axis
 		this.context.lineWidth = 1;
 		this.context.strokeStyle = this.axisColor;
 		this.context.fillStyle = this.axisColor;
@@ -66,37 +66,37 @@ export class LinePlot{
 		
 		//write names of axis
 		this.context.font = "12px Arial";
-		this.context.fillText(this.model.x_axis.name, this.width-6*(this.model.x_axis.name.length) , this.height-3);
-		this.context.fillText(this.model.y_axis.name, 5 ,13);
+		this.context.fillText(this.model.xAxis.name, this.width-6*(this.model.xAxis.name.length) , this.height-3);
+		this.context.fillText(this.model.yAxis.name, 5 ,13);
 		
 		//write values of axis
-		range = this.model.x_axis.max-this.model.x_axis.min;
+		range = this.model.xAxis.max-this.model.xAxis.min;
 		while((Math.floor(stepssize/range*(this.width-30)))<40){
 			stepssize*=10;
 		}
-		startValue = this.model.x_axis.min-(this.model.x_axis.min%stepssize);
-		if(!this.model.x_axis.intervall){
+		startValue = this.model.xAxis.min-(this.model.xAxis.min%stepssize);
+		if(!this.model.xAxis.intervall){
 			startValue+=stepssize;
 		}
-		if(this.model.x_axis.lineColor){
-			this.context.strokeStyle = this.model.x_axis.lineColor;
+		if(this.model.xAxis.lineColor){
+			this.context.strokeStyle = this.model.xAxis.lineColor;
 		} else{
 			this.context.strokeStyle = this.axisColor;
 		}
 		this.context.textAlign = "center"; 
-		for(let i1=startValue; i1<this.model.x_axis.max; i1+=stepssize){
-			if(this.model.x_axis.intervall){
-				currentValue = Math.floor(40+(i1+stepssize/2-this.model.x_axis.min)/range*(this.width-40));
+		for(let i1=startValue; i1<this.model.xAxis.max; i1+=stepssize){
+			if(this.model.xAxis.intervall){
+				currentValue = Math.floor(40+(i1+stepssize/2-this.model.xAxis.min)/range*(this.width-40));
 			} else{
-				currentValue = Math.floor(40+(i1-this.model.x_axis.min)/range*(this.width-40));
+				currentValue = Math.floor(40+(i1-this.model.xAxis.min)/range*(this.width-40));
 			}
-			if(this.model.x_axis.formatter){
-				this.context.fillText(this.model.x_axis.formatter(i1), currentValue, this.height-15);
+			if(this.model.xAxis.formatter){
+				this.context.fillText(this.model.xAxis.formatter(i1), currentValue, this.height-15);
 			} else{
 				this.context.fillText(i1, currentValue, this.height-15);
 			}
-			currentValue = Math.floor(40+(i1-this.model.x_axis.min)/range*(this.width-40));
-			if(this.model.x_axis.line=="dot"){
+			currentValue = Math.floor(40+(i1-this.model.xAxis.min)/range*(this.width-40));
+			if(this.model.xAxis.line=="dot"){
 				this.context.save();
 				this.context.setLineDash([5,5]);
 				this.context.beginPath();
@@ -105,7 +105,7 @@ export class LinePlot{
 				this.context.stroke();
 				this.context.restore();
 			}
-			if(this.model.x_axis.line=="solid"){
+			if(this.model.xAxis.line=="solid"){
 				this.context.beginPath();
 				this.context.moveTo(currentValue,0);
 				this.context.lineTo(currentValue,this.height-30);
@@ -113,25 +113,25 @@ export class LinePlot{
 			}
 		}
 		stepssize = 1;
-		range = this.max_y-this.model.y_axis.min;
+		range = this.max_y-this.model.yAxis.min;
 		while((Math.floor(stepssize/range*(this.height-30)))<15){
 			stepssize*=10;
 		}
-		startValue = this.model.y_axis.min-(this.model.y_axis.min%stepssize)+stepssize;
-		if(this.model.y_axis.lineColor){
-			this.context.strokeStyle = this.model.y_axis.lineColor;
+		startValue = this.model.yAxis.min-(this.model.yAxis.min%stepssize)+stepssize;
+		if(this.model.yAxis.lineColor){
+			this.context.strokeStyle = this.model.yAxis.lineColor;
 		} else{
 			this.context.strokeStyle = this.axisColor;
 		}
 		this.context.textAlign = "end"; 
 		for(let i1=startValue; i1<this.max_y; i1+=stepssize){
-			currentValue = this.height-30-Math.floor((i1-this.model.y_axis.min)/range*(this.height-30));
-			if(this.model.y_axis.formatter){
-				this.context.fillText(this.model.y_axis.formatter(i1), 35, currentValue+5);
+			currentValue = this.height-30-Math.floor((i1-this.model.yAxis.min)/range*(this.height-30));
+			if(this.model.yAxis.formatter){
+				this.context.fillText(this.model.yAxis.formatter(i1), 35, currentValue+5);
 			} else{
 				this.context.fillText(i1, 35, currentValue);
 			}
-			if(this.model.y_axis.line=="dot"){
+			if(this.model.yAxis.line=="dot"){
 				this.context.save();
 				this.context.setLineDash([5,5]);
 				this.context.beginPath();
@@ -140,7 +140,7 @@ export class LinePlot{
 				this.context.stroke();
 				this.context.restore();
 			}
-			if(this.model.y_axis.line=="solid"){
+			if(this.model.yAxis.line=="solid"){
 				this.context.beginPath();
 				this.context.moveTo(40,currentValue);
 				this.context.lineTo(this.width-1,currentValue);
@@ -154,21 +154,21 @@ export class LinePlot{
 		let current_y;
 		let current_x;
 		for(let i1=0; i1<values.length; i1++){
-			if(this.model.lines[i1].width){
-				this.context.lineWidth = this.model.lines[i1].width;
+			if(this.model.series[i1].width){
+				this.context.lineWidth = this.model.series[i1].width;
 			} else{
 				this.context.lineWidth = 2;
 			}
 			if(i1 == oldvalues.length){
 				break;
 			}
-			this.context.strokeStyle = this.model.lines[i1].color;
-			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.y_axis.min)/(this.max_y-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+(offset-1)/this.model.x_axis.step*(this.width-40));
+			this.context.strokeStyle = this.model.series[i1].color;
+			current_y = Math.floor((this.height-30)-(oldvalues[i1]-this.model.yAxis.min)/(this.max_y-this.model.yAxis.min)*(this.height-30));
+			current_x = Math.floor(40+(offset-1)/this.model.xAxis.step*(this.width-40));
 			this.context.beginPath();
 			this.context.moveTo(current_x,current_y);
-			current_y = Math.floor((this.height-30)-(values[i1]-this.model.y_axis.min)/(this.max_y-this.model.y_axis.min)*(this.height-30));
-			current_x = Math.floor(40+offset/this.model.x_axis.step*(this.width-40));
+			current_y = Math.floor((this.height-30)-(values[i1]-this.model.yAxis.min)/(this.max_y-this.model.yAxis.min)*(this.height-30));
+			current_x = Math.floor(40+offset/this.model.xAxis.step*(this.width-40));
 			this.context.lineTo(current_x,current_y);
 			this.context.stroke();
 		}
@@ -188,7 +188,7 @@ export class LinePlot{
 			this.mousePosition=this.height-30-mouseY;
 		}
 		if(!this.stored_y){
-			this.stored_y=this.model.y_axis.max;
+			this.stored_y=this.model.yAxis.max;
 		}
 	}
 	
@@ -214,7 +214,7 @@ export class LinePlot{
 		this.htmlfield = document.getElementById(name);
 		this.axisColor = window.getComputedStyle(this.htmlfield).color;
 		this.mousePosition = null;
-		this.max_y=model.y_axis.max;
+		this.max_y=model.yAxis.max;
 		if(! this.axisColor){
 			this.axisColor="#000000";
 		}
@@ -243,17 +243,17 @@ export class LinePlot{
 	}
 	
 	appendValues(values){
-		if(this.max_y != this.model.y_axis.max){
-			this.max_y=this.model.y_axis.max;
+		if(this.max_y != this.model.yAxis.max){
+			this.max_y=this.model.yAxis.max;
 			this.stored_y=null;
 			this.redrawValues();
 		}
 		if(this.model.scalable){
 			let maxChanged = false;
 			for(let i1=0; i1<values.length; i1++){
-				while(values[i1]>this.model.y_axis.max){
-					this.model.y_axis.max*=2;
-					this.max_y=this.model.y_axis.max;
+				while(values[i1]>this.model.yAxis.max){
+					this.model.yAxis.max*=2;
+					this.max_y=this.model.yAxis.max;
 					maxChanged=true;
 				}
 			}
