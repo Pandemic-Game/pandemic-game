@@ -1,6 +1,11 @@
 import * as Highcharts from 'highcharts';
 
-export const buildCasesChart = (containerId: string, caseSeries: any[], deathsSeries: any[], totalCostSeries: any[]) => {
+export const buildCasesChart = (
+    containerId: string,
+    caseSeries: any[],
+    deathsSeries: any[],
+    totalCostSeries: any[]
+) => {
     Highcharts.chart(
         containerId,
         {
@@ -62,7 +67,7 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], deathsSe
                 }
             ]
         },
-        () => { }
+        () => {}
     );
 };
 
@@ -85,9 +90,7 @@ export const buildCostChart = (
             xAxis: {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             },
-            yAxis: {
-
-            },
+            yAxis: {},
             series: [
                 {
                     type: 'line',
@@ -111,6 +114,6 @@ export const buildCostChart = (
                 }
             ]
         },
-        () => { }
+        () => {}
     );
 };

@@ -209,7 +209,7 @@ export class Simulator {
     }
 
     private computeEconomicCosts(r: number): number {
-        console.log(`R: ${r}`)
+        console.log(`R: ${r}`);
         debugger;
         if (r >= this.scenario.r0) {
             return 0;
