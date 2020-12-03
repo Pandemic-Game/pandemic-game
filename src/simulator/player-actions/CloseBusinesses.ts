@@ -1,12 +1,14 @@
 import { ContainmentPolicy } from './PlayerActions';
 
 export const CloseBusinesses: ContainmentPolicy = {
-    name: 'Close all non-essential businesses',
+    id: 'business',
+    name: 'Close businesses', // 'Close all non-essential businesses',
+    icon: 'fa-briefcase',
     requirements: [],
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
-        updatedWorldState.r = updatedWorldState.r - 0.07;
+        updatedWorldState.r = Math.max(updatedWorldState.r - 0.07, 0);
         return updatedWorldState;
     }
 };

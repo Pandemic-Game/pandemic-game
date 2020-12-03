@@ -67,6 +67,10 @@ export class Simulator {
 
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
+        this.history.push(this.clone(this.currentState));
+
+        // Reset R
+        nextStateCandidate.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
         const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
@@ -79,6 +83,7 @@ export class Simulator {
         // Factor in the recurring effects of existing player actions.
         for (const containmentPolicy of playerActions.containmentPolicies) {
             nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
+            console.log(`${containmentPolicy.name} -> R: ${nextStateCandidate.indicators.r}`);
         }
 
         // Add the new containment policies to the history of player actions
@@ -88,7 +93,7 @@ export class Simulator {
         nextStateCandidate.nextInGameEvents = [];
 
         // Save the candidate state as the new current state
-        this.commitState(this.computeNaturalPandemicEvolution(nextStateCandidate));
+        this.currentState = this.computeNaturalPandemicEvolution(nextStateCandidate);
 
         return this.clone({
             newInGameEvents: nextStateCandidate.nextInGameEvents,
@@ -127,13 +132,16 @@ export class Simulator {
         // Deaths from infections started 20 days ago
 
         const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
-        const long_enough = this.history.length > lag;
+        const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough
             ? this.history[this.history.length - lag].indicators.numInfected * mortality
             : 0;
 
         const currentDay = last_result.days + this.daysPerTurn;
+        const deathCosts = this.computeDeathCost(new_deaths_lagging);
+        const economicCosts = this.computeEconomicCosts(action_r);
+        const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
         return {
             days: currentDay,
             availablePlayerActions: candidateState.availablePlayerActions,
@@ -142,12 +150,12 @@ export class Simulator {
                 numInfected: new_num_infected,
                 totalPopulation: this.scenario.totalPopulation,
                 hospitalCapacity: this.scenario.hospitalCapacity,
-                r: this.scenario.r0,
+                r: candidateState.indicators.r,
                 importedCasesPerDay: this.scenario.importedCasesPerDay,
-                deathCosts: this.computeDeathCost(new_deaths_lagging),
-                economicCosts: this.computeEconomicCosts(action_r, currentDay),
-                medicalCosts: this.computeHospitalizationCosts(new_num_infected),
-                totalCost: this.computeTotalCosts(new_num_infected, new_deaths_lagging, action_r, currentDay)
+                deathCosts: deathCosts,
+                economicCosts: economicCosts,
+                medicalCosts: medicalCosts,
+                totalCost: deathCosts + economicCosts + medicalCosts
             },
             playerActions: candidateState.playerActions,
             nextInGameEvents: []
@@ -156,6 +164,10 @@ export class Simulator {
 
     private computeInitialWorldState(): WorldState {
         // TODO: The hospitalization costs will not be zero on the first turn!
+        const deathCosts = this.computeDeathCost(0);
+        const economicCosts = this.computeEconomicCosts(this.scenario.r0);
+        const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
+
         return {
             days: 0,
             availablePlayerActions: {
@@ -169,10 +181,10 @@ export class Simulator {
                 hospitalCapacity: this.scenario.hospitalCapacity,
                 r: this.scenario.r0,
                 importedCasesPerDay: this.scenario.importedCasesPerDay,
-                deathCosts: this.computeDeathCost(0),
-                economicCosts: this.computeEconomicCosts(this.scenario.r0, 0),
-                medicalCosts: this.computeHospitalizationCosts(this.scenario.initialNumInfected),
-                totalCost: this.computeTotalCosts(this.scenario.initialNumInfected, 0, this.scenario.r0, 0)
+                deathCosts: deathCosts,
+                economicCosts: economicCosts,
+                medicalCosts: medicalCosts,
+                totalCost: deathCosts + economicCosts + medicalCosts
             },
             playerActions: {
                 capabilityImprovements: [],
@@ -196,19 +208,15 @@ export class Simulator {
         return num_hospitalizations * cost_per_hospitalization;
     }
 
-    private computeEconomicCosts(r: number, days: number): number {
+    private computeEconomicCosts(r: number): number {
+        console.log(`R: ${r}`);
+        debugger;
         if (r >= this.scenario.r0) {
             return 0;
         }
-        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * days;
-    }
 
-    private computeTotalCosts(numInfected: number, numDead: number, r: number, days: number): number {
-        return (
-            this.computeHospitalizationCosts(numInfected) +
-            this.computeEconomicCosts(r, days) +
-            this.computeDeathCost(numDead)
-        );
+        debugger;
+        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * this.daysPerTurn;
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
@@ -249,12 +257,6 @@ export class Simulator {
                 (!it.happensOnce || canOnlyHappenOnceButHasntHappened)
             ); // Event can happen multiple times or it hasn't happened yet
         });
-    }
-
-    private commitState(nextStateCandidate: WorldState) {
-        // store the old previous state in the history
-        this.history.push(this.clone(this.currentState));
-        this.currentState = nextStateCandidate;
     }
 
     private clone<T>(obj: T): T {

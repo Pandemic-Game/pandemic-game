@@ -5,7 +5,7 @@ module.exports = {
     entry: path.resolve(__dirname, 'src'),
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist')
     },
     resolve: {
         extensions: ['.ts', '.js', '.json']
@@ -13,13 +13,14 @@ module.exports = {
     plugins: [
         new CopyPlugin({
             patterns: [
-                { from: 'src/public/index.html', to: 'index.html' },
-                { from: 'src/public/style.css', to: 'style.css' },
-            ],
-        }),
+                { from: 'public/index.html', to: 'index.html' },
+                { from: 'public/style/*.css' },
+                { from: 'public/webfonts/*.(eot|svg|ttf|woff|woff2)' }
+            ]
+        })
     ],
     module: {
-        rules: [{ test: /\.(ts|js)x?$/, loader: 'babel-loader', exclude: /node_modules/ }],
+        rules: [{ test: /\.(ts|js)x?$/, loader: 'babel-loader', exclude: /node_modules/ }]
     },
     devServer: {
         contentBase: path.resolve(__dirname, 'dist'),
@@ -36,8 +37,8 @@ module.exports = {
             hash: false,
             modules: false,
             timings: false,
-            version: false,
-        },
+            version: false
+        }
     },
     watch: false,
     devtool: 'inline-source-map',

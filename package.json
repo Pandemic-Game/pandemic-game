@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "webpack serve --config webpack.config.js",
     "build": "webpack --mode=production --config webpack.config.js",
-    "lint": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "lint": "prettier --config .prettierrc 'src/**/*.(ts|js)' --write",
     "test": "jest --config=jest.config.ts --runInBand --detectOpenHandles --colors --verbose"
   },
   "repository": {
@@ -61,8 +61,10 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.3",
+    "highcharts": "^8.2.2",
     "jquery": "^3.5.1",
     "jstat": "^1.9.4",
-    "lodash.clonedeep": "^4.5.0"
+    "lodash.clonedeep": "^4.5.0",
+    "popper.js": "^1.16.1"
   }
 }
