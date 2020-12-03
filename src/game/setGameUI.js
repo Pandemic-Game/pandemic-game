@@ -13,6 +13,7 @@ Sets UI display given the player's in-game turn and actions
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
 import { buildCasesChart } from './LineChart.ts';
+import { months} from '../lib/util';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -55,9 +56,16 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
 };
 
 export const updateIndicators = (indicators, history) => {
-    $(`#cases-current`).html(nFormatter(indicators.numInfected, 5));
-    $(`#cost-current`).html(nFormatter(indicators.totalCost, 5));
+    $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
+    $(`#deaths-current`).html(nFormatter(indicators.numDead, 0));
+    $(`#cost-current`).html('$' + nFormatter(indicators.totalCost, 1));
 
+    const day = history.length;
+    const month_idx = Math.floor(history.length / 30);
+    $('#date-current').html(months[month_idx] + ' 1');
+    
+    console.log(indicators);
+    console.log(history);
     const costHistory = history.map((it) => it.indicators.totalCost);
     costHistory.push(indicators.totalCost);
     while (costHistory.length < 12) {
@@ -80,7 +88,7 @@ export const updateIndicators = (indicators, history) => {
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 5));
-    $(`#win-total-costs`).html(nFormatter(totalCost, 5));
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-costs`).html('$' + nFormatter(totalCost, 1));
     $('#win-screen').modal('show');
 };

@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
 import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
+import { months } from '../lib/util';
+
 /* 
 Shorthand functions to create DOM elements
 
@@ -46,9 +48,10 @@ export const createGameUI = (
 
     const header = createEle('tr', table);
     // eslint-disable-next-line no-plusplus
+    const empty = createEle('td', header);;
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('td', header);
-        date.innerHTML = `${i + 1}/20`;
+        date.innerHTML = months[i];
         date.style.textAlign = 'center';
     }
 
@@ -56,13 +59,17 @@ export const createGameUI = (
     for (const action of listOfPlayerActions) {
         const tr = createEle('TR', table);
         // eslint-disable-next-line no-plusplus
+	const title = createEle('TD', tr);
+	title.innerHTML = action.name;
+	title.style.width = '190px';
+	title.style.textAlign = 'right';
         for (let i = 0; i < numberOfColumns; i++) {
             const td = createEle('TD', tr);
 
             const btn = createEle('BUTTON', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
             btn.style.height = 'auto';
-            btn.style.width = '100%';
+            btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
             btn.style.position = 'relative';
             btn.innerHTML = `<i class="fa ${action.icon}"></i>`;
