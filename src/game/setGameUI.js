@@ -13,7 +13,7 @@ Sets UI display given the player's in-game turn and actions
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
 import { buildCasesChart } from './LineChart.ts';
-import { months} from '../lib/util';
+import { months } from '../lib/util';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -63,7 +63,7 @@ export const updateIndicators = (indicators, history) => {
     const day = history.length;
     const month_idx = Math.floor(history.length / 30);
     $('#date-current').html(months[month_idx] + ' 1');
-    
+
     console.log(indicators);
     console.log(history);
     const costHistory = history.map((it) => it.indicators.totalCost);
