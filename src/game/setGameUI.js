@@ -88,7 +88,7 @@ export const updateIndicators = (indicators, history) => {
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 5));
-    $(`#win-total-costs`).html(nFormatter(totalCost, 5));
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-costs`).html(nFormatter(totalCost, 1));
     $('#win-screen').modal('show');
 };
