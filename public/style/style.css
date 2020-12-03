@@ -27,11 +27,11 @@ box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
 .noselect{
     pointer-events: none;
 }
-
+/* only for testing. It moves the buttons to right
 .row{
 	padding-left: 40px;
 }
-
+*/
 div#cases-graph{
 	margin-left: -15px;
 	margin-right: -15px;
