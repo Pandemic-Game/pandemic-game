@@ -56,9 +56,9 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
 };
 
 export const updateIndicators = (indicators, history) => {
-    $(`#cases-current`).html(nFormatter(indicators.numInfected, 2));
-    $(`#deaths-current`).html(nFormatter(indicators.numDead, 2));
-    $(`#cost-current`).html(nFormatter(indicators.totalCost, 2));
+    $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
+    $(`#deaths-current`).html(nFormatter(indicators.numDead, 1));
+    $(`#cost-current`).html(nFormatter(indicators.totalCost, 1));
 
     const day = history.length;
     const month_idx = Math.floor(history.length / 30);
