@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.3",
+    "highcharts": "^8.2.2",
     "jquery": "^3.5.1",
     "jstat": "^1.9.4",
     "lodash.clonedeep": "^4.5.0",

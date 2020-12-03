@@ -10,10 +10,10 @@ Sets UI display given the player's in-game turn and actions
 
 */
 
-//
-
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
+import { buildCasesChart } from './LineChart.ts';
+import { months} from '../lib/util';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -56,13 +56,40 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, gameUI) => {
     });
 };
 
-export const updateIndicators = (currentCost, currentCases) => {
-    $(`#cases-current`).html(nFormatter(currentCases, 5));
-    $(`#cost-current`).html(nFormatter(currentCost, 5));
+export const updateIndicators = (indicators, history) => {
+    $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
+    $(`#deaths-current`).html(nFormatter(indicators.numDead, 0));
+    $(`#cost-current`).html('$' + nFormatter(indicators.totalCost, 1));
+
+    const day = history.length;
+    const month_idx = Math.floor(history.length / 30);
+    $('#date-current').html(months[month_idx] + ' 1');
+    
+    console.log(indicators);
+    console.log(history);
+    const costHistory = history.map((it) => it.indicators.totalCost);
+    costHistory.push(indicators.totalCost);
+    while (costHistory.length < 12) {
+        costHistory.push(null);
+    }
+
+    const caseHistory = history.map((it) => it.indicators.numInfected);
+    caseHistory.push(indicators.numInfected);
+    while (caseHistory.length < 12) {
+        caseHistory.push(null);
+    }
+
+    const deathHistory = history.map((it) => it.indicators.numDead);
+    deathHistory.push(indicators.numDead);
+    while (deathHistory.length < 12) {
+        deathHistory.push(null);
+    }
+
+    buildCasesChart('cases-graph', caseHistory, deathHistory, costHistory);
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 5));
-    $(`#win-total-costs`).html(nFormatter(totalCost, 5));
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-costs`).html('$' + nFormatter(totalCost, 1));
     $('#win-screen').modal('show');
 };

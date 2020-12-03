@@ -40,6 +40,7 @@ This file contains all classes for frontend components.
 		"formatter":(value => nFormatter(value,1)),
 	};
 */
+
 export class LinePlot{
 	
 	drawAxes(){

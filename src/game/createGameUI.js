@@ -3,6 +3,8 @@ import * as $ from 'jquery';
 import { LinePlot } from '../lib/LinePlot';
 import { nFormatter } from '../lib/util';
 import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
+import { months } from '../lib/util';
+
 /* 
 Shorthand functions to create DOM elements
 
@@ -21,10 +23,6 @@ const createEle = (type, parentEle, id = null) => {
     parentEle.appendChild(ele);
 
     return ele;
-};
-
-const createGraphPlaceholder = (parentEle, id) => {
-    return createEle('DIV', parentEle, id);
 };
 
 /*
@@ -47,90 +45,36 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
-    // Create container
-    const container = createEle('DIV', document.body); // on = document.body
-    container.className = 'p-5 d-flex flex-column';
-
-    // Create title
-    const title = createEle('H1', container); // on = container
-    title.innerHTML = 'Pandemic simulator';
-
-    // Create SVGs for graphs
-    const casesGraphTitle = createEle('H5', container); // on = container
-    casesGraphTitle.innerHTML = 'COVID-19 cases';
-    casesGraphTitle.className = 'p-2';
-    const casesCurrent = createEle('P', container); // on = container
-    casesCurrent.className = 'p-2';
-    casesCurrent.id = 'cases-current';
-	createGraphPlaceholder(container, 'cases-graph');
-	const caseModel ={
-		"scalable":true,
-		"width":"100%",
-		"height":"200px",
-		"backgroundColor":"#E0E0E0",
-		"title": {"text":"costs"},
-        "tooltip": {},
-        "legend": {"data":['costs']},
-		"xAxis":{"name":"","line":"dot","lineColor":"#A0A0A0","min":0,"max":12,"step":12,"intervall":true,"formatter":(value => (value+1)+"/20")},
-		"yAxis":{"name":"","line":"solid","lineColor":"#000000","min":0,"max":250000,"formatter":(value => nFormatter(value,1))},
-		"series":[{"name":"cases","type":"line","color":"#28A745","width":3}]
-	};
-	const casePlot = new LinePlot('cases-graph',caseModel);
-
-    const costGraphTitle = createEle('H5', container); // on = container
-    costGraphTitle.innerHTML = 'Cost per day';
-    costGraphTitle.className = 'p-2';
-    const costCurrent = createEle('P', container); // on = container
-    costCurrent.className = 'p-2';
-    costCurrent.id = 'cost-current';
-    createGraphPlaceholder(container, 'cost-graph');
-	const costModel ={
-		"scalable":true,
-		"width":"100%",
-		"height":"200px",
-		"backgroundColor":"#E0E0E0",
-		"title": {"text":"costs"},
-        "tooltip": {},
-        "legend": {"data":['costs']},
-		"xAxis":{"name":"","line":"dot","lineColor":"#A0A0A0","min":0,"max":12,"step":12,"intervall":true,"formatter":(value => (value+1)+"/20")},
-		"yAxis":{"name":"","line":"solid","lineColor":"#000000","min":0,"max":2500000000000,"formatter":(value => nFormatter(value,1))},
-		"series":[{"name":"costs","type":"line","color":"#28A745","width":3}]
-	};
-	const costPlot = new LinePlot('cost-graph',costModel);
-
-    // Create row
-    const rowTitle = createEle('H5', container); // on = container
-    rowTitle.innerHTML = 'Lockdown policies';
-    rowTitle.className = 'p-2';
-    const row = createEle('DIV', container);
-    row.className = 'row';
-
+    const table = $(`#player-actions-container`)[0];
     // Create n columns in grid
+
+    const header = createEle('tr', table);
     // eslint-disable-next-line no-plusplus
+    const empty = createEle('td', header);;
     for (let i = 0; i < numberOfColumns; i++) {
-        // Create a column
-        const col = createEle('DIV', row);
-        col.className = `col-${numberOfColumns / 12}`;
+        const date = createEle('td', header);
+        date.innerHTML = months[i];
+        date.style.textAlign = 'center';
+    }
 
-        // Give dates as heading for each column
-        const dateDiv = createEle('DIV', col)
-        dateDiv.className = 'pl-3 w-100 d-flex flex-row justify-content-center';
-        const date = createEle('P', dateDiv);
-        date.innerHTML = `${i + 1}/20`;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const action of listOfPlayerActions) {
+        const tr = createEle('TR', table);
+        // eslint-disable-next-line no-plusplus
+	const title = createEle('TD', tr);
+	title.innerHTML = action.name;
+	title.style.width = '190px';
+	title.style.textAlign = 'right';
+        for (let i = 0; i < numberOfColumns; i++) {
+            const td = createEle('TD', tr);
 
-        // Fill the column with UI
-
-        // Player action buttons for each action players can make
-        // eslint-disable-next-line no-restricted-syntax
-        for (const action of listOfPlayerActions) {
-            // Make an action button
-            const btn = createEle('BUTTON', col, `turn${i}-${action.id}`);
+            const btn = createEle('BUTTON', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
             btn.style.height = 'auto';
-            btn.style.width = '100%';
+            btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
             btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon} noselect"></i> <br> <span style='font-size: 0.75rem' class='noselect'>${action.name}</span>`;
+            btn.innerHTML = `<i class="fa ${action.icon}"></i>`;
             btn.onclick = (e) => {
                 // Style as active/inactive
                 const target = $(e.target);
@@ -143,14 +87,9 @@ export const createGameUI = (
         }
     }
 
-    // End turn button
-    const endTurnBtn = createEle('BUTTON', container, `end-turn`);
-    endTurnBtn.className = `w-100 m-2 btn btn-lg btn-secondary`;
-    endTurnBtn.innerHTML = `Click to simulate policy for the month <i class="fas fa-arrow-right"></i>`;
-    endTurnBtn.onclick = () => {
-        // Call back to event on player making action
+    $(`#end-turn-btn`).on('click', () => {
         onEndTurn();
-    };
+    });
     $(`#restart-btn`).on('click', () => {
         onRestart();
     });

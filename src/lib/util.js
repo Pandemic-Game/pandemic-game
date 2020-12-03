@@ -25,3 +25,5 @@ export function nFormatter(num, digits) {
     }
     return `${(num / si[i].value).toFixed(digits).replace(rx, '$1')} ${si[i].symbol}`;
 }
+
+export const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

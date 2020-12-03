@@ -8,6 +8,7 @@
         "allowJs": true,
         "checkJs": false,
         "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
         "maxNodeModuleJsDepth": 1,
         "baseUrl": ".",
         "paths": {

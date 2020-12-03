@@ -15,6 +15,36 @@
 
 <body>
 
+  <div class="p-2 d-flex flex-column">
+    <!-- Cases panel -->
+    <div class="container">
+      <div class="p-2 row">
+        <div class="col-sm">
+          <h2 id='date-current'>Feb 1st</h2>
+        </div>
+        <div class="col-sm">
+          <h4 id="cases-current"></h4>
+          <p>Cases</p>
+        </div>
+        <div class="col-sm">
+          <h4 id="deaths-current">23</h4>
+          <p>Deaths</p>
+        </div>
+        <div class="col-sm">
+          <h4 id="cost-current"></h4>
+          <p class="p-2">Cost</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="cases-graph" style="width:1280px;height:250px; margin-left: 20px;"></div>
+    <h2 class="p-2">Policies</h2>
+    <table style="width:1160px; margin-left:0px;" id="player-actions-container"></table>
+
+    <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Click to simulate policy for the month <i
+        class="fas fa-arrow-right"></i></button>
+  </div>
+
   <!-- Win screen modal-->
   <div class="modal" tabindex="-1" id='win-screen'>
     <div class="modal-dialog">

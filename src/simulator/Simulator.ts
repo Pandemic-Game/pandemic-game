@@ -67,6 +67,10 @@ export class Simulator {
 
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
+        this.history.push(this.clone(this.currentState));
+
+        // Reset R
+        nextStateCandidate.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
         const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
@@ -89,7 +93,7 @@ export class Simulator {
         nextStateCandidate.nextInGameEvents = [];
 
         // Save the candidate state as the new current state
-        this.commitState(this.computeNaturalPandemicEvolution(nextStateCandidate));
+        this.currentState = this.computeNaturalPandemicEvolution(nextStateCandidate);
 
         return this.clone({
             newInGameEvents: nextStateCandidate.nextInGameEvents,
@@ -127,17 +131,16 @@ export class Simulator {
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
 
-        const lag = Math.ceil(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
-        const long_enough = this.history.length > lag;
+        const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
+        const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough
             ? this.history[this.history.length - lag].indicators.numInfected * mortality
             : 0;
 
         const currentDay = last_result.days + this.daysPerTurn;
-
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
-        const economicCosts = this.computeEconomicCosts(action_r, currentDay);
+        const economicCosts = this.computeEconomicCosts(action_r);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
         return {
             days: currentDay,
@@ -162,7 +165,7 @@ export class Simulator {
     private computeInitialWorldState(): WorldState {
         // TODO: The hospitalization costs will not be zero on the first turn!
         const deathCosts = this.computeDeathCost(0);
-        const economicCosts = this.computeEconomicCosts(this.scenario.r0, 0);
+        const economicCosts = this.computeEconomicCosts(this.scenario.r0);
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
 
         return {
@@ -205,18 +208,22 @@ export class Simulator {
         return num_hospitalizations * cost_per_hospitalization;
     }
 
-    private computeEconomicCosts(r: number, days: number): number {
+    private computeEconomicCosts(r: number): number {
+        console.log(`R: ${r}`);
+        debugger;
         if (r >= this.scenario.r0) {
             return 0;
         }
-        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * days;
+
+        debugger;
+        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * this.daysPerTurn;
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
         const lam = this.generateNewCases(num_infected, action_r);
         const r = 50.0;
         const p = lam / (r + lam);
-        const new_num_infected = new FakeNegativeBinomial(r, p).sample();
+	const new_num_infected = new FakeNegativeBinomial(r, p).sample();
         return new_num_infected;
     }
 
@@ -250,12 +257,6 @@ export class Simulator {
                 (!it.happensOnce || canOnlyHappenOnceButHasntHappened)
             ); // Event can happen multiple times or it hasn't happened yet
         });
-    }
-
-    private commitState(nextStateCandidate: WorldState) {
-        // store the old previous state in the history
-        this.history.push(this.clone(this.currentState));
-        this.currentState = nextStateCandidate;
     }
 
     private clone<T>(obj: T): T {
