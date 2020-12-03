@@ -41,32 +41,31 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
-    const row = $(`#player-actions-container`)[0];
+    const table = $(`#player-actions-container`)[0];
     // Create n columns in grid
+
+    const header = createEle('tr', table);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
-        // Create a column
-        const col = createEle('DIV', row);
-        col.className = `col-${numberOfColumns / 12}`;
-
-        // Give date heading
-        const date = createEle('P', col);
+        const date = createEle('td', header);
         date.innerHTML = `${i + 1}/20`;
         date.style.textAlign = 'center';
+    }
 
-        // Fill the column with UI
+    // eslint-disable-next-line no-restricted-syntax
+    for (const action of listOfPlayerActions) {
+        const tr = createEle('TR', table);
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < numberOfColumns; i++) {
+            const td = createEle('TD', tr);
 
-        // Player action buttons for each action players can make
-        // eslint-disable-next-line no-restricted-syntax
-        for (const action of listOfPlayerActions) {
-            // Make an action button
-            const btn = createEle('BUTTON', col, `turn${i}-${action.id}`);
+            const btn = createEle('BUTTON', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
             btn.style.height = 'auto';
             btn.style.width = '100%';
             btn.setAttribute('data-action', action.id);
             btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon}"></i> <br> <span style='font-size: 0.75rem;'>${action.name}</span>`;
+            btn.innerHTML = `<i class="fa ${action.icon}"></i>`;
             btn.onclick = (e) => {
                 // Style as active/inactive
                 const target = $(e.target);

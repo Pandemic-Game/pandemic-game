@@ -131,7 +131,7 @@ export class Simulator {
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
 
-        const lag = Math.ceil(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
+        const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
         const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough
@@ -140,7 +140,7 @@ export class Simulator {
 
         const currentDay = last_result.days + this.daysPerTurn;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
-        const economicCosts = this.computeEconomicCosts(action_r, currentDay);
+        const economicCosts = this.computeEconomicCosts(action_r);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
         return {
             days: currentDay,
@@ -165,7 +165,7 @@ export class Simulator {
     private computeInitialWorldState(): WorldState {
         // TODO: The hospitalization costs will not be zero on the first turn!
         const deathCosts = this.computeDeathCost(0);
-        const economicCosts = this.computeEconomicCosts(this.scenario.r0, 0);
+        const economicCosts = this.computeEconomicCosts(this.scenario.r0);
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
 
         return {
@@ -208,11 +208,15 @@ export class Simulator {
         return num_hospitalizations * cost_per_hospitalization;
     }
 
-    private computeEconomicCosts(r: number, days: number): number {
+    private computeEconomicCosts(r: number): number {
+        console.log(`R: ${r}`)
+        debugger;
         if (r >= this.scenario.r0) {
             return 0;
         }
-        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * days;
+
+        debugger;
+        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * this.daysPerTurn;
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {

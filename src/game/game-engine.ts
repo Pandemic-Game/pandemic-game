@@ -39,10 +39,14 @@ export class GameEngine {
         };
 
         const onEndTurn = () => {
+            let nextTurn: NextTurnState | VictoryState;
             this.playerTurn += 1;
-            const playerActions = this.collectPlayerActions();
-            const nextTurn = this.simulator.nextTurn(playerActions);
+            for (let i = 0; i < 30; i++) {
+                const playerActions = this.collectPlayerActions();
+                nextTurn = this.simulator.nextTurn(playerActions);
+            }
             this.onNextTurn(nextTurn);
+            console.log(this.simulator.state());
         };
 
         const onRestart = () => {

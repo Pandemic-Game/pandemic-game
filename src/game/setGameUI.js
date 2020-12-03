@@ -12,7 +12,7 @@ Sets UI display given the player's in-game turn and actions
 
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
-import { buildCasesChart, buildCostChart } from './LineChart.ts';
+import { buildCasesChart } from './LineChart.ts';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -64,24 +64,6 @@ export const updateIndicators = (indicators, history) => {
         costHistory.push(null);
     }
 
-    const medicalCostHistory = history.map((it) => it.indicators.medicalCosts);
-    medicalCostHistory.push(indicators.medicalCosts);
-    while (medicalCostHistory.length < 12) {
-        medicalCostHistory.push(null);
-    }
-
-    const deathCostHistory = history.map((it) => it.indicators.deathCosts);
-    deathCostHistory.push(indicators.deathCosts);
-    while (deathCostHistory.length < 12) {
-        deathCostHistory.push(null);
-    }
-
-    const economicCostHistory = history.map((it) => it.indicators.economicCosts);
-    economicCostHistory.push(indicators.economicCosts);
-    while (economicCostHistory.length < 12) {
-        economicCostHistory.push(null);
-    }
-
     const caseHistory = history.map((it) => it.indicators.numInfected);
     caseHistory.push(indicators.numInfected);
     while (caseHistory.length < 12) {
@@ -93,8 +75,8 @@ export const updateIndicators = (indicators, history) => {
     while (deathHistory.length < 12) {
         deathHistory.push(null);
     }
-    buildCasesChart('cases-graph', caseHistory, deathHistory);
-    buildCostChart('cost-graph', costHistory, medicalCostHistory, deathCostHistory, economicCostHistory);
+
+    buildCasesChart('cases-graph', caseHistory, deathHistory, costHistory);
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
