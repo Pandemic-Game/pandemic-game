@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
+import { LinePlot } from '../lib/LinePlot';
+import { nFormatter } from '../lib/util';
 import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 import { months } from '../lib/util';
 
@@ -14,7 +16,7 @@ Shorthand functions to create DOM elements
 */
 
 const createEle = (type, parentEle, id = null) => {
-    const ele = document.createElement(type);
+	const ele = document.createElement(type);
     if (id) {
         ele.id = id;
     }
@@ -88,8 +90,9 @@ export const createGameUI = (
     $(`#end-turn-btn`).on('click', () => {
         onEndTurn();
     });
-
     $(`#restart-btn`).on('click', () => {
         onRestart();
     });
+    // to use the line plots to update
+    return {"casePlot":casePlot,"costPlot":costPlot};
 };

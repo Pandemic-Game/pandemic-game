@@ -40,31 +40,34 @@ This file contains all classes for frontend components.
 		"formatter":(value => nFormatter(value,1)),
 	};
 */
-export default class BarPlot {
-    constructor(name, model) {
-        this.name = name;
-        this.model = model;
-        this.htmlfield = document.getElementById(name);
-        this.color = window.getComputedStyle(this.htmlfield).color;
-        if (!this.color) {
-            this.color = '#000000';
-        }
-        this.bar = document.createElement('div');
-        this.bar.setAttribute('id', name + '_bar');
-        this.bar.style.width = '50%';
-        this.bar.style.height = '100%';
-        this.bar.style.backgroundColor = model.lines[0].color;
-        this.bar.style.textAlign = 'right';
-        this.htmlfield.appendChild(this.bar);
-    }
 
-    appendValues(values) {
-        this.bar.style.width = Math.floor((1000 * values[0]) / this.model.y_axis.max) / 10 + '%';
-        this.bar.innerHTML = "<span id='" + this.name + "_text'>" + Math.floor(values[0]) + '</span>';
-        let textsize = document.getElementById(this.name + '_text').offsetWidth;
-        console.log(textsize, this.bar.offsetWidth);
-        if (this.bar.offsetWidth < textsize) {
-            document.getElementById(this.name + '_text').style.display = 'none';
-        }
-    }
+export default class BarPlot{
+	
+	constructor(name,model){
+		this.name = name;
+		this.model = model;
+		this.htmlfield = document.getElementById(name);
+		this.color = window.getComputedStyle(this.htmlfield).color;
+		if(! this.color){
+			this.color="#000000";
+		}
+		this.bar = document.createElement("div");
+		this.bar.setAttribute("id", name+"_bar");
+		this.bar.style.width="50%";
+		this.bar.style.height="100%";
+		this.bar.style.backgroundColor=model.lines[0].color;
+		this.bar.style.textAlign="right";
+		this.htmlfield.appendChild(this.bar);
+
+	}
+	
+	appendValues(values){
+		this.bar.style.width=(Math.floor(1000*values[0]/this.model.y_axis.max)/10)+"%";
+		this.bar.innerHTML="<span id='"+this.name+"_text'>"+Math.floor(values[0])+"</span>";
+		let textsize = document.getElementById(this.name+"_text").offsetWidth;
+		console.log(textsize,this.bar.offsetWidth);
+		if(this.bar.offsetWidth<textsize){
+			document.getElementById(this.name+"_text").style.display="none";
+		}
+	}
 }
