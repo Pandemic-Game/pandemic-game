@@ -223,8 +223,7 @@ export class Simulator {
         const lam = this.generateNewCases(num_infected, action_r);
         const r = 50.0;
         const p = lam / (r + lam);
-	// const new_num_infected = new FakeNegativeBinomial(r, p).sample();
-	const new_num_infected = lam;
+	const new_num_infected = new FakeNegativeBinomial(r, p).sample();
         return new_num_infected;
     }
 
