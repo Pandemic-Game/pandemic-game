@@ -8,6 +8,8 @@
     integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
   <link rel="stylesheet" href="public/style/icons.css">
   <link rel="stylesheet" href="public/style/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500&display=swap" rel="stylesheet">
   <title>Pandemic simulator</title>
 </head>
 
@@ -21,16 +23,34 @@
           <h2 id='date-current'>Feb 1st</h2>
         </div>
         <div class="col-sm">
-          <h4 id="cases-current"></h4>
-          <p>Cases</p>
+          <div class="col-values">
+			<h3 id="cases-current" class= "current-value"></h3>
+			<p>Cases</p>
+		  </div>
+		  <div class="col-changes">
+			<p><span id="cases-growth"></span><br/>
+			<span id="cases-differeces"></span></p>
+		  </div>
         </div>
         <div class="col-sm">
-          <h4 id="deaths-current">23</h4>
-          <p>Deaths</p>
+          <div class="col-values">
+			<h3 id="deaths-current" class= "current-value">23</h3>
+			<p>Deaths</p>
+		  </div>
+		  <div class="col-changes">
+			<p><span id="deaths-growth"></span><br/>
+			<span id="deaths-differeces"></span></p>
+		  </div>
         </div>
         <div class="col-sm">
-          <h4 id="cost-current"></h4>
-          <p class="p-2">Cost</p>
+          <div class="col-values">
+			<h3 id="cost-current" class= "current-value"></h3>
+			<p class="p-2">Cost</p>
+		  </div>
+		  <div class="col-changes">
+			<p><span id="cost-growth"></span><br/>
+			<span id="cost-differeces"></span></p>
+		  </div>
         </div>
       </div>
     </div>
@@ -48,18 +68,19 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">You finished!</h5>
+          <h4 class="modal-title">The year is up, here's how you did...</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <h5>The year is up, here's how you did:</h5>
-          <p>Total cases: <span id='win-total-cases'></span></p>
-          <p>Total costs: <span id='win-total-costs'></span></p>
+          <h5>Total cases</h5>
+          <p id='win-total-cases'></p>
+          <h5>Total costs</h5>
+          <p id='win-total-costs'></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="restart-btn">Try again</button>
+          <button type="button" class="btn btn-primary" id="restart-btn">Reset</button>
         </div>
       </div>
     </div>
