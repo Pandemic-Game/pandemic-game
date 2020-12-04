@@ -49,7 +49,6 @@ export class GameEngine {
                 nextTurn = this.simulator.nextTurn(playerActions);
             }
             this.onNextTurn(nextTurn);
-            console.log(this.simulator.state());
         };
 
         const onRestart = () => {

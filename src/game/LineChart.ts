@@ -2,7 +2,7 @@ import * as Highcharts from 'highcharts';
 import { nFormatter } from '../lib/util';
 
 export const buildCasesChart = (containerId: string, caseSeries: any[], totalCostSeries: any[]) => {
-    Highcharts.chart(containerId, {
+    return Highcharts.chart(containerId, {
         chart: {
             type: 'line'
         },
@@ -28,7 +28,8 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
                     style: {
                         color: 'blue'
                     }
-                }
+                },
+                min: 0
             },
             {
                 title: {
@@ -42,6 +43,7 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
                         color: 'red'
                     }
                 },
+                min: 0,
                 opposite: true
             }
         ],
@@ -71,4 +73,9 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
             }
         ]
     });
+};
+
+export const updateCasesChart = (casesChart: any, caseSeries: any[], totalCostSeries: any[]) => {
+    casesChart.series[0].setData(caseSeries);
+    casesChart.series[1].setData(totalCostSeries);
 };

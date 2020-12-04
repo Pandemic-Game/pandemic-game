@@ -12,7 +12,7 @@ Sets UI display given the player's in-game turn and actions
 
 import * as $ from 'jquery';
 import { nFormatter, months } from '../lib/util';
-import { buildCasesChart } from './LineChart.ts';
+import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 
 // Hide and disable all buttons
 export const resetControls = () => {
@@ -92,6 +92,8 @@ const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
 	}
 };
 
+let casesChart;
+
 export const updateIndicators = (indicators, history) => {
     $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
     $(`#deaths-current`).html(nFormatter(indicators.numDead, 0));
@@ -125,7 +127,11 @@ export const updateIndicators = (indicators, history) => {
         costHistory.push({ x: targetDate, y: null });
     }
 
-    buildCasesChart('cases-graph', caseHistory, costHistory);
+    if (!casesChart) {
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+    } else {
+        updateCasesChart(casesChart, caseHistory, costHistory);
+    }
 };
 
 export const showWinScreen = (totalCost, totalCases) => {
