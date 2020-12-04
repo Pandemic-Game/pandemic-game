@@ -5,6 +5,7 @@ import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEve
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
+import { months } from '../lib/util';
 
 interface CurrentUISelection {
     transit: boolean;
@@ -41,8 +42,9 @@ export class GameEngine {
 
         const onEndTurn = () => {
             let nextTurn: NextTurnState | VictoryState;
+            const month = months[this.playerTurn % months.length];
             this.playerTurn += 1;
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < month.numDays; i++) {
                 const playerActions = this.collectPlayerActions();
                 nextTurn = this.simulator.nextTurn(playerActions);
             }
@@ -66,12 +68,16 @@ export class GameEngine {
         const currentState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
             console.log(`State for day ${nextTurn.currentState.days}`);
+            // Just another turn. Update the controls and indicators
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
             updateIndicators(nextTurn.currentState.indicators, currentState.history);
         } else {
+            // Do the final graph update
+            updateIndicators(currentState.currentState.indicators, currentState.history);
+
+            // Show the win screen
             const totalCasesReducer = (acc: number, it: WorldState) => acc + it.indicators.numInfected;
             const totalCases = currentState.history.reduce(totalCasesReducer, 0);
-
             const totalCostReducer = (acc: number, it: WorldState) => acc + it.indicators.totalCost;
             const totalCost = currentState.history.reduce(totalCostReducer, 0);
             showWinScreen(totalCost, totalCases);
