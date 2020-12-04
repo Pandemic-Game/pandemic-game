@@ -49,8 +49,9 @@ export const createGameUI = (
     // Create n columns in grid
 
     const header = createEle('tr', table);
+
+    const empty = createEle('td', header);
     // eslint-disable-next-line no-plusplus
-    const empty = createEle('td', header);;
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('td', header);
         date.innerHTML = months[i];
@@ -60,11 +61,11 @@ export const createGameUI = (
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
         const tr = createEle('TR', table);
+        const title = createEle('TD', tr);
+        title.innerHTML = action.name;
+        title.style.width = '190px';
+        title.style.textAlign = 'right';
         // eslint-disable-next-line no-plusplus
-	const title = createEle('TD', tr);
-	title.innerHTML = action.name;
-	title.style.width = '190px';
-	title.style.textAlign = 'right';
         for (let i = 0; i < numberOfColumns; i++) {
             const td = createEle('TD', tr);
 
