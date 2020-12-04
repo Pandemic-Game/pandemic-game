@@ -28,8 +28,33 @@ box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
     pointer-events: none;
 }
 
-.row{
-	padding-left: 40px;
+.col-values{
+	float: left;
+	margin-right:5px;
+}
+
+.col-changes{
+	font-size: 12px;
+}
+
+.current-value::after{
+	content:" ";
+}
+
+.current-value.positive::after{
+	content:" ↑";
+}
+
+.current-value.negative::after{
+	content:" ↓";
+}
+
+.positive{
+	color: #C00000;
+}
+
+.negative{
+	color: #00C000;
 }
 
 div#cases-graph{

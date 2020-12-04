@@ -93,6 +93,4 @@ export const createGameUI = (
     $(`#restart-btn`).on('click', () => {
         onRestart();
     });
-    // to use the line plots to update
-    return {"casePlot":casePlot,"costPlot":costPlot};
 };
