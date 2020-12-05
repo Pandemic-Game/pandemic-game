@@ -34,15 +34,24 @@ export class Simulator {
      * Restarts the scenario at a given turn (turn zero by default).
      * Returns a new simulator instance.
      */
-    /*reset(turn: number = 0): Simulator {
+    reset(turn: number = 0): Simulator {
         const newSimulator = new Simulator(this.scenario);
-        if (turn > 0 && this.history.length > 1) {
-            const maxTurn = Math.min(turn, this.history.length - 1);
-            newSimulator.history = this.history.slice(0, maxTurn);
-            newSimulator.currentState = newSimulator.history.pop();
+        if (turn > 0 && this.turnHistory.length > 1) {
+            const maxTurn = Math.min(turn - 1, this.history.length - 1);
+            const targetTurn = this.turnHistory[maxTurn]
+            const maxDay = targetTurn.worldHistoryEndIndex
+            newSimulator.history = this.history.slice(0, maxDay);
+            newSimulator.history.push(this.history[maxDay]);
+            newSimulator.turnHistory = this.turnHistory.slice(0, maxTurn);
+            newSimulator.turnHistory.push(this.turnHistory[maxTurn]);
+
+            newSimulator.currentState = this.clone({
+                ...targetTurn,
+                indicators: this.history[maxDay]
+            });
         }
         return newSimulator;
-    }*/
+    }
 
     /**
      * Allows the caller to obtain a snapshot of the current simulator state.

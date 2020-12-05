@@ -199,7 +199,7 @@ describe("The operation of the Simulator", () => {
         });
     })
 
-    /*describe("The restart process", () => {
+    describe("The restart process", () => {
 
         it("Can be restarted, back to the initial state", () => {
             // Given a simulator instance
@@ -218,16 +218,19 @@ describe("The operation of the Simulator", () => {
 
             // Then the new simulator instance is at the first turn
             const resetState = resetSimulator.state()
-            expect(resetState.history.length).toBe(0)
+            expect(resetState.history.length).toBe(1)
             expect(resetState.scenario).toEqual(simulator.state().scenario)
-            expect(resetState.currentState.days).toBe(0)
-            expect(resetState.currentState.indicators.numDead).toBe(0)
-            expect(resetState.currentState.indicators.numInfected).toBe(TestScenario.initialNumInfected)
+            expect(resetState.playerActionHistory.length).toBe(0)
+
+            const initiallySeededEntry = resetState.history[0]
+            expect(initiallySeededEntry.numDead).toBe(0)
+            expect(initiallySeededEntry.numInfected).toBe(TestScenario.initialNumInfected)
         })
 
         it("Can be restarted, back to a previous point in time", () => {
             // Given a simulator instance
             const simulator = new Simulator(TestScenario);
+            const daysPerTurn = 10;
 
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
@@ -235,15 +238,16 @@ describe("The operation of the Simulator", () => {
                     containmentPolicies: [CloseTransit],
                     capabilityImprovements: [],
                     inGameEventChoices: []
-                });
+                }, daysPerTurn);
             }
             // When it is reset
-            const resetSimulator = simulator.reset(5)
+            const targetTurn = 5;
+            const resetSimulator = simulator.reset(targetTurn)
 
             // Then the new simulator instance is at the first turn
             const resetState = resetSimulator.state()
-            expect(resetState.history.length).toBe(4)
-            expect(resetState.currentState).toEqual(simulator.state().history[4])
+            expect(resetState.playerActionHistory.length).toBe(targetTurn)
+            expect(resetState.history.length).toBe(targetTurn * daysPerTurn + 1)
         })
 
         it("Operates normally after being restored to a previous point in time", () => {
@@ -262,7 +266,7 @@ describe("The operation of the Simulator", () => {
             const resetSimulator = simulator.reset(5) // Turn 5 means there are 4 turns in the history
 
             // Then the reset simulator works normally
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 5; i++) {
                 resetSimulator.nextTurn({
                     containmentPolicies: [CloseSchools],
                     capabilityImprovements: [],
@@ -272,12 +276,12 @@ describe("The operation of the Simulator", () => {
             // And the histories difer
             const resetState = resetSimulator.state()
             const originalState = simulator.state()
-            expect(resetState.history.length).toBe(10) // 4 turns in the history + 6
+            expect(resetState.history.length).toBe(11)
             expect(resetState.history.length).toEqual(originalState.history.length)
 
-            const newPolicyHistory = resetState.history.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
-            const originalPolicyHistory = originalState.history.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
+            const newPolicyHistory = resetState.playerActionHistory.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
+            const originalPolicyHistory = originalState.playerActionHistory.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
             expect(newPolicyHistory).not.toEqual(originalPolicyHistory)
         })
-    })*/
+    })
 })

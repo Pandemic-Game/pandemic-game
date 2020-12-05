@@ -59,7 +59,21 @@ export class GameEngine {
         updateIndicators(initialState.history);
     }
 
-    private onUndoTurn() {}
+    private undoLastTurn() {
+        if (this.playerTurn > 0) {
+            this.simulator = this.simulator.reset(this.playerTurn - 1);
+            const lastState = this.simulator.state();
+            this.currentlySelectedActions = {
+                transit: false,
+                masks: false,
+                schools: false,
+                business: false
+            }
+
+            setControlsToTurn(this.playerTurn - 1, this.currentlySelectedActions);
+            updateIndicators(lastState.history);
+        }
+    }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         const simulatorState = this.simulator.state();
