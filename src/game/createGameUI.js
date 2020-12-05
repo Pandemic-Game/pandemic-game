@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-import { LinePlot } from '../lib/LinePlot';
-import { nFormatter } from '../lib/util';
 import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 import { months } from '../lib/util';
 
@@ -16,7 +14,7 @@ Shorthand functions to create DOM elements
 */
 
 const createEle = (type, parentEle, id = null) => {
-	const ele = document.createElement(type);
+    const ele = document.createElement(type);
     if (id) {
         ele.id = id;
     }

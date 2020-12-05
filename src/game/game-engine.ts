@@ -17,11 +17,11 @@ interface CurrentUISelection {
 type AvailableActions = 'transit' | 'masks' | 'schools' | 'business';
 
 export class GameEngine {
-	private scenario: Scenario;
+    private scenario: Scenario;
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
     private playerTurn: number;
-	private gameUI: Object;
+    private gameUI: Object;
 
     constructor(scenario: Scenario, daysPerTurn: number = 10) {
         this.scenario = scenario;
@@ -56,8 +56,13 @@ export class GameEngine {
             window.location.reload();
         };
 
-        this.gameUI = createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
-		console.log(this.simulator);
+        this.gameUI = createGameUI(
+            this.scenario.initialContainmentPolicies,
+            onPlayerSelectsAction,
+            onEndTurn,
+            onRestart
+        );
+        console.log(this.simulator);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
 
         updateIndicators(this.simulator.state().currentState.indicators, []);
