@@ -169,7 +169,7 @@ describe("The operation of the Simulator", () => {
         })
     })
 
-    describe("The restart process", () => {
+    /*describe("The restart process", () => {
 
         it("Can be restarted, back to the initial state", () => {
             // Given a simulator instance
@@ -249,5 +249,5 @@ describe("The operation of the Simulator", () => {
             const originalPolicyHistory = originalState.history.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
             expect(newPolicyHistory).not.toEqual(originalPolicyHistory)
         })
-    })
+    })*/
 })

@@ -29,7 +29,8 @@ export class SimulatorStateFactory {
 
             const entry = WorldStateFactory.empty()
             entry.days = i * daysPerTurn
-            history.push(entry)
+            entry.indicators.days = i * daysPerTurn
+            history.push(entry.indicators)
         }
         return {
             scenario: US,
@@ -55,6 +56,7 @@ export class SimulatorStateFactory {
 export class IndicatorFactory {
     static empty(): Indicators {
         return {
+            days: 0,
             totalPopulation: US.totalPopulation,
             numInfected: 0,
             numDead: 0,

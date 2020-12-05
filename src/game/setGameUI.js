@@ -90,7 +90,7 @@ export const updateIndicators = (indicators, history) => {
     $(`#cost-current`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
 
     if (history.length >= 30) {
-        const oldIndicators = history[history.length - 30].indicators;
+        const oldIndicators = history[history.length - 30];
         setChangeValues(
             indicators.numInfected,
             oldIndicators.numInfected,
@@ -123,8 +123,8 @@ export const updateIndicators = (indicators, history) => {
     history.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.indicators.totalCost });
-        caseHistory.push({ x: targetDate, y: entry.indicators.numInfected });
+        costHistory.push({ x: targetDate, y: entry.totalCost });
+        caseHistory.push({ x: targetDate, y: entry.numInfected });
     });
 
     const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;

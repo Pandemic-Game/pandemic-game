@@ -20,19 +20,19 @@ describe("A race to zero victory condition", () => {
     })
 
     it("Returns false if there are infected in the last 30 days - infected in the last 30 day history", () => {
-        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(10)
+        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(30)
         const lastHistoryEntry = simulatorState.history[simulatorState.history.length - 1]
-        lastHistoryEntry.indicators.numInfected = 121
+        lastHistoryEntry.numInfected = 121
         expect(RaceToZero.isMet(simulatorState)).toBe(false)
     })
 
     it("Returns true if there are no infected in the last 30 days", () => {
-        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(10)
+        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(30)
         // simulate a number of infected before the last 30 days
         const cutOff = simulatorState.currentState.days - 30
         simulatorState.history.forEach(it => {
             if (it.days < cutOff) {
-                it.indicators.numInfected = 1 + Math.ceil(Math.random() * 100)
+                it.numInfected = 1 + Math.ceil(Math.random() * 100)
             }
         })
         expect(RaceToZero.isMet(simulatorState)).toBe(true)

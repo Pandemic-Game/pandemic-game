@@ -1,6 +1,7 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
 import { InGameEvent } from './in-game-events/InGameEvents';
 import {
+    Indicators,
     NextTurnState,
     PlayerActions,
     SimulatorState,
@@ -18,7 +19,7 @@ export class Simulator {
     private scaleFactor: number;
     private currentState: WorldState;
     private turnHistory: TurnHistoryEntry[];
-    private history: WorldState[];
+    private history: Indicators[];
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
@@ -32,7 +33,7 @@ export class Simulator {
      * Restarts the scenario at a given turn (turn zero by default).
      * Returns a new simulator instance.
      */
-    reset(turn: number = 0): Simulator {
+    /*reset(turn: number = 0): Simulator {
         const newSimulator = new Simulator(this.scenario);
         if (turn > 0 && this.history.length > 1) {
             const maxTurn = Math.min(turn, this.history.length - 1);
@@ -40,7 +41,7 @@ export class Simulator {
             newSimulator.currentState = newSimulator.history.pop();
         }
         return newSimulator;
-    }
+    }*/
 
     /**
      * Allows the caller to obtain a snapshot of the current simulator state.
@@ -86,7 +87,7 @@ export class Simulator {
 
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
-        this.history.push(this.clone(this.currentState));
+        this.history.push(this.clone(this.currentState.indicators));
 
         // Reset R
         nextStateCandidate.indicators.r = this.scenario.r0;
@@ -152,9 +153,7 @@ export class Simulator {
         const lag = 20;
         const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
-        const new_deaths_lagging = long_enough
-            ? this.history[this.history.length - lag].indicators.numInfected * mortality
-            : 0;
+        const new_deaths_lagging = long_enough ? this.history[this.history.length - lag].numInfected * mortality : 0;
 
         const currentDay = last_result.days + 1;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
@@ -164,6 +163,7 @@ export class Simulator {
             days: currentDay,
             availablePlayerActions: candidateState.availablePlayerActions,
             indicators: {
+                days: currentDay,
                 numDead: new_deaths_lagging,
                 numInfected: new_num_infected,
                 totalPopulation: this.scenario.totalPopulation,
@@ -193,6 +193,7 @@ export class Simulator {
                 containmentPolicies: this.scenario.initialContainmentPolicies
             },
             indicators: {
+                days: 0,
                 numDead: 0,
                 numInfected: this.scenario.initialNumInfected,
                 totalPopulation: this.scenario.totalPopulation,

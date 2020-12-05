@@ -1,6 +1,13 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
-import { NextTurnState, PlayerActions, VictoryState, isNextTurn, WorldState } from '../simulator/SimulatorState';
+import {
+    NextTurnState,
+    PlayerActions,
+    VictoryState,
+    isNextTurn,
+    WorldState,
+    Indicators
+} from '../simulator/SimulatorState';
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
@@ -73,9 +80,9 @@ export class GameEngine {
             updateIndicators(currentState.currentState.indicators, currentState.history);
 
             // Show the win screen
-            const totalCasesReducer = (acc: number, it: WorldState) => acc + it.indicators.numInfected;
+            const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
             const totalCases = currentState.history.reduce(totalCasesReducer, 0);
-            const totalCostReducer = (acc: number, it: WorldState) => acc + it.indicators.totalCost;
+            const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
             const totalCost = currentState.history.reduce(totalCostReducer, 0);
             showWinScreen(totalCost, totalCases);
         }

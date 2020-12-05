@@ -10,7 +10,7 @@ export const RaceToZero: VictoryCondition = {
         } else {
             const cutOff = simulatorState.currentState.days - 30;
             //Figure out how many items of the history we need to fetch beyond the current state.
-            const relevantSliceOfHistory = [simulatorState.currentState];
+            const relevantSliceOfHistory = [simulatorState.currentState.indicators];
             for (let i = simulatorState.history.length; i > 0; i--) {
                 const prevEntry = simulatorState.history[i - 1];
                 if (prevEntry.days > cutOff) {
@@ -20,7 +20,7 @@ export const RaceToZero: VictoryCondition = {
                 }
             }
 
-            return !relevantSliceOfHistory.some((it) => it.indicators.numInfected > 0);
+            return !relevantSliceOfHistory.some((it) => it.numInfected > 0);
         }
     }
 };

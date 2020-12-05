@@ -7,6 +7,7 @@ import { VictoryCondition } from './victory-conditions/VictoryConditon';
  * Represents the state of the simulation on a given turn.
  */
 export interface Indicators {
+    days: number;
     totalPopulation: number;
     numInfected: number;
     numDead: number;
@@ -65,7 +66,7 @@ export interface WorldState {
 export interface SimulatorState {
     scenario: Scenario;
     currentState: WorldState;
-    history: WorldState[];
+    history: Indicators[];
 }
 
 /**
