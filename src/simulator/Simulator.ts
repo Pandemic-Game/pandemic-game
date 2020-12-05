@@ -1,6 +1,6 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
 import { InGameEvent } from './in-game-events/InGameEvents';
-import { NextTurnState, PlayerActions, SimulatorState, VictoryState, WorldState } from './SimulatorState';
+import { NextTurnState, PlayerActions, SimulatorState, TurnHistoryEntry, VictoryState, WorldState } from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
@@ -11,6 +11,7 @@ export class Simulator {
     private scaleFactor: number;
     private daysPerTurn: number;
     private currentState: WorldState;
+    private turnHistory: TurnHistoryEntry[];
     private history: WorldState[];
 
     constructor(scenario: Scenario, daysPerTurn = 10) {
@@ -19,6 +20,7 @@ export class Simulator {
         this.scaleFactor = scenario.gdpPerDay * 0.2;
         this.currentState = this.computeInitialWorldState();
         this.history = [];
+        this.turnHistory = [];
     }
 
     /**
@@ -52,9 +54,21 @@ export class Simulator {
      * Processes the next turn by computing the effects of player actions, random events and the natural
      * progression of the epidemic.
      */
-    nextTurn(actionsInTurn: PlayerActions): NextTurnState | VictoryState {
-        const nextTurn = this.prepareNextTurn(actionsInTurn);
-        const victoryCondition = this.isVictorious();
+    nextTurn(actionsInTurn: PlayerActions, daysToAdvance: number): NextTurnState | VictoryState {
+        // Store player previous player turn
+        //this.turnHistory.push(this.clone(this.currentState));
+
+        // Advance world the set number of days
+        let nextTurn;
+        let victoryCondition;
+        for (let i = 0; i < daysToAdvance; i++) {
+            nextTurn = this.prepareNextTurn(actionsInTurn);
+            victoryCondition = this.isVictorious();
+            if (victoryCondition) {
+                break;
+            }
+        }
+
         if (victoryCondition) {
             return this.computeVictory(victoryCondition);
         } else {
@@ -68,6 +82,7 @@ export class Simulator {
         // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
         this.history.push(this.clone(this.currentState));
+
 
         // Reset R
         nextStateCandidate.indicators.r = this.scenario.r0;
@@ -83,7 +98,6 @@ export class Simulator {
         // Factor in the recurring effects of existing player actions.
         for (const containmentPolicy of playerActions.containmentPolicies) {
             nextStateCandidate.indicators = containmentPolicy.recurringEffect(nextStateCandidate);
-            console.log(`${containmentPolicy.name} -> R: ${nextStateCandidate.indicators.r}`);
         }
 
         // Add the new containment policies to the history of player actions

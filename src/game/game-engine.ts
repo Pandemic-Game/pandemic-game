@@ -43,10 +43,8 @@ export class GameEngine {
             let nextTurn: NextTurnState | VictoryState;
             const month = months[this.playerTurn % months.length];
             this.playerTurn += 1;
-            for (let i = 0; i < month.numDays; i++) {
-                const playerActions = this.collectPlayerActions();
-                nextTurn = this.simulator.nextTurn(playerActions);
-            }
+            const playerActions = this.collectPlayerActions();
+            nextTurn = this.simulator.nextTurn(playerActions, month.numDays);
             this.onNextTurn(nextTurn);
         };
 
@@ -61,11 +59,12 @@ export class GameEngine {
             onEndTurn,
             onRestart
         );
-        console.log(this.simulator);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
 
         updateIndicators(this.simulator.state().currentState.indicators, []);
     }
+
+    private onUndoTurn() { }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         const currentState = this.simulator.state();

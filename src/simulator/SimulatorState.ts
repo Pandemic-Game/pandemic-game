@@ -29,6 +29,22 @@ export interface PlayerActions {
 }
 
 /**
+ * Represents the history of game turns. Since the history of the game world is computed on a per-day
+ * basis the turn history may encompass more than one entry in the game world history. 
+ */
+export interface TurnHistoryEntry {
+    turn: number,
+    worldHistoryStartIndex: number,
+    worldHistoryEndIndex: number,
+    availablePlayerActions: {
+        containmentPolicies: ContainmentPolicy[];
+        capabilityImprovements: CapabilityImprovements[];
+    };
+    nextInGameEvents: InGameEvent[];
+    playerActions: PlayerActions;
+}
+
+/**
  * Snapshot of the full world state for a given point in time. Includes the set of indicators that are tracked
  * plus any random events that happened so far, and the set of player actions in force at that point in time.
  */
