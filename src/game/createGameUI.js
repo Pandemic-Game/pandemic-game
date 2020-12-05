@@ -49,12 +49,11 @@ export const createGameUI = (
     // Create n columns in grid
 
     const header = createEle('tr', table);
-
     const empty = createEle('td', header);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('td', header);
-        date.innerHTML = months[i];
+        date.innerHTML = months[i % months.length].name;
         date.style.textAlign = 'center';
     }
 
