@@ -22,9 +22,9 @@ export class GameEngine {
     private currentlySelectedActions: CurrentUISelection;
     private playerTurn: number;
 
-    constructor(scenario: Scenario, daysPerTurn: number = 10) {
+    constructor(scenario: Scenario) {
         this.scenario = scenario;
-        this.simulator = new Simulator(scenario, daysPerTurn);
+        this.simulator = new Simulator(scenario);
         this.playerTurn = 0;
         this.currentlySelectedActions = {
             transit: false,
