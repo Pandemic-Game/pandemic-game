@@ -53,18 +53,13 @@ export class GameEngine {
             window.location.reload();
         };
 
-        createGameUI(
-            this.scenario.initialContainmentPolicies,
-            onPlayerSelectsAction,
-            onEndTurn,
-            onRestart
-        );
+        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
 
         updateIndicators(this.simulator.state().currentState.indicators, []);
     }
 
-    private onUndoTurn() { }
+    private onUndoTurn() {}
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         const currentState = this.simulator.state();

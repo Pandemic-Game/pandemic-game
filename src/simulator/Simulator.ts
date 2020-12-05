@@ -1,6 +1,13 @@
 import { CapabilityImprovements, ContainmentPolicy } from './player-actions/PlayerActions';
 import { InGameEvent } from './in-game-events/InGameEvents';
-import { NextTurnState, PlayerActions, SimulatorState, TurnHistoryEntry, VictoryState, WorldState } from './SimulatorState';
+import {
+    NextTurnState,
+    PlayerActions,
+    SimulatorState,
+    TurnHistoryEntry,
+    VictoryState,
+    WorldState
+} from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
@@ -9,14 +16,12 @@ import cloneDeep from 'lodash/cloneDeep';
 export class Simulator {
     private scenario: Scenario;
     private scaleFactor: number;
-    private daysPerTurn: number;
     private currentState: WorldState;
     private turnHistory: TurnHistoryEntry[];
     private history: WorldState[];
 
-    constructor(scenario: Scenario, daysPerTurn = 10) {
+    constructor(scenario: Scenario) {
         this.scenario = scenario;
-        this.daysPerTurn = daysPerTurn;
         this.scaleFactor = scenario.gdpPerDay * 0.2;
         this.currentState = this.computeInitialWorldState();
         this.history = [];
@@ -28,7 +33,7 @@ export class Simulator {
      * Returns a new simulator instance.
      */
     reset(turn: number = 0): Simulator {
-        const newSimulator = new Simulator(this.scenario, this.daysPerTurn);
+        const newSimulator = new Simulator(this.scenario);
         if (turn > 0 && this.history.length > 1) {
             const maxTurn = Math.min(turn, this.history.length - 1);
             newSimulator.history = this.history.slice(0, maxTurn);
@@ -54,7 +59,7 @@ export class Simulator {
      * Processes the next turn by computing the effects of player actions, random events and the natural
      * progression of the epidemic.
      */
-    nextTurn(actionsInTurn: PlayerActions, daysToAdvance: number): NextTurnState | VictoryState {
+    nextTurn(actionsInTurn: PlayerActions, daysToAdvance: number = 1): NextTurnState | VictoryState {
         // Store player previous player turn
         //this.turnHistory.push(this.clone(this.currentState));
 
@@ -83,7 +88,6 @@ export class Simulator {
         let nextStateCandidate = this.clone(this.currentState);
         this.history.push(this.clone(this.currentState));
 
-
         // Reset R
         nextStateCandidate.indicators.r = this.scenario.r0;
 
@@ -107,7 +111,7 @@ export class Simulator {
         nextStateCandidate.nextInGameEvents = [];
 
         // Save the candidate state as the new current state
-        this.currentState = this.computeNaturalPandemicEvolution(nextStateCandidate);
+        this.currentState = this.computeNextPandemicDay(nextStateCandidate);
 
         return this.clone({
             newInGameEvents: nextStateCandidate.nextInGameEvents,
@@ -128,8 +132,8 @@ export class Simulator {
         };
     }
 
-    private computeNaturalPandemicEvolution(candidateState: WorldState): WorldState {
-        let action_r = candidateState.indicators.r ** this.daysPerTurn; // compounding effect of a repeated action
+    private computeNextPandemicDay(candidateState: WorldState): WorldState {
+        let action_r = candidateState.indicators.r; // compounding effect of a repeated action
         const last_result = this.currentState;
         const prev_cases = last_result.indicators.numInfected;
 
@@ -145,14 +149,14 @@ export class Simulator {
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
 
-        const lag = Math.floor(20 / this.daysPerTurn); // how many steps, of `days` length each, need to have passed?
+        const lag = 20;
         const long_enough = this.history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough
             ? this.history[this.history.length - lag].indicators.numInfected * mortality
             : 0;
 
-        const currentDay = last_result.days + this.daysPerTurn;
+        const currentDay = last_result.days + 1;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(action_r);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
@@ -229,7 +233,7 @@ export class Simulator {
         }
 
         debugger;
-        return ((this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10) * this.daysPerTurn;
+        return (this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10;
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {

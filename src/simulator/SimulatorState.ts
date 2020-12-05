@@ -30,12 +30,12 @@ export interface PlayerActions {
 
 /**
  * Represents the history of game turns. Since the history of the game world is computed on a per-day
- * basis the turn history may encompass more than one entry in the game world history. 
+ * basis the turn history may encompass more than one entry in the game world history.
  */
 export interface TurnHistoryEntry {
-    turn: number,
-    worldHistoryStartIndex: number,
-    worldHistoryEndIndex: number,
+    turn: number;
+    worldHistoryStartIndex: number;
+    worldHistoryEndIndex: number;
     availablePlayerActions: {
         containmentPolicies: ContainmentPolicy[];
         capabilityImprovements: CapabilityImprovements[];

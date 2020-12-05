@@ -53,11 +53,11 @@ describe("The operation of the Simulator", () => {
         it("From one turn to the next, if nothing is done the number of infected, and total cost grows", () => {
             // Given a simulator in the initial state:
             const daysPerturn = 10;
-            const simulator = new Simulator(TestScenario, daysPerturn);
+            const simulator = new Simulator(TestScenario);
             const initialState = simulator.state();
 
             // When the next turn is invoked without any player actions
-            const nextTurn = simulator.nextTurn(emptyPlayerAction);
+            const nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
 
             // Then the pandemic runs its course
             if (isNextTurn(nextTurn)) {
@@ -72,11 +72,10 @@ describe("The operation of the Simulator", () => {
 
         it("Starts counting dead after the first few turns", () => {
             // Given a simulator instance
-            const daysPerturn = 10;
-            const simulator = new Simulator(TestScenario, daysPerturn);
+            const simulator = new Simulator(TestScenario);
 
             // When some turns have elapsed
-            const minTurns = (20 / daysPerturn) + 3 // Give it a few more turns because of randomness
+            const minTurns = 25// Give it a few more turns because of randomness
             let nextTurn: NextTurnState | VictoryState
             for (let i = 0; i < minTurns; i++) {
                 nextTurn = simulator.nextTurn(emptyPlayerAction);
@@ -97,14 +96,14 @@ describe("The operation of the Simulator", () => {
         it("With a time based victory condition the game ends after that game period has elapsed", () => {
             // Given a simulator instance
             const daysPerturn = 10;
-            const simulator = new Simulator(TestScenario, daysPerturn);
+            const simulator = new Simulator(TestScenario);
 
             // When the expected number of turns passes
             let days = 0;
             let totalDays = 365;
             let nextTurn: NextTurnState | VictoryState;
             while (days < totalDays) {
-                nextTurn = simulator.nextTurn(emptyPlayerAction);
+                nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
                 if (isNextTurn(nextTurn)) {
                     days = nextTurn.currentState.days
                 } else {
@@ -121,7 +120,7 @@ describe("The operation of the Simulator", () => {
 
         it("Calls the immediate effect of a player action in the first turn it appears", () => {
             // Given a simulator
-            const simulator = new Simulator(TestScenario, 10);
+            const simulator = new Simulator(TestScenario);
 
             // When a new player action is added in a turn
             const actionUnderTest = { ...CloseTransit }
@@ -143,7 +142,7 @@ describe("The operation of the Simulator", () => {
 
         it("Calls the recurring effect of a player action in the following turns", () => {
             // Given a simulator
-            const simulator = new Simulator(TestScenario, 10);
+            const simulator = new Simulator(TestScenario);
 
             // When a new player action is added in a turn
             simulator.nextTurn({
@@ -174,7 +173,7 @@ describe("The operation of the Simulator", () => {
 
         it("Can be restarted, back to the initial state", () => {
             // Given a simulator instance
-            const simulator = new Simulator(TestScenario, 10);
+            const simulator = new Simulator(TestScenario);
 
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
@@ -198,7 +197,7 @@ describe("The operation of the Simulator", () => {
 
         it("Can be restarted, back to a previous point in time", () => {
             // Given a simulator instance
-            const simulator = new Simulator(TestScenario, 10);
+            const simulator = new Simulator(TestScenario);
 
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
@@ -219,7 +218,7 @@ describe("The operation of the Simulator", () => {
 
         it("Operates normally after being restored to a previous point in time", () => {
             // Given a simulator instance
-            const simulator = new Simulator(TestScenario, 10);
+            const simulator = new Simulator(TestScenario);
 
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
