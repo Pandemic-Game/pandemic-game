@@ -21,7 +21,6 @@ export class GameEngine {
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
     private playerTurn: number;
-    private gameUI: Object;
 
     constructor(scenario: Scenario, daysPerTurn: number = 10) {
         this.scenario = scenario;
@@ -56,7 +55,7 @@ export class GameEngine {
             window.location.reload();
         };
 
-        this.gameUI = createGameUI(
+        createGameUI(
             this.scenario.initialContainmentPolicies,
             onPlayerSelectsAction,
             onEndTurn,
