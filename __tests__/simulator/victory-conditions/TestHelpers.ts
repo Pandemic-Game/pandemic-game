@@ -6,7 +6,9 @@ export class SimulatorStateFactory {
         return {
             scenario: US,
             currentState: {
-                days: 0,
+                turn: 0,
+                worldHistoryEndIndex: 0,
+                worldHistoryStartIndex: 0,
                 indicators: IndicatorFactory.empty(),
                 availablePlayerActions: {
                     capabilityImprovements: [],
@@ -26,16 +28,16 @@ export class SimulatorStateFactory {
     static withHistory(numHistoryEntries: number, daysPerTurn = 10): SimulatorState {
         const history = []
         for (let i = 0; i < numHistoryEntries; i++) {
-
-            const entry = WorldStateFactory.empty()
-            entry.days = i * daysPerTurn
-            entry.indicators.days = i * daysPerTurn
-            history.push(entry.indicators)
+            const entry = IndicatorFactory.empty()
+            entry.days = i
+            history.push(entry)
         }
         return {
             scenario: US,
             currentState: {
-                days: numHistoryEntries * daysPerTurn,
+                turn: (numHistoryEntries > daysPerTurn) ? Math.ceil(numHistoryEntries / daysPerTurn) : 1,
+                worldHistoryEndIndex: 0,
+                worldHistoryStartIndex: 0,
                 indicators: IndicatorFactory.empty(),
                 availablePlayerActions: {
                     capabilityImprovements: [],
@@ -74,7 +76,9 @@ export class IndicatorFactory {
 export class WorldStateFactory {
     static empty(): WorldState {
         return {
-            days: 0,
+            turn: 0,
+            worldHistoryEndIndex: 0,
+            worldHistoryStartIndex: 0,
             indicators: IndicatorFactory.empty(),
             availablePlayerActions: {
                 capabilityImprovements: [],

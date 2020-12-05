@@ -42,9 +42,9 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario);
             const s0 = simulator.state();
 
-            expect(s0.history.length).toBe(0);
+            expect(s0.history.length).toBe(1); // Starting point of the simulation
             expect(s0.scenario).toEqual(TestScenario);
-            expect(s0.currentState.days).toBe(0)
+            expect(s0.playerActionHistory.length).toBe(0)
         })
     })
 
@@ -55,6 +55,7 @@ describe("The operation of the Simulator", () => {
             const daysPerturn = 10;
             const simulator = new Simulator(TestScenario);
             const initialState = simulator.state();
+            const firstIndicators = initialState.history[initialState.history.length - 1]
 
             // When the next turn is invoked without any player actions
             const nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
@@ -62,9 +63,9 @@ describe("The operation of the Simulator", () => {
             // Then the pandemic runs its course
             if (isNextTurn(nextTurn)) {
                 expect(nextTurn.newInGameEvents.length).toBe(0)
-                expect(nextTurn.currentState.days).toBe(daysPerturn)
-                expect(nextTurn.currentState.indicators.totalCost).toBeGreaterThan(initialState.currentState.indicators.totalCost);
-                expect(nextTurn.currentState.indicators.numInfected).toBeGreaterThan(initialState.currentState.indicators.numInfected);
+                expect(nextTurn.latestIndicators.days).toBe(daysPerturn)
+                expect(nextTurn.latestIndicators.totalCost).toBeGreaterThan(firstIndicators.totalCost);
+                expect(nextTurn.latestIndicators.numInfected).toBeGreaterThan(firstIndicators.numInfected);
             } else {
                 fail("Unexpected next turn response")
             }
@@ -83,13 +84,13 @@ describe("The operation of the Simulator", () => {
 
             // Then we expect some deaths
             if (isNextTurn(nextTurn)) {
-                expect(nextTurn.currentState.indicators.numDead).toBeGreaterThan(0)
+                expect(nextTurn.latestIndicators.numDead).toBeGreaterThan(0)
             } else {
                 fail("The game should not end at 5 turns in.")
             }
 
             // And the history has the expected number of turns
-            expect(simulator.state().history.length).toBe(minTurns)
+            expect(simulator.state().history.length).toBe(minTurns + 1) // acount for the initial history entry
 
         })
 
@@ -102,10 +103,10 @@ describe("The operation of the Simulator", () => {
             let days = 0;
             let totalDays = 365;
             let nextTurn: NextTurnState | VictoryState;
-            while (days < totalDays) {
+            while (days <= totalDays) {
                 nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
                 if (isNextTurn(nextTurn)) {
-                    days = nextTurn.currentState.days
+                    days = nextTurn.latestIndicators.days
                 } else {
                     break
                 }
@@ -167,6 +168,35 @@ describe("The operation of the Simulator", () => {
             spyRecurringEffect.mockRestore()
             spyImmediateEffect.mockRestore()
         })
+
+        it("Correctly keeps track of the indicator history items affected by each player turn", () => {
+            // Given a simulator instance
+            const daysPerturn = 10;
+            const numTurns = 10;
+            const initialySeededHistoryEntries = 1;
+            const simulator = new Simulator(TestScenario);
+
+            // When a few turns spanning more that one simulator days pass
+            for (let i = 0; i < numTurns; i++) {
+                simulator.nextTurn(emptyPlayerAction, daysPerturn);
+            }
+
+            // Then the history has the correct number of results
+            const currentState = simulator.state();
+            expect(currentState.history.length).toEqual(daysPerturn * numTurns + initialySeededHistoryEntries)
+
+            // And the turn history has no gaps and spans the correct number of items
+            expect(currentState.playerActionHistory.length).toEqual(10);
+            let startIndex = initialySeededHistoryEntries;
+            let endIndex = daysPerturn;
+            for (let actionHistory of currentState.playerActionHistory) {
+                expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
+                expect(actionHistory.worldHistoryEndIndex).toEqual(endIndex);
+                startIndex = actionHistory.worldHistoryEndIndex
+                endIndex = actionHistory.worldHistoryEndIndex + daysPerturn
+            }
+
+        });
     })
 
     /*describe("The restart process", () => {

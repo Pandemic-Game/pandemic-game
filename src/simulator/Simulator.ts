@@ -6,13 +6,14 @@ import {
     PlayerActions,
     SimulatorState,
     TurnHistoryEntry,
-    VictoryState,
-    WorldState
+    VictoryState
 } from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
+
+type WorldState = { indicators: Indicators } & TurnHistoryEntry;
 
 export class Simulator {
     private scenario: Scenario;
@@ -25,7 +26,7 @@ export class Simulator {
         this.scenario = scenario;
         this.scaleFactor = scenario.gdpPerDay * 0.2;
         this.currentState = this.computeInitialWorldState();
-        this.history = [];
+        this.history = [this.currentState.indicators];
         this.turnHistory = [];
     }
 
@@ -49,7 +50,7 @@ export class Simulator {
     state(): SimulatorState {
         const simulatorStateSnapshot: SimulatorState = {
             scenario: this.scenario,
-            currentState: this.currentState,
+            playerActionHistory: this.turnHistory,
             history: this.history
         };
         // Return an immutable copy of the state.
@@ -60,36 +61,11 @@ export class Simulator {
      * Processes the next turn by computing the effects of player actions, random events and the natural
      * progression of the epidemic.
      */
-    nextTurn(actionsInTurn: PlayerActions, daysToAdvance: number = 1): NextTurnState | VictoryState {
+    nextTurn(playerActions: PlayerActions, daysToAdvance: number = 1): NextTurnState | VictoryState {
         // Store player previous player turn
-        //this.turnHistory.push(this.clone(this.currentState));
-
-        // Advance world the set number of days
-        let nextTurn;
-        let victoryCondition;
-        for (let i = 0; i < daysToAdvance; i++) {
-            nextTurn = this.prepareNextTurn(actionsInTurn);
-            victoryCondition = this.isVictorious();
-            if (victoryCondition) {
-                break;
-            }
-        }
-
-        if (victoryCondition) {
-            return this.computeVictory(victoryCondition);
-        } else {
-            return nextTurn;
-        }
-    }
-
-    private prepareNextTurn(playerActions: PlayerActions): NextTurnState {
-        // TODO: add guards to guarantee that player actions and capability improvements match the allowed set.
-
-        // Create a new copy of the current state to avoid side effects that can pollute the history
         let nextStateCandidate = this.clone(this.currentState);
-        this.history.push(this.clone(this.currentState.indicators));
-
-        // Reset R
+        // Reset the baseline R for the turn
+        nextStateCandidate.turn += 1;
         nextStateCandidate.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
@@ -111,41 +87,66 @@ export class Simulator {
         // Add any new random events that will trigger on the next turn
         nextStateCandidate.nextInGameEvents = [];
 
-        // Save the candidate state as the new current state
-        this.currentState = this.computeNextPandemicDay(nextStateCandidate);
+        // Advance world timeline the desired number of days
+        let nextIndicators;
+        let prevIndicators = this.history[this.history.length - 1];
+        for (let i = 0; i < daysToAdvance; i++) {
+            nextIndicators = this.computeNextPandemicDay(nextStateCandidate, prevIndicators);
+            prevIndicators = nextIndicators;
+            // Add the last indicators to the world timeline.
+            this.history.push(this.clone(nextIndicators));
+        }
 
-        return this.clone({
-            newInGameEvents: nextStateCandidate.nextInGameEvents,
-            currentState: this.currentState
-        });
+        // Update the references to the history slice affected by this entry
+        nextStateCandidate.worldHistoryStartIndex = this.currentState.worldHistoryEndIndex;
+        nextStateCandidate.worldHistoryEndIndex = this.history.length - 1;
+        nextStateCandidate.indicators = nextIndicators;
+
+        this.turnHistory.push(this.clone(nextStateCandidate));
+        this.currentState = nextStateCandidate;
+
+        // Check if victory conditions are met.
+        const victoryCondition = this.isVictorious();
+        if (victoryCondition) {
+            return this.computeVictory(victoryCondition);
+        } else {
+            return this.clone({
+                newInGameEvents: nextStateCandidate.nextInGameEvents,
+                latestIndicators: nextIndicators
+            });
+        }
     }
 
     private isVictorious(): VictoryCondition | undefined {
-        const simulatorState = this.state();
-        return this.scenario.victoryConditions.find((it) => it.isMet(simulatorState));
+        return this.scenario.victoryConditions.find((it) =>
+            it.isMet({
+                scenario: this.scenario,
+                playerActionHistory: this.turnHistory,
+                history: this.history
+            })
+        );
     }
 
     private computeVictory(victoryCondition: VictoryCondition): VictoryState {
         return {
             simulatorState: this.state(),
-            score: this.currentState.indicators.totalCost,
+            score: this.history[this.history.length - 1].totalCost,
             victoryCondition: victoryCondition
         };
     }
 
-    private computeNextPandemicDay(candidateState: WorldState): WorldState {
-        let action_r = candidateState.indicators.r; // compounding effect of a repeated action
-        const last_result = this.currentState;
-        const prev_cases = last_result.indicators.numInfected;
+    private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators): Indicators {
+        let actionR = candidateState.indicators.r;
+        const prevCases = lastResult.numInfected;
 
         // Don't allow cases to exceed hospital capacity
-        const hospitalCapacity = this.currentState.indicators.hospitalCapacity;
-        const lockdown_ratio = hospitalCapacity / prev_cases;
-        const capped_action_r = prev_cases * action_r >= hospitalCapacity ? lockdown_ratio : action_r;
-        action_r = capped_action_r;
+        const hospitalCapacity = lastResult.hospitalCapacity;
+        const lockdownRatio = hospitalCapacity / prevCases;
+        const cappedActionR = prevCases * actionR >= hospitalCapacity ? lockdownRatio : actionR;
+        actionR = cappedActionR;
 
         // Compute next state
-        let new_num_infected = this.generateNewCasesFromDistribution(prev_cases, action_r);
+        let new_num_infected = this.generateNewCasesFromDistribution(prevCases, actionR);
         new_num_infected = Math.max(Math.floor(new_num_infected), 0);
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
         // Deaths from infections started 20 days ago
@@ -155,28 +156,22 @@ export class Simulator {
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough ? this.history[this.history.length - lag].numInfected * mortality : 0;
 
-        const currentDay = last_result.days + 1;
+        const currentDay = lastResult.days + 1;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
-        const economicCosts = this.computeEconomicCosts(action_r);
+        const economicCosts = this.computeEconomicCosts(actionR);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
         return {
             days: currentDay,
-            availablePlayerActions: candidateState.availablePlayerActions,
-            indicators: {
-                days: currentDay,
-                numDead: new_deaths_lagging,
-                numInfected: new_num_infected,
-                totalPopulation: this.scenario.totalPopulation,
-                hospitalCapacity: this.scenario.hospitalCapacity,
-                r: candidateState.indicators.r,
-                importedCasesPerDay: this.scenario.importedCasesPerDay,
-                deathCosts: deathCosts,
-                economicCosts: economicCosts,
-                medicalCosts: medicalCosts,
-                totalCost: deathCosts + economicCosts + medicalCosts
-            },
-            playerActions: candidateState.playerActions,
-            nextInGameEvents: []
+            numDead: new_deaths_lagging,
+            numInfected: new_num_infected,
+            totalPopulation: this.scenario.totalPopulation,
+            hospitalCapacity: this.scenario.hospitalCapacity,
+            r: candidateState.indicators.r,
+            importedCasesPerDay: this.scenario.importedCasesPerDay,
+            deathCosts: deathCosts,
+            economicCosts: economicCosts,
+            medicalCosts: medicalCosts,
+            totalCost: deathCosts + economicCosts + medicalCosts
         };
     }
 
@@ -187,7 +182,9 @@ export class Simulator {
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
 
         return {
-            days: 0,
+            turn: 0,
+            worldHistoryStartIndex: 0,
+            worldHistoryEndIndex: 1,
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
                 containmentPolicies: this.scenario.initialContainmentPolicies
@@ -245,11 +242,11 @@ export class Simulator {
         return new_num_infected;
     }
 
-    private generateNewCases(num_infected: number, r: number) {
-        const fraction_susceptible = 1; // immune population?
-        const expected_new_cases =
-            num_infected * r * fraction_susceptible + this.currentState.indicators.importedCasesPerDay;
-        return expected_new_cases;
+    private generateNewCases(numInfected: number, r: number) {
+        const fractionSusceptible = 1; // immune population?
+        const expectedNewCases =
+            numInfected * r * fractionSusceptible + this.history[this.history.length - 1].importedCasesPerDay;
+        return expectedNewCases;
     }
 
     private findNewContainmentPolicies(containmentPoliciesOfTurn: ContainmentPolicy[]): ContainmentPolicy[] {

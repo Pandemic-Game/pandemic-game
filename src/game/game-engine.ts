@@ -1,13 +1,6 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { Simulator } from '../simulator/Simulator';
-import {
-    NextTurnState,
-    PlayerActions,
-    VictoryState,
-    isNextTurn,
-    WorldState,
-    Indicators
-} from '../simulator/SimulatorState';
+import { NextTurnState, PlayerActions, VictoryState, isNextTurn, Indicators } from '../simulator/SimulatorState';
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
@@ -60,30 +53,29 @@ export class GameEngine {
             window.location.reload();
         };
 
+        const initialState = this.simulator.state();
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
-
-        updateIndicators(this.simulator.state().currentState.indicators, []);
+        updateIndicators(initialState.history);
     }
 
     private onUndoTurn() {}
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
-        const currentState = this.simulator.state();
+        const simulatorState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
-            console.log(`State for day ${nextTurn.currentState.days}`);
             // Just another turn. Update the controls and indicators
             setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
-            updateIndicators(nextTurn.currentState.indicators, currentState.history);
+            updateIndicators(simulatorState.history);
         } else {
             // Do the final graph update
-            updateIndicators(currentState.currentState.indicators, currentState.history);
+            updateIndicators(simulatorState.history);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
-            const totalCases = currentState.history.reduce(totalCasesReducer, 0);
+            const totalCases = simulatorState.history.reduce(totalCasesReducer, 0);
             const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
-            const totalCost = currentState.history.reduce(totalCostReducer, 0);
+            const totalCost = simulatorState.history.reduce(totalCostReducer, 0);
             showWinScreen(totalCost, totalCases);
         }
     }

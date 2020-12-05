@@ -84,61 +84,66 @@ const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
 
 let casesChart;
 
-export const updateIndicators = (indicators, history) => {
-    $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
-    $(`#deaths-current`).html(nFormatter(indicators.numDead, 0));
-    $(`#cost-current`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
-
-    if (history.length >= 30) {
-        const oldIndicators = history[history.length - 30];
-        setChangeValues(
-            indicators.numInfected,
-            oldIndicators.numInfected,
-            $(`#cases-differeces`),
-            $(`#cases-growth`),
-            $(`#cases-current`)
-        );
-        setChangeValues(
-            indicators.numDead,
-            oldIndicators.numDead,
-            $(`#deaths-differeces`),
-            $(`#deaths-growth`),
-            $(`#deaths-current`)
-        );
-        setChangeValues(
-            indicators.totalCost,
-            oldIndicators.totalCost,
-            $(`#cost-differeces`),
-            $(`#cost-growth`),
-            $(`#cost-current`)
-        );
-    }
-
-    const monthIdx = Math.floor(history.length / 30) % months.length;
-    $('#date-current').html(`${months[monthIdx].name} 1`);
-
-    const fullYear = 365;
-    const costHistory = [];
-    const caseHistory = [];
-    history.forEach((entry) => {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.totalCost });
-        caseHistory.push({ x: targetDate, y: entry.numInfected });
-    });
-
-    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
-    // eslint-disable-next-line no-plusplus
-    for (let futureDay = lastDay; futureDay <= fullYear; futureDay++) {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + futureDay);
-        costHistory.push({ x: targetDate, y: null });
-    }
-
-    if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+export const updateIndicators = (history) => {
+    if (history.length === 0) {
+        console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
-        updateCasesChart(casesChart, caseHistory, costHistory);
+        const lastHistoryEntry = history[history.length - 1];
+        $(`#cases-current`).html(nFormatter(lastHistoryEntry.numInfected, 1));
+        $(`#deaths-current`).html(nFormatter(lastHistoryEntry.numDead, 0));
+        $(`#cost-current`).html(`$ ${nFormatter(lastHistoryEntry.totalCost, 1)}`);
+
+        if (history.length >= 30) {
+            const oldIndicators = history[history.length - 30];
+            setChangeValues(
+                lastHistoryEntry.numInfected,
+                oldIndicators.numInfected,
+                $(`#cases-differeces`),
+                $(`#cases-growth`),
+                $(`#cases-current`)
+            );
+            setChangeValues(
+                lastHistoryEntry.numDead,
+                oldIndicators.numDead,
+                $(`#deaths-differeces`),
+                $(`#deaths-growth`),
+                $(`#deaths-current`)
+            );
+            setChangeValues(
+                lastHistoryEntry.totalCost,
+                oldIndicators.totalCost,
+                $(`#cost-differeces`),
+                $(`#cost-growth`),
+                $(`#cost-current`)
+            );
+        }
+
+        const monthIdx = Math.floor(history.length / 30) % months.length;
+        $('#date-current').html(`${months[monthIdx].name} 1`);
+
+        const fullYear = 365;
+        const costHistory = [];
+        const caseHistory = [];
+        history.forEach((entry) => {
+            const targetDate = new Date(Date.UTC(2020, 0, 1));
+            targetDate.setDate(targetDate.getDate() + entry.days);
+            costHistory.push({ x: targetDate, y: entry.totalCost });
+            caseHistory.push({ x: targetDate, y: entry.numInfected });
+        });
+
+        const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+        // eslint-disable-next-line no-plusplus
+        for (let futureDay = lastDay; futureDay <= fullYear; futureDay++) {
+            const targetDate = new Date(Date.UTC(2020, 0, 1));
+            targetDate.setDate(targetDate.getDate() + futureDay);
+            costHistory.push({ x: targetDate, y: null });
+        }
+
+        if (!casesChart) {
+            casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+        } else {
+            updateCasesChart(casesChart, caseHistory, costHistory);
+        }
     }
 };
 

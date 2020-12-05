@@ -46,26 +46,11 @@ export interface TurnHistoryEntry {
 }
 
 /**
- * Snapshot of the full world state for a given point in time. Includes the set of indicators that are tracked
- * plus any random events that happened so far, and the set of player actions in force at that point in time.
- */
-export interface WorldState {
-    days: number;
-    indicators: Indicators;
-    availablePlayerActions: {
-        containmentPolicies: ContainmentPolicy[];
-        capabilityImprovements: CapabilityImprovements[];
-    };
-    nextInGameEvents: InGameEvent[];
-    playerActions: PlayerActions;
-}
-
-/**
  * Full simulator state
  */
 export interface SimulatorState {
     scenario: Scenario;
-    currentState: WorldState;
+    playerActionHistory: TurnHistoryEntry[];
     history: Indicators[];
 }
 
@@ -73,7 +58,7 @@ export interface SimulatorState {
  * Models the updated state of the world at the start of a new turn
  */
 export interface NextTurnState {
-    currentState: WorldState;
+    latestIndicators: Indicators;
     newInGameEvents: InGameEvent[];
 }
 
@@ -87,5 +72,5 @@ export interface VictoryState {
 }
 
 export const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
-    return (nextTurn as any)?.currentState !== undefined;
+    return (nextTurn as any)?.latestIndicators !== undefined;
 };
