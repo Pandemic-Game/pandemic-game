@@ -64,7 +64,7 @@ export const createGameUI = (
         target.toggleClass('btn-success');
 
         // Change label text on click
-        let label = target.html();
+        const label = target.html();
         if (label === target.attr('data-activeLabel')) {
             target.html(target.attr('data-inactiveLabel'));
         } else {
@@ -81,7 +81,6 @@ export const createGameUI = (
         const title = createEle('TD', tr);
         title.innerHTML = action.name;
         title.className = 'noselect';
-        title.style.width = '190px';
         title.style.textAlign = 'right';
         // eslint-disable-next-line no-plusplus
         for (let i = 0; i < numberOfColumns; i++) {
