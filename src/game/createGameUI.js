@@ -52,7 +52,8 @@ export const createGameUI = (
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('td', header);
-        date.innerHTML = months[i % months.length].name;
+        date.innerHTML = `${i+1}/20`; // Numbered months not named
+        date.className = 'noselect';
         date.style.textAlign = 'center';
     }
 
@@ -61,6 +62,15 @@ export const createGameUI = (
         const target = $(e.target);
         target.toggleClass('btn-light');
         target.toggleClass('btn-success');
+
+        // Change label text on click
+        let label = target.html();
+        if(label === target.attr('data-activeLabel')){
+            target.html(target.attr('data-inactiveLabel'))
+        } else {
+            target.html(target.attr('data-activeLabel'))
+        }
+        
 
         // On player selects action pass action to event
         onPlayerSelectsAction(target.attr('data-action'));
@@ -71,6 +81,7 @@ export const createGameUI = (
         const tr = createEle('TR', table);
         const title = createEle('TD', tr);
         title.innerHTML = action.name;
+        title.className = 'noselect';
         title.style.width = '190px';
         title.style.textAlign = 'right';
         // eslint-disable-next-line no-plusplus
@@ -82,8 +93,10 @@ export const createGameUI = (
             btn.style.height = 'auto';
             btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
+            btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
+            btn.setAttribute('data-activeLabel', action.activeLabel);
             // btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon}"></i>`;
+            btn.innerHTML = `<i class="fa ${action.icon} noselect"></i>`;
             btn.onclick = btnClickHandler;
         }
     }
