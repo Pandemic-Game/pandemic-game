@@ -55,7 +55,8 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, gameUI) => {
     });
 };
 
-const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
+const setChangeValues = (newValue, oldValue, totalValue, diffElm, grothElm, currentElm, totalElm) => {
+	totalElm.html(totalValue);
 	if(newValue > oldValue){
 		diffElm
 			.removeClass("negative")
@@ -100,11 +101,20 @@ export const updateIndicators = (indicators, history) => {
     $(`#cost-current`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
     
     if(history.length >= 30){
-	let oldIndicators = history[history.length-30].indicators;
-	setChangeValues(indicators.numInfected,oldIndicators.numInfected,$(`#cases-differeces`),$(`#cases-growth`),$(`#cases-current`));
-	setChangeValues(indicators.numDead,oldIndicators.numDead,$(`#deaths-differeces`),$(`#deaths-growth`),$(`#deaths-current`));
-	setChangeValues(indicators.totalCost,oldIndicators.totalCost,$(`#cost-differeces`),$(`#cost-growth`),$(`#cost-current`));
-    }
+		let oldIndicators = history[history.length-30].indicators;
+		
+		let totalcases = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.numInfected},0)+indicators.numInfected;
+		let totaldeaths = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.numDead},0)+indicators.numDead;
+		let totalcosts = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.totalCost},0)+indicators.totalCost;
+
+		setChangeValues(indicators.numInfected,oldIndicators.numInfected,nFormatter(totalcases),$(`#cases-differeces`),$(`#cases-growth`),$(`#cases-current`),$(`#cases-total`));
+		setChangeValues(indicators.numDead,oldIndicators.numDead,nFormatter(totaldeaths),$(`#deaths-differeces`),$(`#deaths-growth`),$(`#deaths-current`),$(`#deaths-total`));
+		setChangeValues(indicators.totalCost,oldIndicators.totalCost,"$ "+nFormatter(totalcosts),$(`#cost-differeces`),$(`#cost-growth`),$(`#cost-current`),$(`#cost-total`));
+    } else{
+		$(`#cases-total`).html(nFormatter(indicators.numInfected, 1));
+		$(`#deaths-total`).html(nFormatter(indicators.numDead, 0));
+		$(`#cost-total`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
+	}
 	
     const monthIdx = Math.floor(history.length / 30) % months.length;
     $('#date-current').html(`${months[monthIdx].name} 1`);
