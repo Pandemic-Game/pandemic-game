@@ -5,7 +5,7 @@ import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
-import { Simulator2, VictoryState2 } from '@src/simulator/Simulator2';
+import { Simulator2, VictoryState2 } from '../simulator/Simulator2';
 
 export const isNextTurn = (nextTurn: NextTurnState | VictoryState2): nextTurn is NextTurnState => {
     return (nextTurn as any)?.latestIndicators !== undefined;

@@ -7,7 +7,6 @@ import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
 
 interface TurnHistoryEntry2 {
-    turn: number;
     availablePlayerActions: {
         containmentPolicies: ContainmentPolicy[];
         capabilityImprovements: CapabilityImprovements[];
@@ -47,9 +46,10 @@ export class Simulator2 {
 
     reset(turn: number = 0): Simulator2 {
         const newSimulator = new Simulator2(this.scenario);
-        if (turn > 0 && this.timeline.length >= turn) {
-            const targetTurn = this.timeline[turn - 1];
-            newSimulator.timeline = this.clone(this.timeline.slice(0, turn));
+        const baseline = turn - 1;
+        if (baseline > 0 && this.timeline.length >= baseline) {
+            const targetTurn = this.timeline[baseline - 1];
+            newSimulator.timeline = this.clone(this.timeline.slice(0, baseline));
 
             const history = newSimulator.history();
             newSimulator.currentTurn = this.clone({
@@ -65,7 +65,7 @@ export class Simulator2 {
     }
 
     lastTurn(): number {
-        return this.currentTurn.turn;
+        return this.timeline.length;
     }
 
     /**
@@ -94,7 +94,6 @@ export class Simulator2 {
         // Store player previous player turn
         let nextTurnCandidate = this.clone(this.currentTurn);
         // Reset the baseline R for the turn
-        nextTurnCandidate.turn += 1;
         nextTurnCandidate.lastIndicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
@@ -216,7 +215,6 @@ export class Simulator2 {
         const economicCosts = this.computeEconomicCosts(this.scenario.r0);
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
         return {
-            turn: 0,
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
                 containmentPolicies: this.scenario.initialContainmentPolicies
