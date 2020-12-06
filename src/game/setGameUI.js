@@ -26,9 +26,8 @@ export const resetControls = () => {
         .removeClass('btn-success');
 };
 
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies, gameUI) => {
-    console.log("setControlsToTurn");
-	// If game initialised or reset re-init controls
+export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents) => {
+    // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
         resetControls();
@@ -53,71 +52,87 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, gameUI) => {
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
+
+    // Remove styles from future choices
+    $(`[id^="turn${playerTurn + 1}-"]`)
+        .prop('disabled', true) // Disable
+        .removeClass('btn-light')
+        .removeClass('btn-success')
+        .animate({ opacity: 0.1 }, 'slow'); // Hide
+
+    $('#events-holder').html('');
+    inGameEvents.forEach((evt) => {
+        $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
+    });
 };
 
-const setChangeValues = (newValue, oldValue, totalValue, diffElm, grothElm, currentElm, totalElm) => {
-	totalElm.html(totalValue);
-	if(newValue > oldValue){
-		diffElm
-			.removeClass("negative")
-			.addClass("positive")
-			.html("+"+nFormatter(newValue-oldValue));
-		grothElm
-			.removeClass("negative")
-			.addClass("positive")
-			.html(oldValue == 0 ? "" : "+"+(Math.floor(1000*(newValue-oldValue)/oldValue/10))+"%");
-		currentElm
-			.removeClass("negative")
-			.addClass("positive");
-	} else if(newValue < oldValue){
-		diffElm
-			.removeClass("positive")
-			.addClass("negative")
-			.html(nFormatter(newValue-oldValue));
-		grothElm
-			.removeClass("positive")
-			.addClass("negative")
-			.html((Math.floor(1000*(newValue-oldValue)/oldValue/10))+"%");
-		currentElm
-			.removeClass("positive")
-			.addClass("negative");
-	} else{
-		diffElm
-			.removeClass("positive negative")
-			.html("0");
-		grothElm
-			.removeClass("positive negative")
-			.html("0%");
-		currentElm
-			.removeClass("positive negative")
-	}
+const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
+    if (newValue > oldValue) {
+        diffElm
+            .removeClass('negative')
+            .addClass('positive')
+            .html(`+${nFormatter(newValue - oldValue)}`);
+        grothElm
+            .removeClass('negative')
+            .addClass('positive')
+            .html(oldValue === 0 ? '' : `+${Math.floor((1000 * (newValue - oldValue)) / oldValue / 10)}%`);
+        currentElm.removeClass('negative').addClass('positive');
+    } else if (newValue < oldValue) {
+        diffElm
+            .removeClass('positive')
+            .addClass('negative')
+            .html(nFormatter(newValue - oldValue));
+        grothElm
+            .removeClass('positive')
+            .addClass('negative')
+            .html(`${Math.floor((1000 * (newValue - oldValue)) / oldValue / 10)}%`);
+        currentElm.removeClass('positive').addClass('negative');
+    } else {
+        diffElm.removeClass('positive negative').html('0');
+        grothElm.removeClass('positive negative').html('0%');
+        currentElm.removeClass('positive negative');
+    }
 };
 
 let casesChart;
 
-export const updateIndicators = (indicators, history) => {
-    $(`#cases-current`).html(nFormatter(indicators.numInfected, 1));
-    $(`#deaths-current`).html(nFormatter(indicators.numDead, 0));
-    $(`#cost-current`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
-    
-    if(history.length >= 30){
-		let oldIndicators = history[history.length-30].indicators;
-		
-		let totalcases = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.numInfected},0)+indicators.numInfected;
-		let totaldeaths = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.numDead},0)+indicators.numDead;
-		let totalcosts = history.reduce((acc,cur)=>{console.log(acc,cur.indicators.numInfected);return acc+cur.indicators.totalCost},0)+indicators.totalCost;
+export const updateIndicators = (history) => {
+    if (history.length === 0) {
+        console.warn('History should not be empty. Indicators will not be renderer correctly');
+    } else {
+        const lastHistoryEntry = history[history.length - 1];
+        $(`#cases-current`).html(nFormatter(lastHistoryEntry.numInfected, 1));
+        $(`#deaths-current`).html(nFormatter(lastHistoryEntry.numDead, 0));
+        $(`#cost-current`).html(`$ ${nFormatter(lastHistoryEntry.totalCost, 1)}`);
 
-		setChangeValues(indicators.numInfected,oldIndicators.numInfected,nFormatter(totalcases),$(`#cases-differeces`),$(`#cases-growth`),$(`#cases-current`),$(`#cases-total`));
-		setChangeValues(indicators.numDead,oldIndicators.numDead,nFormatter(totaldeaths),$(`#deaths-differeces`),$(`#deaths-growth`),$(`#deaths-current`),$(`#deaths-total`));
-		setChangeValues(indicators.totalCost,oldIndicators.totalCost,"$ "+nFormatter(totalcosts),$(`#cost-differeces`),$(`#cost-growth`),$(`#cost-current`),$(`#cost-total`));
-    } else{
-		$(`#cases-total`).html(nFormatter(indicators.numInfected, 1));
-		$(`#deaths-total`).html(nFormatter(indicators.numDead, 0));
-		$(`#cost-total`).html(`$ ${nFormatter(indicators.totalCost, 1)}`);
-	}
-	
-    const monthIdx = Math.floor(history.length / 30) % months.length;
-    $('#date-current').html(`${months[monthIdx].name} 1`);
+        if (history.length >= 30) {
+            const oldIndicators = history[history.length - 30];
+            setChangeValues(
+                lastHistoryEntry.numInfected,
+                oldIndicators.numInfected,
+                $(`#cases-differeces`),
+                $(`#cases-growth`),
+                $(`#cases-current`)
+            );
+            setChangeValues(
+                lastHistoryEntry.numDead,
+                oldIndicators.numDead,
+                $(`#deaths-differeces`),
+                $(`#deaths-growth`),
+                $(`#deaths-current`)
+            );
+            setChangeValues(
+                lastHistoryEntry.totalCost,
+                oldIndicators.totalCost,
+                $(`#cost-differeces`),
+                $(`#cost-growth`),
+                $(`#cost-current`)
+            );
+        }
+
+        const monthIdx = Math.floor(history.length / 30) % months.length;
+        $('#date-current').html(`${months[monthIdx].name} 1`);
+    }
 
     const fullYear = 365;
     const costHistory = [];
@@ -125,8 +140,8 @@ export const updateIndicators = (indicators, history) => {
     history.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.indicators.totalCost });
-        caseHistory.push({ x: targetDate, y: entry.indicators.numInfected });
+        costHistory.push({ x: targetDate, y: entry.totalCost });
+        caseHistory.push({ x: targetDate, y: entry.numInfected });
     });
 
     const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
@@ -135,6 +150,7 @@ export const updateIndicators = (indicators, history) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + futureDay);
         costHistory.push({ x: targetDate, y: null });
+        caseHistory.push({ x: targetDate, y: null });
     }
 
     if (!casesChart) {
