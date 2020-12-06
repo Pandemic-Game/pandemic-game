@@ -1,29 +1,30 @@
 import { US } from "@src/simulator/scenarios/US";
-import { Indicators, SimulatorState, TurnHistoryEntry } from "@src/simulator/SimulatorState";
+import { Indicators, SimulatorState, TimelineEntry, TurnHistoryEntry } from "@src/simulator/SimulatorState";
 
 export class SimulatorStateFactory {
     static empty(): SimulatorState {
         return {
             scenario: US,
-            playerActionHistory: [],
+            currentTurn: TurnHistoryEntryFactory.empty(),
+            timeline: [],
             history: []
         }
     }
 
     static withHistory(numHistoryEntries: number): SimulatorState {
         const history = []
-        const playerActionHistory: TurnHistoryEntry[] = []
+        const timeline: TimelineEntry[] = []
         for (let i = 0; i < numHistoryEntries; i++) {
             const entry = IndicatorFactory.empty()
-            const playerAction = TurnHistoryEntryFactory.empty()
-            playerActionHistory.push(playerAction);
-
             entry.days = i
             history.push(entry)
+            const playerAction = TurnHistoryEntryFactory.empty()
+            timeline.push({ ...playerAction, history: [entry] });
         }
         return {
             scenario: US,
-            playerActionHistory: playerActionHistory,
+            currentTurn: TurnHistoryEntryFactory.empty(),
+            timeline: timeline,
             history: history
         }
     }
@@ -50,9 +51,6 @@ export class IndicatorFactory {
 export class TurnHistoryEntryFactory {
     static empty(): TurnHistoryEntry {
         return {
-            turn: 0,
-            historyLength: 0,
-            worldHistoryStartIndex: 0,
             availablePlayerActions: {
                 capabilityImprovements: [],
                 containmentPolicies: [],

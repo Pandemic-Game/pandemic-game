@@ -29,14 +29,7 @@ export interface PlayerActions {
     inGameEventChoices: RecordedInGameEventChoice[];
 }
 
-/**
- * Represents the history of game turns. Since the history of the game world is computed on a per-day
- * basis the turn history may encompass more than one entry in the game world history.
- */
 export interface TurnHistoryEntry {
-    turn: number;
-    worldHistoryStartIndex: number; // inclusive
-    historyLength: number;
     availablePlayerActions: {
         containmentPolicies: ContainmentPolicy[];
         capabilityImprovements: CapabilityImprovements[];
@@ -45,14 +38,21 @@ export interface TurnHistoryEntry {
     playerActions: PlayerActions;
 }
 
-/**
- * Full simulator state
- */
+export type WorldState = { indicators: Indicators } & TurnHistoryEntry;
+
+export type TimelineEntry = { history: Indicators[] } & TurnHistoryEntry;
+
 export interface SimulatorState {
     scenario: Scenario;
-    currentActions: TurnHistoryEntry;
-    playerActionHistory: TurnHistoryEntry[];
+    currentTurn: TurnHistoryEntry;
+    timeline: TimelineEntry[];
     history: Indicators[];
+}
+
+export interface VictoryState {
+    simulatorState: SimulatorState;
+    victoryCondition: VictoryCondition;
+    score: number;
 }
 
 /**
@@ -66,11 +66,6 @@ export interface NextTurnState {
 /**
  * Models the state where the game ends due to a victory condition being met
  */
-export interface VictoryState {
-    simulatorState: SimulatorState;
-    victoryCondition: VictoryCondition;
-    score: number;
-}
 
 export const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
     return (nextTurn as any)?.latestIndicators !== undefined;
