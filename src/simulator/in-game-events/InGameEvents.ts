@@ -1,4 +1,4 @@
-import { Indicators, WorldState } from '../SimulatorState';
+import { SimulatorState } from '../SimulatorState';
 
 /**
  * Represents an in game event.
@@ -7,15 +7,16 @@ export interface InGameEvent {
     name: string;
     description: string;
     happensOnce: boolean;
-    canActivate: (context: WorldState) => boolean;
+    cssClass: string;
+    canActivate: (context: SimulatorState) => boolean;
     choices: EventChoice[];
 }
 
 export interface EventChoice {
     name: string;
     description: string;
-    immediateEffect: (context: WorldState) => WorldState;
-    recurringEffect: (context: WorldState) => WorldState;
+    immediateEffect: (context: SimulatorState) => SimulatorState;
+    recurringEffect: (context: SimulatorState) => SimulatorState;
 }
 
 export interface RecordedInGameEventChoice {

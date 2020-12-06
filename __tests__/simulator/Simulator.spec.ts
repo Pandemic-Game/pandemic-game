@@ -25,7 +25,7 @@ export const TestScenario: Scenario = {
     time_lumping: false,
     initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
     initialCapabilityImprovements: [],
-    initialInGameEvents: [],
+    availableInGameEvents: [],
     victoryConditions: [TimeVictory]
 };
 
