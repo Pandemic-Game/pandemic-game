@@ -12,14 +12,22 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
         credits: {
             enabled: false
         },
+        legend: {
+            enabled: false
+        },
         xAxis: {
-            type: 'datetime',
-            tickInterval: 1000 * 3600 * 24 * 30 // 1 month
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            labels: {
+                enabled: false
+            },
+            minorTickLength: 0,
+            tickLength: 0
         },
         yAxis: [
             {
                 title: {
-                    text: 'Cases/Deaths/day',
+                    text: 'Cases/day',
                     style: {
                         color: 'blue'
                     }
@@ -59,7 +67,7 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
         series: [
             {
                 type: 'line',
-                name: 'Cases/month',
+                name: 'Cases/day',
                 data: caseSeries,
                 yAxis: 0,
                 color: 'blue'
