@@ -35,13 +35,16 @@ export class Simulator {
      * Returns a new simulator instance.
      */
     reset(turn: number = 0): Simulator {
+        console.log(
+            `Reseting to start of turn: ${turn} - current state is ${this.currentState.turn} | history: ${this.turnHistory.length}`
+        );
         const newSimulator = new Simulator(this.scenario);
         if (turn > 0 && this.turnHistory.length >= turn) {
             const prevTurn = turn - 1;
             const targetTurn = this.turnHistory[prevTurn];
             newSimulator.turnHistory = this.clone(this.turnHistory.slice(0, prevTurn));
 
-            const maxDay = targetTurn.worldHistoryStartIndex;
+            const maxDay = targetTurn.worldHistoryStartIndex + targetTurn.historyLength;
             newSimulator.history = this.clone(this.history.slice(0, maxDay));
 
             newSimulator.currentState = this.clone({
@@ -50,7 +53,7 @@ export class Simulator {
             });
         } else {
             newSimulator.turnHistory = [];
-            newSimulator.history = this.clone([this.history[0]]);
+            newSimulator.history = [this.clone(this.history[0])];
             newSimulator.currentState = this.clone({
                 ...this.turnHistory[0],
                 indicators: this.history[0]
@@ -66,6 +69,7 @@ export class Simulator {
     state(): SimulatorState {
         const simulatorStateSnapshot: SimulatorState = {
             scenario: this.scenario,
+            currentActions: this.currentState,
             playerActionHistory: this.turnHistory,
             history: this.history
         };
@@ -77,7 +81,7 @@ export class Simulator {
      * Returns the last turn numbner
      */
     lastTurn(): number {
-        return this.currentState.turn
+        return this.currentState.turn;
     }
 
     /**
@@ -145,6 +149,7 @@ export class Simulator {
         return this.scenario.victoryConditions.find((it) =>
             it.isMet({
                 scenario: this.scenario,
+                currentActions: this.currentState,
                 playerActionHistory: this.turnHistory,
                 history: this.history
             })

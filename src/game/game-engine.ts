@@ -62,17 +62,26 @@ export class GameEngine {
     private undoLastTurn() {
         const lastState = this.simulator.state();
         if (this.simulator.lastTurn() > 0) {
-            this.simulator = this.simulator.reset(this.simulator.lastTurn());
-            this.currentlySelectedActions = {
+            const prevContainmentPolicies = lastState.currentActions.playerActions.containmentPolicies;
+            const prevChoices: CurrentUISelection = {
                 transit: false,
                 masks: false,
                 schools: false,
                 business: false
             };
 
+            prevContainmentPolicies.forEach((it) => {
+                prevChoices[it.id as AvailableActions] = true;
+            });
+
+            this.simulator = this.simulator.reset(this.simulator.lastTurn());
+            this.currentlySelectedActions = prevChoices;
+
+            const updatedState = this.simulator.state();
+
             setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
-            updateIndicators(this.simulator.lastTurn(), lastState.history);
-            console.log(`Reverting to turn ${this.simulator.lastTurn()}`);
+            updateIndicators(this.simulator.lastTurn(), updatedState.history);
+            console.log(`Reverting to start of turn ${this.simulator.lastTurn()}`);
             console.log(this.simulator.state());
         }
     }

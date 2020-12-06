@@ -187,11 +187,21 @@ describe("The operation of the Simulator", () => {
 
             // And the turn history has no gaps and spans the correct number of items
             expect(currentState.playerActionHistory.length).toEqual(10);
-            let startIndex = initialySeededHistoryEntries;
+            let startIndex = 0;
+            let count = 0
             for (let actionHistory of currentState.playerActionHistory) {
-                expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
-                expect(actionHistory.historyLength).toEqual(daysPerturn);
-                startIndex = actionHistory.worldHistoryStartIndex + daysPerturn;
+                if (count === 0) {
+                    expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
+                    expect(actionHistory.historyLength).toEqual(1);
+                    startIndex = actionHistory.worldHistoryStartIndex + 1;
+                } else {
+                    expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
+                    expect(actionHistory.historyLength).toEqual(daysPerturn);
+                    startIndex = actionHistory.worldHistoryStartIndex + daysPerturn;
+                }
+
+
+                count += 1;
             }
 
         });

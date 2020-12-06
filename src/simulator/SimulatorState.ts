@@ -50,6 +50,7 @@ export interface TurnHistoryEntry {
  */
 export interface SimulatorState {
     scenario: Scenario;
+    currentActions: TurnHistoryEntry;
     playerActionHistory: TurnHistoryEntry[];
     history: Indicators[];
 }
