@@ -1,11 +1,11 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
-import { Simulator } from '../simulator/Simulator';
-import { NextTurnState, PlayerActions, VictoryState, isNextTurn, Indicators } from '../simulator/SimulatorState';
+import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } from '../simulator/SimulatorState';
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
+import { Simulator } from '../simulator/Simulator';
 
 interface CurrentUISelection {
     transit: boolean;
@@ -53,16 +53,15 @@ export class GameEngine {
             window.location.reload();
         };
 
-        const initialState = this.simulator.state();
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
-        updateIndicators(0, initialState.history);
+        updateIndicators(this.simulator.history());
     }
 
     private undoLastTurn() {
         const lastState = this.simulator.state();
-        if (this.simulator.lastTurn() > 0) {
-            const prevContainmentPolicies = lastState.currentActions.playerActions.containmentPolicies;
+        if (this.simulator.lastTurn() >= 0) {
+            const prevContainmentPolicies = lastState.currentTurn.playerActions.containmentPolicies;
             const prevChoices: CurrentUISelection = {
                 transit: false,
                 masks: false,
@@ -77,33 +76,28 @@ export class GameEngine {
             this.simulator = this.simulator.reset(this.simulator.lastTurn());
             this.currentlySelectedActions = prevChoices;
 
-            const updatedState = this.simulator.state();
-
             setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
-            updateIndicators(this.simulator.lastTurn(), updatedState.history);
-            console.log(`Reverting to start of turn ${this.simulator.lastTurn()}`);
-            console.log(this.simulator.state());
+            updateIndicators(this.simulator.history());
         }
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
-        const simulatorState = this.simulator.state();
+        const history = this.simulator.history();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
             setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
-            updateIndicators(this.simulator.lastTurn(), simulatorState.history);
+            updateIndicators(history);
         } else {
             // Do the final graph update
-            updateIndicators(this.simulator.lastTurn(), simulatorState.history);
+            updateIndicators(history);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
-            const totalCases = simulatorState.history.reduce(totalCasesReducer, 0);
+            const totalCases = history.reduce(totalCasesReducer, 0);
             const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
-            const totalCost = simulatorState.history.reduce(totalCostReducer, 0);
+            const totalCost = history.reduce(totalCostReducer, 0);
             showWinScreen(totalCost, totalCases);
         }
-        console.log(`Turn ${this.simulator.lastTurn()}, done`);
     }
 
     private collectPlayerActions(): PlayerActions {

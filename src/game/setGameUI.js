@@ -91,8 +91,7 @@ const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
 
 let casesChart;
 
-export const updateIndicators = (turn, history) => {
-    $('#turn').html(`Engine turn: ${turn}`);
+export const updateIndicators = (history) => {
     if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
@@ -128,30 +127,31 @@ export const updateIndicators = (turn, history) => {
 
         const monthIdx = Math.floor(history.length / 30) % months.length;
         $('#date-current').html(`${months[monthIdx].name} 1`);
+    }
 
-        const fullYear = 365;
-        const costHistory = [];
-        const caseHistory = [];
-        history.forEach((entry) => {
-            const targetDate = new Date(Date.UTC(2020, 0, 1));
-            targetDate.setDate(targetDate.getDate() + entry.days);
-            costHistory.push({ x: targetDate, y: entry.totalCost });
-            caseHistory.push({ x: targetDate, y: entry.numInfected });
-        });
+    const fullYear = 365;
+    const costHistory = [];
+    const caseHistory = [];
+    history.forEach((entry) => {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + entry.days);
+        costHistory.push({ x: targetDate, y: entry.totalCost });
+        caseHistory.push({ x: targetDate, y: entry.numInfected });
+    });
 
-        const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
-        // eslint-disable-next-line no-plusplus
-        for (let futureDay = lastDay; futureDay <= fullYear; futureDay++) {
-            const targetDate = new Date(Date.UTC(2020, 0, 1));
-            targetDate.setDate(targetDate.getDate() + futureDay);
-            costHistory.push({ x: targetDate, y: null });
-        }
+    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+    // eslint-disable-next-line no-plusplus
+    for (let futureDay = lastDay; futureDay <= fullYear; futureDay++) {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + futureDay);
+        costHistory.push({ x: targetDate, y: null });
+        caseHistory.push({ x: targetDate, y: null });
+    }
 
-        if (!casesChart) {
-            casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
-        } else {
-            updateCasesChart(casesChart, caseHistory, costHistory);
-        }
+    if (!casesChart) {
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+    } else {
+        updateCasesChart(casesChart, caseHistory, costHistory);
     }
 };
 

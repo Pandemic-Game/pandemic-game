@@ -6,9 +6,10 @@ import { CapabilityImprovements, ContainmentPolicy } from "@src/simulator/player
 import { RequireMasks } from "@src/simulator/player-actions/RequireMasks";
 import { Scenario } from "@src/simulator/scenarios/Scenarios";
 import { GDP_US } from "@src/simulator/scenarios/US";
-import { Simulator } from "@src/simulator/Simulator"
+import { Simulator } from "@src/simulator/Simulator";
 import { isNextTurn, NextTurnState, VictoryState } from "@src/simulator/SimulatorState"
 import { TimeVictory } from "@src/simulator/victory-conditions/TimeVictory";
+
 
 export const TestScenario: Scenario = {
     totalPopulation: 400000000, // 400 million people -- i.e. approximate US population
@@ -41,10 +42,9 @@ describe("The operation of the Simulator", () => {
         it("Can be initialized with a scenario", () => {
             const simulator = new Simulator(TestScenario);
             const s0 = simulator.state();
-
-            expect(s0.history.length).toBe(1); // Starting point of the simulation
             expect(s0.scenario).toEqual(TestScenario);
-            expect(s0.playerActionHistory.length).toBe(0)
+            expect(s0.history.length).toBe(1)
+            expect(s0.timeline.length).toBe(0)
         })
     })
 
@@ -55,7 +55,6 @@ describe("The operation of the Simulator", () => {
             const daysPerturn = 10;
             const simulator = new Simulator(TestScenario);
             const initialState = simulator.state();
-            const firstIndicators = initialState.history[initialState.history.length - 1]
 
             // When the next turn is invoked without any player actions
             const nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
@@ -64,8 +63,8 @@ describe("The operation of the Simulator", () => {
             if (isNextTurn(nextTurn)) {
                 expect(nextTurn.newInGameEvents.length).toBe(0)
                 expect(nextTurn.latestIndicators.days).toBe(daysPerturn)
-                expect(nextTurn.latestIndicators.totalCost).toBeGreaterThan(firstIndicators.totalCost);
-                expect(nextTurn.latestIndicators.numInfected).toBeGreaterThan(firstIndicators.numInfected);
+                expect(nextTurn.latestIndicators.totalCost).toBeGreaterThan(0);
+                expect(nextTurn.latestIndicators.numInfected).toBeGreaterThan(TestScenario.initialNumInfected);
             } else {
                 fail("Unexpected next turn response")
             }
@@ -90,7 +89,7 @@ describe("The operation of the Simulator", () => {
             }
 
             // And the history has the expected number of turns
-            expect(simulator.state().history.length).toBe(minTurns + 1) // acount for the initial history entry
+            expect(simulator.state().history.length).toBe(minTurns + 1)
 
         })
 
@@ -173,7 +172,6 @@ describe("The operation of the Simulator", () => {
             // Given a simulator instance
             const daysPerturn = 10;
             const numTurns = 10;
-            const initialySeededHistoryEntries = 1;
             const simulator = new Simulator(TestScenario);
 
             // When a few turns spanning more that one simulator days pass
@@ -183,27 +181,10 @@ describe("The operation of the Simulator", () => {
 
             // Then the history has the correct number of results
             const currentState = simulator.state();
-            expect(currentState.history.length).toEqual(daysPerturn * numTurns + initialySeededHistoryEntries)
+            expect(currentState.history.length).toEqual(daysPerturn * numTurns + 1) // The initial indicators are appended on the first turn
 
             // And the turn history has no gaps and spans the correct number of items
-            expect(currentState.playerActionHistory.length).toEqual(10);
-            let startIndex = 0;
-            let count = 0
-            for (let actionHistory of currentState.playerActionHistory) {
-                if (count === 0) {
-                    expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
-                    expect(actionHistory.historyLength).toEqual(1);
-                    startIndex = actionHistory.worldHistoryStartIndex + 1;
-                } else {
-                    expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
-                    expect(actionHistory.historyLength).toEqual(daysPerturn);
-                    startIndex = actionHistory.worldHistoryStartIndex + daysPerturn;
-                }
-
-
-                count += 1;
-            }
-
+            expect(currentState.timeline.length).toEqual(10);
         });
     })
 
@@ -228,11 +209,7 @@ describe("The operation of the Simulator", () => {
             const resetState = resetSimulator.state()
             expect(resetState.history.length).toBe(1)
             expect(resetState.scenario).toEqual(simulator.state().scenario)
-            expect(resetState.playerActionHistory.length).toBe(0)
-
-            const initiallySeededEntry = resetState.history[0]
-            expect(initiallySeededEntry.numDead).toBe(0)
-            expect(initiallySeededEntry.numInfected).toBe(TestScenario.initialNumInfected)
+            expect(resetState.timeline.length).toBe(0)
         })
 
         it("Can be restarted, back to a previous point in time", () => {
@@ -256,7 +233,7 @@ describe("The operation of the Simulator", () => {
             // Then the new simulator instance is at the first turn
             const resetState = resetSimulator.state()
             // We are now at turn 5, with 4 turns in the player action history
-            expect(resetState.playerActionHistory.length).toBe(targetTurn - 1)
+            expect(resetState.timeline.length).toBe(targetTurn - 1)
 
             // And the last item in the history is the last item of the previous turn prior to the reset
             expect(resetState.history.length).toBe((targetTurn - 1) * daysPerTurn + 1)
@@ -293,8 +270,8 @@ describe("The operation of the Simulator", () => {
             expect(resetState.history.length).toBe(11)
             expect(resetState.history.length).toEqual(originalState.history.length)
 
-            const newPolicyHistory = resetState.playerActionHistory.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
-            const originalPolicyHistory = originalState.playerActionHistory.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
+            const newPolicyHistory = resetState.timeline.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
+            const originalPolicyHistory = originalState.timeline.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
             expect(newPolicyHistory).not.toEqual(originalPolicyHistory)
         })
     })

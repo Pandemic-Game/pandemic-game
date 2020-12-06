@@ -49,7 +49,7 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
         ],
         tooltip: {
             formatter: function () {
-                return `${this.x.toLocaleDateString('en-US', {
+                return `${(this.x as any).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric'
