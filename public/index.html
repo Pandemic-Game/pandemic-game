@@ -14,7 +14,7 @@
 </head>
 
 <body>
-
+  <h1 id="turn"></h1>
   <div class="p-2 d-flex flex-column">
     <!-- Cases panel -->
     <div class="container" style="margin-left: 200px">
@@ -24,33 +24,33 @@
         </div>
         <div class="col-sm">
           <div class="col-values">
-			<h3 id="cases-current" class= "current-value"></h3>
-			<p>Cases</p>
-		  </div>
-		  <div class="col-changes">
-			<p><span id="cases-growth"></span><br/>
-			<span id="cases-differeces"></span></p>
-		  </div>
+            <h3 id="cases-current" class="current-value"></h3>
+            <p>Cases</p>
+          </div>
+          <div class="col-changes">
+            <p><span id="cases-growth"></span><br />
+              <span id="cases-differeces"></span></p>
+          </div>
         </div>
         <div class="col-sm">
           <div class="col-values">
-			<h3 id="deaths-current" class= "current-value">23</h3>
-			<p>Deaths</p>
-		  </div>
-		  <div class="col-changes">
-			<p><span id="deaths-growth"></span><br/>
-			<span id="deaths-differeces"></span></p>
-		  </div>
+            <h3 id="deaths-current" class="current-value">23</h3>
+            <p>Deaths</p>
+          </div>
+          <div class="col-changes">
+            <p><span id="deaths-growth"></span><br />
+              <span id="deaths-differeces"></span></p>
+          </div>
         </div>
         <div class="col-sm">
           <div class="col-values">
-			<h3 id="cost-current" class= "current-value"></h3>
-			<p class="p-2">Cost</p>
-		  </div>
-		  <div class="col-changes">
-			<p><span id="cost-growth"></span><br/>
-			<span id="cost-differeces"></span></p>
-		  </div>
+            <h3 id="cost-current" class="current-value"></h3>
+            <p class="p-2">Cost</p>
+          </div>
+          <div class="col-changes">
+            <p><span id="cost-growth"></span><br />
+              <span id="cost-differeces"></span></p>
+          </div>
         </div>
       </div>
     </div>
@@ -59,8 +59,16 @@
     <h2 class="p-2">Policies</h2>
     <table style="width:1160px; margin-left:0px;" id="player-actions-container"></table>
 
-    <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Click to simulate policy for the month <i
-        class="fas fa-arrow-right"></i></button>
+    <div class="row">
+      <div class="col-md">
+        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i>Undo</button>
+      </div>
+      <div class="col-md">
+        <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Next turn <i
+            class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Win screen modal-->

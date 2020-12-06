@@ -10,12 +10,12 @@ describe("A time victory condition", () => {
     })
 
     it("Returns false before 365 days have elapsed - some history", () => {
-        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(234, 1)
+        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(234)
         expect(TimeVictory.isMet(simulatorState)).toBe(false)
     })
 
     it("Returns true after 365 days have elapsed", () => {
-        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(366, 1)
+        const simulatorState: SimulatorState = SimulatorStateFactory.withHistory(366)
         expect(TimeVictory.isMet(simulatorState)).toBe(true)
     })
 })

@@ -20,12 +20,10 @@ export class GameEngine {
     private scenario: Scenario;
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
-    private playerTurn: number;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
         this.simulator = new Simulator(scenario);
-        this.playerTurn = 0;
         this.currentlySelectedActions = {
             transit: false,
             masks: false,
@@ -40,12 +38,14 @@ export class GameEngine {
         };
 
         const onEndTurn = () => {
-            let nextTurn: NextTurnState | VictoryState;
-            const month = months[this.playerTurn % months.length];
-            this.playerTurn += 1;
+            const month = months[this.simulator.lastTurn() % months.length];
             const playerActions = this.collectPlayerActions();
-            nextTurn = this.simulator.nextTurn(playerActions, month.numDays);
+            const nextTurn = this.simulator.nextTurn(playerActions, month.numDays);
             this.onNextTurn(nextTurn);
+        };
+
+        const onUndo = () => {
+            this.undoLastTurn();
         };
 
         const onRestart = () => {
@@ -54,24 +54,26 @@ export class GameEngine {
         };
 
         const initialState = this.simulator.state();
-        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onRestart);
+        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
         setControlsToTurn(0, this.scenario.initialContainmentPolicies);
-        updateIndicators(initialState.history);
+        updateIndicators(0, initialState.history);
     }
 
     private undoLastTurn() {
-        if (this.playerTurn > 0) {
-            this.simulator = this.simulator.reset(this.playerTurn - 1);
-            const lastState = this.simulator.state();
+        const lastState = this.simulator.state();
+        if (this.simulator.lastTurn() > 0) {
+            this.simulator = this.simulator.reset(this.simulator.lastTurn());
             this.currentlySelectedActions = {
                 transit: false,
                 masks: false,
                 schools: false,
                 business: false
-            }
+            };
 
-            setControlsToTurn(this.playerTurn - 1, this.currentlySelectedActions);
-            updateIndicators(lastState.history);
+            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
+            updateIndicators(this.simulator.lastTurn(), lastState.history);
+            console.log(`Reverting to turn ${this.simulator.lastTurn()}`);
+            console.log(this.simulator.state());
         }
     }
 
@@ -79,11 +81,11 @@ export class GameEngine {
         const simulatorState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
-            setControlsToTurn(this.playerTurn, this.currentlySelectedActions);
-            updateIndicators(simulatorState.history);
+            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
+            updateIndicators(this.simulator.lastTurn(), simulatorState.history);
         } else {
             // Do the final graph update
-            updateIndicators(simulatorState.history);
+            updateIndicators(this.simulator.lastTurn(), simulatorState.history);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
@@ -92,6 +94,7 @@ export class GameEngine {
             const totalCost = simulatorState.history.reduce(totalCostReducer, 0);
             showWinScreen(totalCost, totalCases);
         }
+        console.log(`Turn ${this.simulator.lastTurn()}, done`);
     }
 
     private collectPlayerActions(): PlayerActions {

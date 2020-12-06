@@ -36,20 +36,27 @@ export class Simulator {
      */
     reset(turn: number = 0): Simulator {
         const newSimulator = new Simulator(this.scenario);
-        if (turn > 0 && this.turnHistory.length > 1) {
-            const maxTurn = Math.min(turn - 1, this.history.length - 1);
-            const targetTurn = this.turnHistory[maxTurn]
-            const maxDay = targetTurn.worldHistoryEndIndex
-            newSimulator.history = this.history.slice(0, maxDay);
-            newSimulator.history.push(this.history[maxDay]);
-            newSimulator.turnHistory = this.turnHistory.slice(0, maxTurn);
-            newSimulator.turnHistory.push(this.turnHistory[maxTurn]);
+        if (turn > 0 && this.turnHistory.length >= turn) {
+            const prevTurn = turn - 1;
+            const targetTurn = this.turnHistory[prevTurn];
+            newSimulator.turnHistory = this.clone(this.turnHistory.slice(0, prevTurn));
+
+            const maxDay = targetTurn.worldHistoryStartIndex;
+            newSimulator.history = this.clone(this.history.slice(0, maxDay));
 
             newSimulator.currentState = this.clone({
                 ...targetTurn,
                 indicators: this.history[maxDay]
             });
+        } else {
+            newSimulator.turnHistory = [];
+            newSimulator.history = this.clone([this.history[0]]);
+            newSimulator.currentState = this.clone({
+                ...this.turnHistory[0],
+                indicators: this.history[0]
+            });
         }
+
         return newSimulator;
     }
 
@@ -64,6 +71,13 @@ export class Simulator {
         };
         // Return an immutable copy of the state.
         return this.clone(simulatorStateSnapshot);
+    }
+
+    /**
+     * Returns the last turn numbner
+     */
+    lastTurn(): number {
+        return this.currentState.turn
     }
 
     /**
@@ -107,11 +121,12 @@ export class Simulator {
         }
 
         // Update the references to the history slice affected by this entry
-        nextStateCandidate.worldHistoryStartIndex = this.currentState.worldHistoryEndIndex;
-        nextStateCandidate.worldHistoryEndIndex = this.history.length - 1;
+        nextStateCandidate.worldHistoryStartIndex =
+            this.currentState.worldHistoryStartIndex + this.currentState.historyLength; //The index is inclusive
+        nextStateCandidate.historyLength = daysToAdvance;
         nextStateCandidate.indicators = nextIndicators;
 
-        this.turnHistory.push(this.clone(nextStateCandidate));
+        this.turnHistory.push(this.clone(this.currentState));
         this.currentState = nextStateCandidate;
 
         // Check if victory conditions are met.
@@ -189,11 +204,10 @@ export class Simulator {
         const deathCosts = this.computeDeathCost(0);
         const economicCosts = this.computeEconomicCosts(this.scenario.r0);
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
-
         return {
             turn: 0,
             worldHistoryStartIndex: 0,
-            worldHistoryEndIndex: 1,
+            historyLength: 1,
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
                 containmentPolicies: this.scenario.initialContainmentPolicies

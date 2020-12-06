@@ -188,12 +188,10 @@ describe("The operation of the Simulator", () => {
             // And the turn history has no gaps and spans the correct number of items
             expect(currentState.playerActionHistory.length).toEqual(10);
             let startIndex = initialySeededHistoryEntries;
-            let endIndex = daysPerturn;
             for (let actionHistory of currentState.playerActionHistory) {
                 expect(actionHistory.worldHistoryStartIndex).toEqual(startIndex);
-                expect(actionHistory.worldHistoryEndIndex).toEqual(endIndex);
-                startIndex = actionHistory.worldHistoryEndIndex
-                endIndex = actionHistory.worldHistoryEndIndex + daysPerturn
+                expect(actionHistory.historyLength).toEqual(daysPerturn);
+                startIndex = actionHistory.worldHistoryStartIndex + daysPerturn;
             }
 
         });
@@ -239,6 +237,7 @@ describe("The operation of the Simulator", () => {
                     capabilityImprovements: [],
                     inGameEventChoices: []
                 }, daysPerTurn);
+
             }
             // When it is reset
             const targetTurn = 5;
@@ -246,8 +245,11 @@ describe("The operation of the Simulator", () => {
 
             // Then the new simulator instance is at the first turn
             const resetState = resetSimulator.state()
-            expect(resetState.playerActionHistory.length).toBe(targetTurn)
-            expect(resetState.history.length).toBe(targetTurn * daysPerTurn + 1)
+            // We are now at turn 5, with 4 turns in the player action history
+            expect(resetState.playerActionHistory.length).toBe(targetTurn - 1)
+
+            // And the last item in the history is the last item of the previous turn prior to the reset
+            expect(resetState.history.length).toBe((targetTurn - 1) * daysPerTurn + 1)
         })
 
         it("Operates normally after being restored to a previous point in time", () => {
@@ -263,10 +265,11 @@ describe("The operation of the Simulator", () => {
                 });
             }
             // And it is reset
-            const resetSimulator = simulator.reset(5) // Turn 5 means there are 4 turns in the history
+            expect(simulator.state().history.length).toBe(11)
+            const resetSimulator = simulator.reset(5)
 
             // Then the reset simulator works normally
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 6; i++) {
                 resetSimulator.nextTurn({
                     containmentPolicies: [CloseSchools],
                     capabilityImprovements: [],
@@ -276,6 +279,7 @@ describe("The operation of the Simulator", () => {
             // And the histories difer
             const resetState = resetSimulator.state()
             const originalState = simulator.state()
+
             expect(resetState.history.length).toBe(11)
             expect(resetState.history.length).toEqual(originalState.history.length)
 

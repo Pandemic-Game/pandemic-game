@@ -1,55 +1,29 @@
 import { US } from "@src/simulator/scenarios/US";
-import { Indicators, SimulatorState, WorldState } from "@src/simulator/SimulatorState";
+import { Indicators, SimulatorState, TurnHistoryEntry } from "@src/simulator/SimulatorState";
 
 export class SimulatorStateFactory {
     static empty(): SimulatorState {
         return {
             scenario: US,
-            currentState: {
-                turn: 0,
-                worldHistoryEndIndex: 0,
-                worldHistoryStartIndex: 0,
-                indicators: IndicatorFactory.empty(),
-                availablePlayerActions: {
-                    capabilityImprovements: [],
-                    containmentPolicies: [],
-                },
-                nextInGameEvents: [],
-                playerActions: {
-                    capabilityImprovements: [],
-                    containmentPolicies: [],
-                    inGameEventChoices: []
-                }
-            },
+            playerActionHistory: [],
             history: []
         }
     }
 
-    static withHistory(numHistoryEntries: number, daysPerTurn = 10): SimulatorState {
+    static withHistory(numHistoryEntries: number): SimulatorState {
         const history = []
+        const playerActionHistory: TurnHistoryEntry[] = []
         for (let i = 0; i < numHistoryEntries; i++) {
             const entry = IndicatorFactory.empty()
+            const playerAction = TurnHistoryEntryFactory.empty()
+            playerActionHistory.push(playerAction);
+
             entry.days = i
             history.push(entry)
         }
         return {
             scenario: US,
-            currentState: {
-                turn: (numHistoryEntries > daysPerTurn) ? Math.ceil(numHistoryEntries / daysPerTurn) : 1,
-                worldHistoryEndIndex: 0,
-                worldHistoryStartIndex: 0,
-                indicators: IndicatorFactory.empty(),
-                availablePlayerActions: {
-                    capabilityImprovements: [],
-                    containmentPolicies: [],
-                },
-                nextInGameEvents: [],
-                playerActions: {
-                    capabilityImprovements: [],
-                    containmentPolicies: [],
-                    inGameEventChoices: []
-                }
-            },
+            playerActionHistory: playerActionHistory,
             history: history
         }
     }
@@ -73,13 +47,12 @@ export class IndicatorFactory {
     }
 }
 
-export class WorldStateFactory {
-    static empty(): WorldState {
+export class TurnHistoryEntryFactory {
+    static empty(): TurnHistoryEntry {
         return {
             turn: 0,
-            worldHistoryEndIndex: 0,
+            historyLength: 0,
             worldHistoryStartIndex: 0,
-            indicators: IndicatorFactory.empty(),
             availablePlayerActions: {
                 capabilityImprovements: [],
                 containmentPolicies: [],

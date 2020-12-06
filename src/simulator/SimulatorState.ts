@@ -35,8 +35,8 @@ export interface PlayerActions {
  */
 export interface TurnHistoryEntry {
     turn: number;
-    worldHistoryStartIndex: number;
-    worldHistoryEndIndex: number;
+    worldHistoryStartIndex: number; // inclusive
+    historyLength: number;
     availablePlayerActions: {
         containmentPolicies: ContainmentPolicy[];
         capabilityImprovements: CapabilityImprovements[];

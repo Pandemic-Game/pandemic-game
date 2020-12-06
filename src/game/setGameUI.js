@@ -52,6 +52,13 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
+
+    // Remove styles from future choices
+    $(`[id^="turn${playerTurn + 1}-"]`)
+        .prop('disabled', true) // Disable
+        .removeClass('btn-light')
+        .removeClass('btn-success')
+        .animate({ opacity: 0.1 }, 'slow'); // Hide
 };
 
 const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
@@ -84,7 +91,8 @@ const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
 
 let casesChart;
 
-export const updateIndicators = (history) => {
+export const updateIndicators = (turn, history) => {
+    $('#turn').html(`Engine turn: ${turn}`);
     if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
