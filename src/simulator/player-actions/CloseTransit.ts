@@ -1,9 +1,9 @@
 import { ContainmentPolicy } from './PlayerActions';
 
 export const CloseTransit: ContainmentPolicy = {
-    id: 'transit',
-    name: 'Transit', // 'Close transit (buses, trains, airports)',
-    icon: 'fa-car-side',
+    id: 'transport',
+    name: 'Transport',
+    icon: 'fa-plane-departure',
     requirements: [],
     activeLabel: 'Closed',
     inactiveLabel: 'Open',

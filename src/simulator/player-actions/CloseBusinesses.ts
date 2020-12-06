@@ -3,7 +3,7 @@ import { ContainmentPolicy } from './PlayerActions';
 export const CloseBusinesses: ContainmentPolicy = {
     id: 'business',
     name: 'Businesses', // 'Close all non-essential businesses',
-    icon: 'fa-briefcase',
+    icon: 'fa-dollar-sign',
     requirements: [],
     activeLabel: 'Closed',
     inactiveLabel: 'Open',

@@ -15,54 +15,73 @@
 
 <body>
   <div class="container-fluid" style="width:1380px;">
-    <!-- Cases panel -->
-    <div id="indicator-panel">
-      <div class="p-2 row">
-        <div class="col-sm-3">
-          <h2 id="date-current">Jan 1</h2>
-        </div>
-        <div class="col-sm-3">
-          <div class="col-values">
-            <h3 id="cases-current" class="current-value"></h3>
-            <p>Cases</p>
+    <!-- consequences panel -->
+    <div class="row">
+      <div class="col-xs-1" style="width:32px;">
+        <div class="rotated-text" style="top:160px">Consequences</div>
+      </div>
+      <div class="col">
+        <!-- Cases panel -->
+        <div id="indicator-panel">
+          <div class="p-2 row">
+            <div class="col-sm-3">
+              <h2 id="date-current">Jan 1</h2>
+            </div>
+            <div class="col-sm-3">
+              <div class="col-values">
+                <h3 id="cases-current" class="current-value"></h3>
+                <p>Cases</p>
+              </div>
+              <div class="col-changes">
+                <p><span id="cases-growth"></span><br />
+                  <span id="cases-differeces"></span></p>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="col-values">
+                <h3 id="deaths-current" class="current-value"></h3>
+                <p>Deaths</p>
+              </div>
+              <div class="col-changes">
+                <p><span id="deaths-growth"></span><br />
+                  <span id="deaths-differeces"></span></p>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="col-values">
+                <h3 id="cost-current" class="current-value"></h3>
+                <p class="p-2">Cost</p>
+              </div>
+              <div class="col-changes">
+                <p><span id="cost-growth"></span><br />
+                  <span id="cost-differeces"></span></p>
+              </div>
+            </div>
           </div>
-          <div class="col-changes">
-            <p><span id="cases-growth"></span><br />
-              <span id="cases-differeces"></span></p>
-          </div>
-        </div>
-        <div class="col-sm-3">
-          <div class="col-values">
-            <h3 id="deaths-current" class="current-value"></h3>
-            <p>Deaths</p>
-          </div>
-          <div class="col-changes">
-            <p><span id="deaths-growth"></span><br />
-              <span id="deaths-differeces"></span></p>
-          </div>
-        </div>
-        <div class="col-sm-3">
-          <div class="col-values">
-            <h3 id="cost-current" class="current-value"></h3>
-            <p class="p-2">Cost</p>
-          </div>
-          <div class="col-changes">
-            <p><span id="cost-growth"></span><br />
-              <span id="cost-differeces"></span></p>
-          </div>
+
+
+          <!-- in game events panel-->
+          <div id="events-holder" style="height: 80px;"></div>
+
+          <!-- Graph panel-->
+          <div id="cases-graph" style="width:100%;height:250px;"></div>
         </div>
       </div>
     </div>
+    <!-- actions panel -->
+    <div class="row">
+      <div class="col-xs-1" style="width:32px">
+        <div class="rotated-text" style="top:80px">Actions</div>
+      </div>
+      <div class="col">
+        <table id="player-actions-container"></table>
+      </div>
+    </div>
 
-    <!-- in game events panel-->
-    <div id="events-holder" style="height: 80px;"></div>
-
-    <!-- Graph panel-->
-    <div id="cases-graph" style="width:100%;height:250px;"></div>
-    <table id="player-actions-container" style="width:1280px"></table>
-    <div class="row justify-content-between">
+    <div class="row justify-content-between" style="margin-top: 40px;">
       <div class="col-sm-2">
-        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i> Undo</button>
+        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i>
+          Undo</button>
       </div>
       <div class="col-sm-2">
         <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Next turn <i

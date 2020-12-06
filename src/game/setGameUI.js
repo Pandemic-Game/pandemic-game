@@ -66,6 +66,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         .animate({ opacity: 0.1 }, 'slow'); // Hide
 
     $('#events-holder').html('');
+    console.log(inGameEvents)
     inGameEvents.forEach((evt) => {
         $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
     });

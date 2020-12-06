@@ -1,4 +1,3 @@
-import { Simulator } from '../Simulator';
 import { SimulatorState } from '../SimulatorState';
 import { InGameEvent } from './InGameEvents';
 
