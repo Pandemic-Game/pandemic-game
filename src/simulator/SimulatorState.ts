@@ -7,6 +7,7 @@ import { VictoryCondition } from './victory-conditions/VictoryConditon';
  * Represents the state of the simulation on a given turn.
  */
 export interface Indicators {
+    days: number;
     totalPopulation: number;
     numInfected: number;
     numDead: number;
@@ -28,13 +29,7 @@ export interface PlayerActions {
     inGameEventChoices: RecordedInGameEventChoice[];
 }
 
-/**
- * Snapshot of the full world state for a given point in time. Includes the set of indicators that are tracked
- * plus any random events that happened so far, and the set of player actions in force at that point in time.
- */
-export interface WorldState {
-    days: number;
-    indicators: Indicators;
+export interface TurnHistoryEntry {
     availablePlayerActions: {
         containmentPolicies: ContainmentPolicy[];
         capabilityImprovements: CapabilityImprovements[];
@@ -43,32 +38,35 @@ export interface WorldState {
     playerActions: PlayerActions;
 }
 
-/**
- * Full simulator state
- */
+export type WorldState = { indicators: Indicators } & TurnHistoryEntry;
+
+export type TimelineEntry = { history: Indicators[] } & TurnHistoryEntry;
+
 export interface SimulatorState {
     scenario: Scenario;
-    currentState: WorldState;
-    history: WorldState[];
+    currentTurn: TurnHistoryEntry;
+    timeline: TimelineEntry[];
+    history: Indicators[];
 }
 
-/**
- * Models the updated state of the world at the start of a new turn
- */
-export interface NextTurnState {
-    currentState: WorldState;
-    newInGameEvents: InGameEvent[];
-}
-
-/**
- * Models the state where the game ends due to a victory condition being met
- */
 export interface VictoryState {
     simulatorState: SimulatorState;
     victoryCondition: VictoryCondition;
     score: number;
 }
 
+/**
+ * Models the updated state of the world at the start of a new turn
+ */
+export interface NextTurnState {
+    latestIndicators: Indicators;
+    newInGameEvents: InGameEvent[];
+}
+
+/**
+ * Models the state where the game ends due to a victory condition being met
+ */
+
 export const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
-    return (nextTurn as any)?.currentState !== undefined;
+    return (nextTurn as any)?.latestIndicators !== undefined;
 };

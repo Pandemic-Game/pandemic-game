@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-import { LinePlot } from '../lib/LinePlot';
-import { nFormatter } from '../lib/util';
 import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
 import { months } from '../lib/util';
 
@@ -16,7 +14,7 @@ Shorthand functions to create DOM elements
 */
 
 const createEle = (type, parentEle, id = null) => {
-	const ele = document.createElement(type);
+    const ele = document.createElement(type);
     if (id) {
         ele.id = id;
     }
@@ -42,6 +40,7 @@ export const createGameUI = (
     listOfPlayerActions,
     onPlayerSelectsAction,
     onEndTurn,
+    onUndo,
     onRestart,
     numberOfColumns = 12
 ) => {
@@ -56,6 +55,16 @@ export const createGameUI = (
         date.innerHTML = months[i % months.length].name;
         date.style.textAlign = 'center';
     }
+
+    const btnClickHandler = (e) => {
+        // Style as active/inactive
+        const target = $(e.target);
+        target.toggleClass('btn-light');
+        target.toggleClass('btn-success');
+
+        // On player selects action pass action to event
+        onPlayerSelectsAction(target.attr('data-action'));
+    };
 
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
@@ -73,24 +82,21 @@ export const createGameUI = (
             btn.style.height = 'auto';
             btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
-            btn.style.position = 'relative';
+            // btn.style.position = 'relative';
             btn.innerHTML = `<i class="fa ${action.icon}"></i>`;
-            btn.onclick = (e) => {
-                // Style as active/inactive
-                const target = $(e.target);
-                target.toggleClass('btn-light');
-                target.toggleClass('btn-success');
-
-                // On player selects action pass action to event
-                onPlayerSelectsAction(target.attr('data-action'));
-            };
+            btn.onclick = btnClickHandler;
         }
     }
 
     $(`#end-turn-btn`).on('click', () => {
         onEndTurn();
     });
+
     $(`#restart-btn`).on('click', () => {
         onRestart();
+    });
+
+    $(`#undo-btn`).on('click', () => {
+        onUndo();
     });
 };

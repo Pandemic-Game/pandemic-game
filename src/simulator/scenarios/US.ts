@@ -1,3 +1,4 @@
+import { HospitalCapacityExceeded } from '../in-game-events/HospitalCapacityExceeded';
 import { CloseBusinesses } from '../player-actions/CloseBusinesses';
 import { CloseSchools } from '../player-actions/CloseSchools';
 import { CloseTransit } from '../player-actions/CloseTransit';
@@ -20,6 +21,6 @@ export const US: Scenario = {
     time_lumping: false,
     initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
     initialCapabilityImprovements: [],
-    initialInGameEvents: [],
+    availableInGameEvents: [HospitalCapacityExceeded],
     victoryConditions: [TimeVictory]
 };

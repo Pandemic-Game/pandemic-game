@@ -19,6 +19,6 @@ export interface Scenario {
     time_lumping: boolean;
     initialContainmentPolicies: ContainmentPolicy[];
     initialCapabilityImprovements: CapabilityImprovements[];
-    initialInGameEvents: InGameEvent[];
+    availableInGameEvents: InGameEvent[];
     victoryConditions: VictoryCondition[];
 }
