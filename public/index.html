@@ -14,14 +14,14 @@
 </head>
 
 <body>
-  <div class="p-2 d-flex flex-column">
+  <div class="container-fluid" style="width:1280px;">
     <!-- Cases panel -->
-    <div class="container" style="margin-left: 200px">
+    <div id="indicator-panel">
       <div class="p-2 row">
-        <div class="col-sm">
+        <div class="col-sm-3">
           <h2 id="date-current">Jan 1</h2>
         </div>
-        <div class="col-sm">
+        <div class="col-sm-3">
           <div class="col-values">
             <h3 id="cases-current" class="current-value"></h3>
             <p>Cases</p>
@@ -31,7 +31,7 @@
               <span id="cases-differeces"></span></p>
           </div>
         </div>
-        <div class="col-sm">
+        <div class="col-sm-3">
           <div class="col-values">
             <h3 id="deaths-current" class="current-value"></h3>
             <p>Deaths</p>
@@ -41,7 +41,7 @@
               <span id="deaths-differeces"></span></p>
           </div>
         </div>
-        <div class="col-sm">
+        <div class="col-sm-3">
           <div class="col-values">
             <h3 id="cost-current" class="current-value"></h3>
             <p class="p-2">Cost</p>
@@ -54,40 +54,41 @@
       </div>
     </div>
 
-    <div id="cases-graph" style="width:1280px;height:250px; margin-left: 20px;"></div>
-    <h2 class="p-2">Policies</h2>
-    <table style="width:1160px; margin-left:0px;" id="player-actions-container"></table>
+    <!-- in game events panel-->
+    <div id="events-holder" style="height: 80px;"></div>
 
-    <div class="row">
-      <div class="col-md">
-        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i>Undo</button>
+    <!-- Graph panel-->
+    <div id="cases-graph" style="width:100%;height:250px;"></div>
+    <table id="player-actions-container"></table>
+    <div class="row justify-content-between">
+      <div class="col-sm-2">
+        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i> Undo</button>
       </div>
-      <div class="col-md">
+      <div class="col-sm-2">
         <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Next turn <i
             class="fas fa-arrow-right"></i></button>
       </div>
     </div>
 
-  </div>
-
-  <!-- Win screen modal-->
-  <div class="modal" tabindex="-1" id='win-screen'>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">The year is up, here's how you did...</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <h5>Total cases</h5>
-          <p id='win-total-cases'></p>
-          <h5>Total costs</h5>
-          <p id='win-total-costs'></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="restart-btn">Reset</button>
+    <!-- Win screen modal -->
+    <div class="modal" tabindex="-1" id='win-screen'>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">The year is up, here's how you did...</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h5>Total cases</h5>
+            <p id='win-total-cases'></p>
+            <h5>Total costs</h5>
+            <p id='win-total-costs'></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="restart-btn">Reset</button>
+          </div>
         </div>
       </div>
     </div>

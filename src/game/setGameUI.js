@@ -26,7 +26,7 @@ export const resetControls = () => {
         .removeClass('btn-success');
 };
 
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
+export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents) => {
     // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
@@ -59,6 +59,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies) => {
         .removeClass('btn-light')
         .removeClass('btn-success')
         .animate({ opacity: 0.1 }, 'slow'); // Hide
+
+    $('#events-holder').html('');
+    inGameEvents.forEach((evt) => {
+        $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
+    });
 };
 
 const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {

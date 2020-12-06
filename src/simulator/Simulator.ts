@@ -12,6 +12,7 @@ import { FakeNegativeBinomial } from '../lib/Probabilities';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
+import { InGameEvent } from './in-game-events/InGameEvents';
 
 export class Simulator {
     private scenario: Scenario;
@@ -53,15 +54,18 @@ export class Simulator {
     /**
      * Allows the caller to obtain a snapshot of the current simulator state.
      */
-    state(): SimulatorState {
-        const simulatorStateSnapshot = {
+    private mutableState(): SimulatorState {
+        return {
             scenario: this.scenario,
             currentTurn: this.currentTurn,
             timeline: this.timeline,
             history: this.mutableHistory()
         };
+    }
+
+    state(): SimulatorState {
         // Return an immutable copy of the state.
-        return this.clone(simulatorStateSnapshot);
+        return this.clone(this.mutableState());
     }
 
     history(): Indicators[] {
@@ -78,51 +82,53 @@ export class Simulator {
      */
     nextTurn(playerActions: PlayerActions, daysToAdvance: number = 1): NextTurnState | VictoryState {
         // Store player previous player turn
-        let nextTurnCandidate = this.clone(this.currentTurn);
+        let stateAtTurnEnd = this.clone(this.currentTurn);
         // Reset the baseline R for the turn
-        nextTurnCandidate.indicators.r = this.scenario.r0;
+        stateAtTurnEnd.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
         const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
             playerActions.containmentPolicies
         );
         for (const containmentPolicy of newContainmentPolicies) {
-            nextTurnCandidate.indicators = containmentPolicy.immediateEffect(nextTurnCandidate);
+            stateAtTurnEnd.indicators = containmentPolicy.immediateEffect(stateAtTurnEnd);
         }
 
         // Factor in the recurring effects of existing player actions.
         for (const containmentPolicy of playerActions.containmentPolicies) {
-            nextTurnCandidate.indicators = containmentPolicy.recurringEffect(nextTurnCandidate);
+            stateAtTurnEnd.indicators = containmentPolicy.recurringEffect(stateAtTurnEnd);
         }
 
         // Add the new containment policies to the history of player actions
-        nextTurnCandidate.playerActions.containmentPolicies = playerActions.containmentPolicies;
-
-        // Add any new random events that will trigger on the next turn
-        nextTurnCandidate.nextInGameEvents = [];
+        stateAtTurnEnd.playerActions.containmentPolicies = playerActions.containmentPolicies;
 
         // Advance world timeline the desired number of days
-        let nextIndicators;
-        let prevIndicators = this.currentTurn.indicators;
+        let latestIndicators;
+        let indicatorsAtTurnStart = this.currentTurn.indicators;
         // The initial state is added on the first play
         let history = this.timeline.length === 0 ? [this.currentTurn.indicators] : [];
         for (let i = 0; i < daysToAdvance; i++) {
-            nextIndicators = this.computeNextPandemicDay(nextTurnCandidate, prevIndicators);
-            prevIndicators = nextIndicators;
+            latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart);
+            indicatorsAtTurnStart = latestIndicators;
             // Add the last indicators to the world timeline.
-            history.push(this.clone(nextIndicators));
+            history.push(this.clone(latestIndicators));
         }
 
         // Update the next turn's indicators
-        nextTurnCandidate.indicators = nextIndicators;
+        stateAtTurnEnd.indicators = latestIndicators;
 
-        this.currentTurn = nextTurnCandidate;
+        // Advance the current turn to match the state at turn end.
+        this.currentTurn = stateAtTurnEnd;
         this.timeline.push(
             this.clone({
-                ...nextTurnCandidate,
+                ...stateAtTurnEnd,
                 history: history
             })
         );
+
+        // Add any new random events that will trigger on the next turn at this point in time
+        // These will be in effect in the next turn
+        this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
 
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
@@ -130,8 +136,8 @@ export class Simulator {
             return this.computeVictory(victoryCondition);
         } else {
             return this.clone({
-                newInGameEvents: nextTurnCandidate.nextInGameEvents,
-                latestIndicators: nextIndicators
+                newInGameEvents: this.currentTurn.nextInGameEvents,
+                latestIndicators: latestIndicators
             });
         }
     }
@@ -149,8 +155,10 @@ export class Simulator {
 
     private computeVictory(victoryCondition: VictoryCondition): VictoryState {
         return {
-            simulatorState: this.state(),
-            score: 0,
+            simulatorState: this.mutableState(),
+            score: this.mutableHistory().reduce((prev, current) => {
+                return prev + current.totalCost;
+            }, 0),
             victoryCondition: victoryCondition
         };
     }
@@ -271,6 +279,23 @@ export class Simulator {
         return containmentPoliciesOfTurn.filter(
             (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.name) == -1
         );
+    }
+
+    private pickNextGameEvents(): InGameEvent[] {
+        const result: InGameEvent[] = [];
+        const state = this.mutableState();
+        const eventHistory = this.timeline
+            .reduce((evts, current) => {
+                return evts.concat(current.nextInGameEvents);
+            }, [])
+            .map((it) => it.name);
+        this.scenario.availableInGameEvents.map((it) => {
+            const happensOnceAndHasNotHappened = it.happensOnce && eventHistory.indexOf(it.name) != -1;
+            if ((happensOnceAndHasNotHappened || !it.happensOnce) && it.canActivate(state)) {
+                result.push(it);
+            }
+        });
+        return result;
     }
 
     private clone<T>(obj: T): T {

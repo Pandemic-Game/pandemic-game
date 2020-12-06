@@ -54,7 +54,7 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.scenario.initialContainmentPolicies);
+        setControlsToTurn(0, this.scenario.initialContainmentPolicies, []);
         updateIndicators(this.simulator.history());
     }
 
@@ -76,7 +76,12 @@ export class GameEngine {
             this.simulator = this.simulator.reset(this.simulator.lastTurn());
             this.currentlySelectedActions = prevChoices;
 
-            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
+            const simulatorState = this.simulator.state();
+            setControlsToTurn(
+                this.simulator.lastTurn(),
+                this.currentlySelectedActions,
+                simulatorState.currentTurn.nextInGameEvents
+            );
             updateIndicators(this.simulator.history());
         }
     }
@@ -85,7 +90,7 @@ export class GameEngine {
         const history = this.simulator.history();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
-            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions);
+            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions, nextTurn.newInGameEvents);
             updateIndicators(history);
         } else {
             // Do the final graph update
