@@ -200,7 +200,6 @@ describe("The operation of the Simulator", () => {
                     startIndex = actionHistory.worldHistoryStartIndex + daysPerturn;
                 }
 
-
                 count += 1;
             }
 

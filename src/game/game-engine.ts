@@ -1,11 +1,15 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
-import { Simulator } from '../simulator/Simulator';
-import { NextTurnState, PlayerActions, VictoryState, isNextTurn, Indicators } from '../simulator/SimulatorState';
+import { NextTurnState, PlayerActions, Indicators } from '../simulator/SimulatorState';
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
+import { Simulator2, VictoryState2 } from '@src/simulator/Simulator2';
+
+export const isNextTurn = (nextTurn: NextTurnState | VictoryState2): nextTurn is NextTurnState => {
+    return (nextTurn as any)?.latestIndicators !== undefined;
+};
 
 interface CurrentUISelection {
     transit: boolean;
@@ -18,12 +22,12 @@ type AvailableActions = 'transit' | 'masks' | 'schools' | 'business';
 
 export class GameEngine {
     private scenario: Scenario;
-    private simulator: Simulator;
+    private simulator: Simulator2;
     private currentlySelectedActions: CurrentUISelection;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
-        this.simulator = new Simulator(scenario);
+        this.simulator = new Simulator2(scenario);
         this.currentlySelectedActions = {
             transit: false,
             masks: false,
@@ -62,7 +66,7 @@ export class GameEngine {
     private undoLastTurn() {
         const lastState = this.simulator.state();
         if (this.simulator.lastTurn() > 0) {
-            const prevContainmentPolicies = lastState.currentActions.playerActions.containmentPolicies;
+            const prevContainmentPolicies = lastState.currentTurn.playerActions.containmentPolicies;
             const prevChoices: CurrentUISelection = {
                 transit: false,
                 masks: false,
@@ -86,7 +90,7 @@ export class GameEngine {
         }
     }
 
-    private onNextTurn(nextTurn: NextTurnState | VictoryState) {
+    private onNextTurn(nextTurn: NextTurnState | VictoryState2) {
         const simulatorState = this.simulator.state();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
