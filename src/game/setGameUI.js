@@ -46,11 +46,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         const choiceIsActive = dictOfActivePolicies[$(this).attr('data-action')];
 
         let label = '';
-        for(const choice of initialContainmentPolicies){
-            if(choice.id === $(this).attr('data-action')){
-                if(choiceIsActive){
+        for (const choice of initialContainmentPolicies) {
+            if (choice.id === $(this).attr('data-action')) {
+                if (choiceIsActive) {
                     label = choice.activeLabel;
-                }else{
+                } else {
                     label = choice.inactiveLabel;
                 }
             }

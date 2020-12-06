@@ -9,8 +9,8 @@ export interface ContainmentPolicy {
     icon: string;
     requirements: CapabilityImprovements[];
     name: string;
-    activeLabel: string,
-    inactiveLabel: string,
+    activeLabel: string;
+    inactiveLabel: string;
     immediateEffect: (context: WorldState) => Indicators;
     recurringEffect: (context: WorldState) => Indicators;
 }

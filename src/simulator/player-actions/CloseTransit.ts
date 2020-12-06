@@ -5,8 +5,8 @@ export const CloseTransit: ContainmentPolicy = {
     name: 'Transit', // 'Close transit (buses, trains, airports)',
     icon: 'fa-car-side',
     requirements: [],
-    activeLabel: "Closed",
-    inactiveLabel: "Open",
+    activeLabel: 'Closed',
+    inactiveLabel: 'Open',
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
