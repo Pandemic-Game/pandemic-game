@@ -27,7 +27,6 @@ export const HospitalCapacityExceeded: InGameEvent = {
                     return prev + current.hospitalCapacity;
                 }, 0) / 5;
 
-            console.log(`${totalInfectedRequiringHospitalization} | ${totalHospitalCapacity}`);
             // Some infections last longer than average taking up hospital space
             return totalInfectedRequiringHospitalization > totalHospitalCapacity * 0.8;
         }
