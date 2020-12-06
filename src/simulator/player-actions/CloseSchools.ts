@@ -2,9 +2,11 @@ import { ContainmentPolicy } from './PlayerActions';
 
 export const CloseSchools: ContainmentPolicy = {
     id: 'schools',
-    name: 'Close schools',
+    name: 'Schools',
     icon: 'fa-graduation-cap',
     requirements: [],
+    activeLabel: "Closed",
+    inactiveLabel: "Open",
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };

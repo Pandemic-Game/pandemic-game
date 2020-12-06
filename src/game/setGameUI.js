@@ -26,7 +26,7 @@ export const resetControls = () => {
         .removeClass('btn-success');
 };
 
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents) => {
+export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents, initialContainmentPolicies) => {
     // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
@@ -45,7 +45,19 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         // Enable and style by activation
         const choiceIsActive = dictOfActivePolicies[$(this).attr('data-action')];
 
+        let label = '';
+        for(const choice of initialContainmentPolicies){
+            if(choice.id === $(this).attr('data-action')){
+                if(choiceIsActive){
+                    label = choice.activeLabel;
+                }else{
+                    label = choice.inactiveLabel;
+                }
+            }
+        }
+
         $(this)
+            .html(label)
             .removeClass('btn-light')
             .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
             .addClass(choiceIsActive ? 'btn-success' : 'btn-light') // Green = active, red = inactive
