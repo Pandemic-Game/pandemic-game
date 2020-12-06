@@ -52,7 +52,7 @@ export const createGameUI = (
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('td', header);
-        date.innerHTML = `${i+1}/20`; // Numbered months not named
+        date.innerHTML = `${i + 1}/20`; // Numbered months not named
         date.className = 'noselect';
         date.style.textAlign = 'center';
     }
@@ -64,13 +64,12 @@ export const createGameUI = (
         target.toggleClass('btn-success');
 
         // Change label text on click
-        let label = target.html();
-        if(label === target.attr('data-activeLabel')){
-            target.html(target.attr('data-inactiveLabel'))
+        const label = target.html();
+        if (label === target.attr('data-activeLabel')) {
+            target.html(target.attr('data-inactiveLabel'));
         } else {
-            target.html(target.attr('data-activeLabel'))
+            target.html(target.attr('data-activeLabel'));
         }
-        
 
         // On player selects action pass action to event
         onPlayerSelectsAction(target.attr('data-action'));
@@ -82,7 +81,6 @@ export const createGameUI = (
         const title = createEle('TD', tr);
         title.innerHTML = action.name;
         title.className = 'noselect';
-        title.style.width = '190px';
         title.style.textAlign = 'right';
         // eslint-disable-next-line no-plusplus
         for (let i = 0; i < numberOfColumns; i++) {

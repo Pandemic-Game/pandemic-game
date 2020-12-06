@@ -41,22 +41,15 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     }
 
     // Style current choices
-    $(`[id^="turn${playerTurn}-"]`).each(function () {
+    $(`[id^="turn${playerTurn}-"]`).each((_idx, domNode) => {
         // Enable and style by activation
-        const choiceIsActive = dictOfActivePolicies[$(this).attr('data-action')];
+        const target = $(domNode);
+        const choiceIsActive = dictOfActivePolicies[target.data('action')];
 
-        let label = '';
-        for(const choice of initialContainmentPolicies){
-            if(choice.id === $(this).attr('data-action')){
-                if(choiceIsActive){
-                    label = choice.activeLabel;
-                }else{
-                    label = choice.inactiveLabel;
-                }
-            }
-        }
-
-        $(this)
+        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
+        // eslint-disable-next-line no-nested-ternary
+        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
+        target
             .html(label)
             .removeClass('btn-light')
             .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')

@@ -91,7 +91,12 @@ export class GameEngine {
         const history = this.simulator.history();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
-            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions, nextTurn.newInGameEvents, this.scenario.initialContainmentPolicies);
+            setControlsToTurn(
+                this.simulator.lastTurn(),
+                this.currentlySelectedActions,
+                nextTurn.newInGameEvents,
+                this.scenario.initialContainmentPolicies
+            );
             updateIndicators(history);
         } else {
             // Do the final graph update

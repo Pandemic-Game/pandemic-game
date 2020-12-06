@@ -5,8 +5,8 @@ export const CloseBusinesses: ContainmentPolicy = {
     name: 'Businesses', // 'Close all non-essential businesses',
     icon: 'fa-briefcase',
     requirements: [],
-    activeLabel: "Closed",
-    inactiveLabel: "Open",
+    activeLabel: 'Closed',
+    inactiveLabel: 'Open',
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
