@@ -94,7 +94,7 @@ export const createGameUI = (
             btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
             btn.setAttribute('data-activeLabel', action.activeLabel);
             // btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon} noselect"></i>`;
+            btn.innerHTML = action.inactiveLabel; // Icons disabled for faster load `<i class="fa ${action.icon} noselect"></i>`;
             btn.onclick = btnClickHandler;
         }
     }
