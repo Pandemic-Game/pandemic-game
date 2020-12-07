@@ -133,7 +133,8 @@ class PandemicEnv {
         const r = 50.0;
         const p = lam / (r + lam);
         const new_num_infected = new FakeNegativeBinomial(r, p).sample();
-        return new_num_infected;
+        //return new_num_infected;
+        return lam; // remove stochasticity
     }
 }
 
