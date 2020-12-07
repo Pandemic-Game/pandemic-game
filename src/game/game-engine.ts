@@ -6,15 +6,16 @@ import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-a
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
+import { WelcomeEvent } from '../simulator/in-game-events/WelcomeEvent';
 
 interface CurrentUISelection {
-    transit: boolean;
+    transport: boolean;
     masks: boolean;
     schools: boolean;
     business: boolean;
 }
 
-type AvailableActions = 'transit' | 'masks' | 'schools' | 'business';
+type AvailableActions = 'transport' | 'masks' | 'schools' | 'business';
 
 export class GameEngine {
     private scenario: Scenario;
@@ -25,7 +26,7 @@ export class GameEngine {
         this.scenario = scenario;
         this.simulator = new Simulator(scenario);
         this.currentlySelectedActions = {
-            transit: false,
+            transport: false,
             masks: false,
             schools: false,
             business: false
@@ -54,7 +55,12 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.scenario.initialContainmentPolicies, [], this.scenario.initialContainmentPolicies);
+        setControlsToTurn(
+            0,
+            this.scenario.initialContainmentPolicies,
+            [WelcomeEvent],
+            this.scenario.initialContainmentPolicies
+        );
         updateIndicators(this.simulator.history());
     }
 
@@ -63,7 +69,7 @@ export class GameEngine {
         if (this.simulator.lastTurn() >= 0) {
             const prevContainmentPolicies = lastState.currentTurn.playerActions.containmentPolicies;
             const prevChoices: CurrentUISelection = {
-                transit: false,
+                transport: false,
                 masks: false,
                 schools: false,
                 business: false
@@ -91,7 +97,12 @@ export class GameEngine {
         const history = this.simulator.history();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
-            setControlsToTurn(this.simulator.lastTurn(), this.currentlySelectedActions, nextTurn.newInGameEvents, this.scenario.initialContainmentPolicies);
+            setControlsToTurn(
+                this.simulator.lastTurn(),
+                this.currentlySelectedActions,
+                nextTurn.newInGameEvents,
+                this.scenario.initialContainmentPolicies
+            );
             updateIndicators(history);
         } else {
             // Do the final graph update

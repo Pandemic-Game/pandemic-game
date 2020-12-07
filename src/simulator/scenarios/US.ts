@@ -1,4 +1,5 @@
 import { HospitalCapacityExceeded } from '../in-game-events/HospitalCapacityExceeded';
+import { WelcomeEvent } from '../in-game-events/WelcomeEvent';
 import { CloseBusinesses } from '../player-actions/CloseBusinesses';
 import { CloseSchools } from '../player-actions/CloseSchools';
 import { CloseTransit } from '../player-actions/CloseTransit';

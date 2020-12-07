@@ -41,22 +41,15 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     }
 
     // Style current choices
-    $(`[id^="turn${playerTurn}-"]`).each(function () {
+    $(`[id^="turn${playerTurn}-"]`).each((_idx, domNode) => {
         // Enable and style by activation
-        const choiceIsActive = dictOfActivePolicies[$(this).attr('data-action')];
+        const target = $(domNode);
+        const choiceIsActive = dictOfActivePolicies[target.data('action')];
 
-        let label = '';
-        for(const choice of initialContainmentPolicies){
-            if(choice.id === $(this).attr('data-action')){
-                if(choiceIsActive){
-                    label = choice.activeLabel;
-                }else{
-                    label = choice.inactiveLabel;
-                }
-            }
-        }
-
-        $(this)
+        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
+        // eslint-disable-next-line no-nested-ternary
+        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
+        target
             .html(label)
             .removeClass('btn-light')
             .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
@@ -80,7 +73,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
 
 const setChangeValues = (newValue, oldValue, totalValue, diffElm, grothElm, currentElm, totalElm) => {
     totalElm.html(totalValue);
-	if (newValue > oldValue) {
+    if (newValue > oldValue) {
         diffElm
             .removeClass('negative')
             .addClass('positive')
@@ -120,43 +113,45 @@ export const updateIndicators = (history) => {
 
         if (history.length >= 31) {
             const oldIndicators = history[history.length - 31];
-			
-			let totalcases = history.reduce((acc,cur)=>{return acc+cur.numInfected},0);
-			let totaldeaths = history.reduce((acc,cur)=>{return acc+cur.numDead},0);
-			let totalcosts = history.reduce((acc,cur)=>{return acc+cur.totalCost},0);
-		
+
+            const totalcases = history.reduce((acc, cur) => {
+                return acc + cur.numInfected;
+            }, 0);
+            const totaldeaths = history.reduce((acc, cur) => {
+                return acc + cur.numDead;
+            }, 0);
+            const totalcosts = history.reduce((acc, cur) => {
+                return acc + cur.totalCost;
+            }, 0);
+
             setChangeValues(
                 lastHistoryEntry.numInfected,
                 oldIndicators.numInfected,
-				nFormatter(totalcases),
+                nFormatter(totalcases),
                 $(`#cases-differeces`),
                 $(`#cases-growth`),
                 $(`#cases-current`),
-				$(`#cases-total`)
+                $(`#cases-total`)
             );
             setChangeValues(
                 lastHistoryEntry.numDead,
                 oldIndicators.numDead,
-				nFormatter(totaldeaths),
+                nFormatter(totaldeaths),
                 $(`#deaths-differeces`),
                 $(`#deaths-growth`),
                 $(`#deaths-current`),
-				$(`#deaths-total`)
+                $(`#deaths-total`)
             );
             setChangeValues(
                 lastHistoryEntry.totalCost,
                 oldIndicators.totalCost,
-				nFormatter(totalcosts),
+                nFormatter(totalcosts),
                 $(`#cost-differeces`),
                 $(`#cost-growth`),
                 $(`#cost-current`),
-				$(`#cost-total`)
+                $(`#cost-total`)
             );
-        } else{
-			$(`#cases-total`).html(nFormatter(indicators.numInfected, 1));
-			$(`#deaths-total`).html(nFormatter(indicators.numDead, 0));
-			$(`#cost-total`).html("$ "+nFormatter(indicators.totalCost, 1));
-		}
+        }
 
         const monthIdx = Math.floor(history.length / 30) % months.length;
         $('#date-current').html(`${months[monthIdx].name} 1`);
