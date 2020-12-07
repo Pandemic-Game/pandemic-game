@@ -27,16 +27,16 @@ export function nFormatter(num, digits) {
 }
 
 export const months = [
-    { name: 'Jan', numDays: 31 },
-    { name: 'Feb', numDays: 28 },
-    { name: 'Mar', numDays: 31 },
-    { name: 'Apr', numDays: 30 },
-    { name: 'May', numDays: 31 },
-    { name: 'Jun', numDays: 30 },
-    { name: 'Jul', numDays: 31 },
-    { name: 'Aug', numDays: 31 },
-    { name: 'Sep', numDays: 30 },
-    { name: 'Oct', numDays: 31 },
-    { name: 'Nov', numDays: 30 },
-    { name: 'Dec', numDays: 31 }
+    { name: 'Jan', longName: 'January', numDays: 31 },
+    { name: 'Feb', longName: 'February', numDays: 28 },
+    { name: 'Mar', longName: 'March', numDays: 31 },
+    { name: 'Apr', longName: 'April', numDays: 30 },
+    { name: 'May', longName: 'May', numDays: 31 },
+    { name: 'Jun', longName: 'June', numDays: 30 },
+    { name: 'Jul', longName: 'July', numDays: 31 },
+    { name: 'Aug', longName: 'August', numDays: 31 },
+    { name: 'Sep', longName: 'September', numDays: 30 },
+    { name: 'Oct', longName: 'October', numDays: 31 },
+    { name: 'Nov', longName: 'November', numDays: 30 },
+    { name: 'Dec', longName: 'December', numDays: 31 }
 ];
