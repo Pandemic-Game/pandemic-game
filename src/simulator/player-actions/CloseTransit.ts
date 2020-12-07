@@ -10,7 +10,7 @@ export const CloseTransit: ContainmentPolicy = {
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
-        updatedWorldState.r = Math.max(updatedWorldState.r - 0.04, 0);
+        updatedWorldState.r = Math.max(updatedWorldState.r - 0.03, 0);
         return updatedWorldState;
     }
 };
