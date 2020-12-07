@@ -72,7 +72,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
 };
 
 const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
-	if (newValue > oldValue) {
+    if (newValue > oldValue) {
         diffElm
             .removeClass('negative')
             .addClass('positive')
@@ -101,70 +101,76 @@ const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
 
 let casesChart;
 
-const getMonthValues = (history, passedDays)=>{
-	if (history.length >= passedDays+30){
-		const monthHistory = history.slice(history.length - passedDays - 30,history.length - passedDays);
-		return {
-			"cases": monthHistory.reduce((acc,cur)=>{return acc+cur.numInfected},0),
-			"death": monthHistory.reduce((acc,cur)=>{return acc+cur.numDead},0),
-			"cost":  monthHistory.reduce((acc,cur)=>{return acc+cur.totalCost},0),
-		}
-	} if(history.length > passedDays){
-		const lastHistoryEntry = history[history.length - passedDays -1];
-		return {
-			"cases": lastHistoryEntry.numInfected,
-			"death": lastHistoryEntry.numDead,
-			"cost":  lastHistoryEntry.totalCost,
-		}
-	}
-	return null;
-}
+const getMonthValues = (history, passedDays) => {
+    if (history.length >= passedDays + 30) {
+        const monthHistory = history.slice(history.length - passedDays - 30, history.length - passedDays);
+        return {
+            cases: monthHistory.reduce((acc, cur) => {
+                return acc + cur.numInfected;
+            }, 0),
+            death: monthHistory.reduce((acc, cur) => {
+                return acc + cur.numDead;
+            }, 0),
+            cost: monthHistory.reduce((acc, cur) => {
+                return acc + cur.totalCost;
+            }, 0)
+        };
+    }
+    if (history.length > passedDays) {
+        const lastHistoryEntry = history[history.length - passedDays - 1];
+        return {
+            cases: lastHistoryEntry.numInfected,
+            death: lastHistoryEntry.numDead,
+            cost: lastHistoryEntry.totalCost
+        };
+    }
+    return null;
+};
 
 export const updateIndicators = (history) => {
-	if (history.length === 0) {
+    if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
+        const totalcases = history.reduce((acc, cur) => {
+            return acc + cur.numInfected;
+        }, 0);
+        const totaldeaths = history.reduce((acc, cur) => {
+            return acc + cur.numDead;
+        }, 0);
+        const totalcosts = history.reduce((acc, cur) => {
+            return acc + cur.totalCost;
+        }, 0);
+        $(`#cases-total`).html(nFormatter(totalcases, 1));
+        $(`#deaths-total`).html(nFormatter(totaldeaths, 0));
+        $(`#cost-total`).html('$ ' + nFormatter(totalcosts, 1));
 
-    const totalcases = history.reduce((acc, cur) => {
-        return acc + cur.numInfected;
-    }, 0);
-    const totaldeaths = history.reduce((acc, cur) => {
-        return acc + cur.numDead;
-    }, 0);
-    const totalcosts = history.reduce((acc, cur) => {
-        return acc + cur.totalCost;
-    }, 0);
-		$(`#cases-total`).html(nFormatter(totalcases, 1));
-		$(`#deaths-total`).html(nFormatter(totaldeaths, 0));
-		$(`#cost-total`).html("$ "+nFormatter(totalcosts, 1));
-			
-		const monthValues = getMonthValues(history,0);
+        const monthValues = getMonthValues(history, 0);
         $(`#cases-current`).html(nFormatter(monthValues.cases, 1));
         $(`#deaths-current`).html(nFormatter(monthValues.death, 0));
         $(`#cost-current`).html(`$ ${nFormatter(monthValues.cost, 1)}`);
-		
-		const oldMonthValues = getMonthValues(history,30);
+
+        const oldMonthValues = getMonthValues(history, 30);
         if (oldMonthValues !== null) {
             setChangeValues(
                 monthValues.cases,
                 oldMonthValues.cases,
                 $(`#cases-differeces`),
                 $(`#cases-growth`),
-                $(`#cases-current`),
+                $(`#cases-current`)
             );
             setChangeValues(
                 monthValues.death,
                 oldMonthValues.death,
                 $(`#deaths-differeces`),
                 $(`#deaths-growth`),
-                $(`#deaths-current`),
+                $(`#deaths-current`)
             );
             setChangeValues(
                 monthValues.cost,
                 oldMonthValues.cost,
                 $(`#cost-differeces`),
                 $(`#cost-growth`),
-                $(`#cost-current`),
+                $(`#cost-current`)
             );
         }
         const monthIdx = Math.floor(history.length / 30) % months.length;
