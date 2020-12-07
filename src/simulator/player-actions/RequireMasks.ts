@@ -5,8 +5,8 @@ export const RequireMasks: ContainmentPolicy = {
     name: 'Masks',
     icon: 'fa-head-side-mask',
     requirements: [],
-    activeLabel: "Required",
-    inactiveLabel: "Optional",
+    activeLabel: 'Required',
+    inactiveLabel: 'Optional',
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };

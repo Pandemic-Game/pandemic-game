@@ -41,22 +41,15 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     }
 
     // Style current choices
-    $(`[id^="turn${playerTurn}-"]`).each(function () {
+    $(`[id^="turn${playerTurn}-"]`).each((_idx, domNode) => {
         // Enable and style by activation
-        const choiceIsActive = dictOfActivePolicies[$(this).attr('data-action')];
+        const target = $(domNode);
+        const choiceIsActive = dictOfActivePolicies[target.data('action')];
 
-        let label = '';
-        for(const choice of initialContainmentPolicies){
-            if(choice.id === $(this).attr('data-action')){
-                if(choiceIsActive){
-                    label = choice.activeLabel;
-                }else{
-                    label = choice.inactiveLabel;
-                }
-            }
-        }
-
-        $(this)
+        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
+        // eslint-disable-next-line no-nested-ternary
+        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
+        target
             .html(label)
             .removeClass('btn-light')
             .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
@@ -131,10 +124,16 @@ export const updateIndicators = (history) => {
 	if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
-		
-		let totalcases = history.reduce((acc,cur)=>{return acc+cur.numInfected},0);
-		let totaldeaths = history.reduce((acc,cur)=>{return acc+cur.numDead},0);
-		let totalcosts = history.reduce((acc,cur)=>{return acc+cur.totalCost},0);
+
+    const totalcases = history.reduce((acc, cur) => {
+        return acc + cur.numInfected;
+    }, 0);
+    const totaldeaths = history.reduce((acc, cur) => {
+        return acc + cur.numDead;
+    }, 0);
+    const totalcosts = history.reduce((acc, cur) => {
+        return acc + cur.totalCost;
+    }, 0);
 		$(`#cases-total`).html(nFormatter(totalcases, 1));
 		$(`#deaths-total`).html(nFormatter(totaldeaths, 0));
 		$(`#cost-total`).html("$ "+nFormatter(totalcosts, 1));

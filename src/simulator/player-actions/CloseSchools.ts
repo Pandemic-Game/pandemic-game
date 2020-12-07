@@ -5,12 +5,12 @@ export const CloseSchools: ContainmentPolicy = {
     name: 'Schools',
     icon: 'fa-graduation-cap',
     requirements: [],
-    activeLabel: "Closed",
-    inactiveLabel: "Open",
+    activeLabel: 'Closed',
+    inactiveLabel: 'Open',
     immediateEffect: (context) => context.indicators,
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
-        updatedWorldState.r = Math.max(updatedWorldState.r - 0.05, 0);
+        updatedWorldState.r = Math.max(updatedWorldState.r - 0.03, 0);
         return updatedWorldState;
     }
 };
