@@ -66,13 +66,13 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         .animate({ opacity: 0.1 }, 'slow'); // Hide
 
     $('#events-holder').html('');
-    console.log(inGameEvents)
     inGameEvents.forEach((evt) => {
         $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
     });
 };
 
-const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
+const setChangeValues = (newValue, oldValue, totalValue, diffElm, grothElm, currentElm, totalElm) => {
+    totalElm.html(totalValue);
     if (newValue > oldValue) {
         diffElm
             .removeClass('negative')
@@ -111,28 +111,45 @@ export const updateIndicators = (history) => {
         $(`#deaths-current`).html(nFormatter(lastHistoryEntry.numDead, 0));
         $(`#cost-current`).html(`$ ${nFormatter(lastHistoryEntry.totalCost, 1)}`);
 
-        if (history.length >= 30) {
-            const oldIndicators = history[history.length - 30];
+        if (history.length >= 31) {
+            const oldIndicators = history[history.length - 31];
+
+            const totalcases = history.reduce((acc, cur) => {
+                return acc + cur.numInfected;
+            }, 0);
+            const totaldeaths = history.reduce((acc, cur) => {
+                return acc + cur.numDead;
+            }, 0);
+            const totalcosts = history.reduce((acc, cur) => {
+                return acc + cur.totalCost;
+            }, 0);
+
             setChangeValues(
                 lastHistoryEntry.numInfected,
                 oldIndicators.numInfected,
+                nFormatter(totalcases),
                 $(`#cases-differeces`),
                 $(`#cases-growth`),
-                $(`#cases-current`)
+                $(`#cases-current`),
+                $(`#cases-total`)
             );
             setChangeValues(
                 lastHistoryEntry.numDead,
                 oldIndicators.numDead,
+                nFormatter(totaldeaths),
                 $(`#deaths-differeces`),
                 $(`#deaths-growth`),
-                $(`#deaths-current`)
+                $(`#deaths-current`),
+                $(`#deaths-total`)
             );
             setChangeValues(
                 lastHistoryEntry.totalCost,
                 oldIndicators.totalCost,
+                nFormatter(totalcosts),
                 $(`#cost-differeces`),
                 $(`#cost-growth`),
-                $(`#cost-current`)
+                $(`#cost-current`),
+                $(`#cost-total`)
             );
         }
 

@@ -55,7 +55,12 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.scenario.initialContainmentPolicies, [WelcomeEvent], this.scenario.initialContainmentPolicies);
+        setControlsToTurn(
+            0,
+            this.scenario.initialContainmentPolicies,
+            [WelcomeEvent],
+            this.scenario.initialContainmentPolicies
+        );
         updateIndicators(this.simulator.history());
     }
 
