@@ -250,12 +250,10 @@ export class Simulator {
     }
 
     private computeEconomicCosts(r: number): number {
-        debugger;
         if (r >= this.scenario.r0) {
             return 0;
         }
 
-        debugger;
         return (this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10;
     }
 

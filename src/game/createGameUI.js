@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
-import { months } from '../lib/util';
 
 /* 
 Shorthand functions to create DOM elements

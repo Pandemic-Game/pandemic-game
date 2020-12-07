@@ -1,5 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: path.resolve(__dirname, 'src'),
@@ -10,13 +12,14 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js', '.json']
     },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()]
+    },
     plugins: [
+        // new BundleAnalyzerPlugin(),
         new CopyPlugin({
-            patterns: [
-                { from: 'public/index.html', to: 'index.html' },
-                { from: 'public/style/*.css' },
-                { from: 'public/webfonts/*.(eot|svg|ttf|woff|woff2)' }
-            ]
+            patterns: [{ from: 'public/index.html', to: 'index.html' }, { from: 'public/style/*.css' }]
         })
     ],
     module: {
@@ -41,5 +44,5 @@ module.exports = {
         }
     },
     watch: false,
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map'
 };
