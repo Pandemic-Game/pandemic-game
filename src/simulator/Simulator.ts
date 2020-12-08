@@ -9,6 +9,7 @@ import {
     WorldState
 } from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
+import jStat from 'jstat';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
