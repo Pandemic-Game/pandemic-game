@@ -269,7 +269,7 @@ export class Simulator {
         const new_num_infected_mean = single_chain_distr.mean * lam;
         const new_num_infected_variance = single_chain_distr.variance * lam;
         
-        const new_num_infected = return Math.max(0, Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5)));
+        const new_num_infected = Math.max(0, Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5)));
         
         return new_num_infected + this.currentTurn.indicators.importedCasesPerDay; // remove stochasticity; was: return new_num_infected;
     }
