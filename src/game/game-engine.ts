@@ -55,18 +55,16 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(
-            0,
-            this.scenario.initialContainmentPolicies,
-            [WelcomeEvent],
-            this.scenario.initialContainmentPolicies
-        );
-        updateIndicators(this.simulator.history());
+        setControlsToTurn(0, this.currentlySelectedActions, [WelcomeEvent], this.scenario.initialContainmentPolicies);
+        const history = this.simulator.history(); // In the first turn total history is the last month history
+        updateIndicators(0, history, history);
     }
 
     private undoLastTurn() {
         const lastState = this.simulator.state();
-        if (this.simulator.lastTurn() >= 0) {
+        const targetTurn = this.simulator.lastTurn();
+        if (targetTurn >= 0) {
+            // Map the previous player actions to the format used in the frontend
             const prevContainmentPolicies = lastState.currentTurn.playerActions.containmentPolicies;
             const prevChoices: CurrentUISelection = {
                 transport: false,
@@ -79,34 +77,39 @@ export class GameEngine {
                 prevChoices[it.id as AvailableActions] = true;
             });
 
-            this.simulator = this.simulator.reset(this.simulator.lastTurn());
-            this.currentlySelectedActions = prevChoices;
+            // Go back to the last turn
 
+            this.simulator = this.simulator.reset(targetTurn);
+            this.currentlySelectedActions = prevChoices;
             const simulatorState = this.simulator.state();
+            const updatedTurn = this.simulator.lastTurn();
+            // Reset the controls
             setControlsToTurn(
-                this.simulator.lastTurn(),
+                updatedTurn,
                 this.currentlySelectedActions,
                 simulatorState.currentTurn.nextInGameEvents,
                 this.scenario.initialContainmentPolicies
             );
-            updateIndicators(this.simulator.history());
+            const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
+            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory);
         }
     }
 
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         const history = this.simulator.history();
+        const currentTurn = this.simulator.lastTurn();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
             setControlsToTurn(
-                this.simulator.lastTurn(),
+                currentTurn,
                 this.currentlySelectedActions,
                 nextTurn.newInGameEvents,
                 this.scenario.initialContainmentPolicies
             );
-            updateIndicators(history);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
         } else {
             // Do the final graph update
-            updateIndicators(history);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
