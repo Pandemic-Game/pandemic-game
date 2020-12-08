@@ -263,7 +263,7 @@ export class Simulator {
         const r = 50.0;
         const p = lam / (r + lam);
         const new_num_infected = new FakeNegativeBinomial(r, p).sample();
-        return new_num_infected;
+        return lam; // Remove stochasticity. Was: return new_num_infected;
     }
 
     private generateNewCases(numInfected: number, r: number) {
