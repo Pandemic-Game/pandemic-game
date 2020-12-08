@@ -77,6 +77,12 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
 };
 
+const adjustIndicator = (turnNumber) => {
+    const basePosition = 375;
+    const leftCorner = turnNumber * 97 + basePosition;
+    $('#turn-indicator').animate({ left: `${leftCorner}px` });
+};
+
 /**
  * Updates all the on-screen indicators including graphs.
  * @param turnNumber - The number of the current turn
@@ -87,6 +93,7 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory) => {
     updateCumulativeIndicators(fullHistory);
     updateGraphs(fullHistory);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
+    adjustIndicator(turnNumber);
 };
 
 export const showWinScreen = (totalCost, totalCases) => {

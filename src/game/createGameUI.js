@@ -85,6 +85,8 @@ export const createGameUI = (
             const td = createEle('td', tr);
             const btn = createEle('button', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
+            btn.style.position = 'relative';
+            btn.style.zIndex = '200';
             btn.style.height = 'auto';
             btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
