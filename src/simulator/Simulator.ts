@@ -137,6 +137,7 @@ export class Simulator {
         } else {
             return this.clone({
                 newInGameEvents: this.currentTurn.nextInGameEvents,
+                lastTurnIndicators: history,
                 latestIndicators: latestIndicators
             });
         }
@@ -154,13 +155,13 @@ export class Simulator {
     }
 
     private computeVictory(victoryCondition: VictoryCondition): VictoryState {
-        return {
-            simulatorState: this.mutableState(),
+        return this.clone({
+            lastTurnIndicators: this.timeline[this.timeline.length - 1].history,
             score: this.mutableHistory().reduce((prev, current) => {
                 return prev + current.totalCost;
             }, 0),
             victoryCondition: victoryCondition
-        };
+        });
     }
 
     private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators): Indicators {
