@@ -57,12 +57,17 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
         ],
         tooltip: {
             formatter: function () {
-                return `${(this.x as any).toLocaleDateString('en-US', {
+                const date = (this.x as any).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric'
-                })}: ${nFormatter(this.y, 1)}`;
-            }
+                });
+                console.log(date);
+                return this.points.reduce(function (prev, point) {
+                    return `${prev}<br/> ${point.series.name}: ${nFormatter(point.y, 1)}`;
+                }, `<b>${date}<br/>`);
+            },
+            shared: true
         },
         series: [
             {

@@ -13,7 +13,6 @@ Sets UI display given the player's in-game turn and actions
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
-
 // Object that will keep track of the chart instance
 let casesChart;
 
