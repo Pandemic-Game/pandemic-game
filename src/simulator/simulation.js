@@ -124,16 +124,23 @@ class PandemicEnv {
 
     _expected_new_state(num_infected, r) {
         const fraction_susceptible = 1;
-        const expected_new_cases = num_infected * r * fraction_susceptible + this.imported_cases_per_step;
+        const expected_new_cases = num_infected * r * fraction_susceptible; // + this.imported_cases_per_step;
         return expected_new_cases;
     }
 
     _new_random_state(num_infected, action_r) {
         const lam = this._expected_new_state(num_infected, action_r);
-        const r = 50.0;
-        const p = lam / (r + lam);
-        const new_num_infected = new FakeNegativeBinomial(r, p).sample();
-        return lam; // remove stochasticity; was: return new_num_infected;
+        const r_single_chain = 0.17; // 50.0;
+        const lam_sigle_chain = 1.0 * action_r;
+        const p_single_chain = lam_sigle_chain / (r + lam_single_chain);
+        
+        const single_chain_distr = new FakeNegativeBinomial(r_sigle_chain, p_single_chain);
+        const new_num_infected_mean = single_chain_distr.mean * lam;
+        const new_num_infected_variance = single_chain_distr.variance * lam;
+        
+        const new_num_infected = return Math.max(0, Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5)));
+        
+        return new_num_infected + this.imported_cases_per_step; // remove stochasticity; was: return new_num_infected;
     }
 }
 
