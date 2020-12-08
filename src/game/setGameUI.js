@@ -72,7 +72,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
 };
 
 const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm, days, olddays) => {
-	if (newValue*olddays > days*oldValue) {
+  if (newValue*olddays > days*oldValue) {
         diffElm
             .removeClass('negative')
             .addClass('positive')
@@ -126,7 +126,7 @@ const getMonthValues = (history, month)=>{
 }
 
 export const updateIndicators = (history) => {
-	if (history.length === 0) {
+    if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
 		const totalcases = history.reduce((acc, cur) => {
@@ -155,8 +155,8 @@ export const updateIndicators = (history) => {
                 $(`#cases-differeces`),
                 $(`#cases-growth`),
                 $(`#cases-current`),
-				monthValues.days,
-				oldMonthValues.days
+				        monthValues.days,
+				        oldMonthValues.days
             );
             setChangeValues(
                 monthValues.death,
@@ -164,8 +164,8 @@ export const updateIndicators = (history) => {
                 $(`#deaths-differeces`),
                 $(`#deaths-growth`),
                 $(`#deaths-current`),
-				monthValues.days,
-				oldMonthValues.days
+				        monthValues.days,
+				        oldMonthValues.days
             );
             setChangeValues(
                 monthValues.cost,
@@ -173,8 +173,8 @@ export const updateIndicators = (history) => {
                 $(`#cost-differeces`),
                 $(`#cost-growth`),
                 $(`#cost-current`),
-				monthValues.days,
-				oldMonthValues.days
+				        monthValues.days,
+				        oldMonthValues.days
             );
         }
 		if(monthIdx == -1){

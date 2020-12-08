@@ -1,7 +1,5 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-import * as bootstrap from 'bootstrap'; // required to have bootstrap widgets on jquery
-import { months } from '../lib/util';
 
 /* 
 Shorthand functions to create DOM elements
@@ -94,7 +92,7 @@ export const createGameUI = (
             btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
             btn.setAttribute('data-activeLabel', action.activeLabel);
             // btn.style.position = 'relative';
-            btn.innerHTML = `<i class="fa ${action.icon} noselect"></i>`;
+            btn.innerHTML = action.inactiveLabel; // Icons disabled for faster load `<i class="fa ${action.icon} noselect"></i>`;
             btn.onclick = btnClickHandler;
         }
     }

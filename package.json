@@ -4,8 +4,8 @@
   "description": "A simple web game / policy simulator to build intuition around the best way to respond to a pandemic",
   "private": true,
   "scripts": {
-    "start:dev": "webpack serve --config webpack.config.js",
-    "build": "webpack --mode=production --config webpack.config.js",
+    "start:dev": "webpack serve --config webpack.config.dev.js",
+    "build": "webpack --mode=production --config webpack.config.prod.js",
     "lint": "prettier --config .prettierrc 'src/**/*.(ts|js)' --write",
     "test": "jest --config=jest.config.ts --runInBand --detectOpenHandles --colors --verbose"
   },
@@ -46,9 +46,11 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.0.0",
+    "exports-loader": "^1.1.1",
     "jest": "^26.6.3",
     "prettier": "^2.1.2",
     "regenerator-runtime": "^0.13.7",
+    "terser-webpack-plugin": "^4.2.3",
     "ts-jest": "^26.4.4",
     "ts-loader": "^8.0.11",
     "ts-node": "^9.0.0",
