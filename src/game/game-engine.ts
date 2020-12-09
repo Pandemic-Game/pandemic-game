@@ -25,6 +25,7 @@ export class GameEngine {
     constructor(scenario: Scenario) {
         this.scenario = scenario;
         this.simulator = new Simulator(scenario);
+		console.log(this.simulator.scenario.hospitalCapacity);
         this.currentlySelectedActions = {
             transport: false,
             masks: false,
@@ -61,7 +62,7 @@ export class GameEngine {
             [WelcomeEvent],
             this.scenario.initialContainmentPolicies
         );
-        updateIndicators(this.simulator.history());
+        updateIndicators(this.simulator.history(),this.simulator.scenario);
     }
 
     private undoLastTurn() {

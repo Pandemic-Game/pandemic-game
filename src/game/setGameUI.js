@@ -125,7 +125,7 @@ const getMonthValues = (history, month)=>{
 	return null;
 }
 
-export const updateIndicators = (history) => {
+export const updateIndicators = (history, scenario) => {
     if (history.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
@@ -204,7 +204,7 @@ export const updateIndicators = (history) => {
     }
 
     if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, scenario.hospitalCapacity);
     } else {
         updateCasesChart(casesChart, caseHistory, costHistory);
     }
