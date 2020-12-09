@@ -60,11 +60,12 @@ describe("The operation of the Simulator", () => {
             const nextTurn = simulator.nextTurn(emptyPlayerAction, daysPerturn);
 
             // Then the pandemic runs its course
+            const latestIndicators = nextTurn.lastTurnIndicators[nextTurn.lastTurnIndicators.length - 1]
             if (isNextTurn(nextTurn)) {
                 expect(nextTurn.newInGameEvents.length).toBe(0)
-                expect(nextTurn.latestIndicators.days).toBe(daysPerturn)
-                expect(nextTurn.latestIndicators.totalCost).toBeGreaterThan(0);
-                expect(nextTurn.latestIndicators.numInfected).toBeGreaterThan(TestScenario.initialNumInfected);
+                expect(latestIndicators.days).toBe(daysPerturn)
+                expect(latestIndicators.totalCost).toBeGreaterThan(0);
+                expect(latestIndicators.numInfected).toBeGreaterThan(TestScenario.initialNumInfected);
             } else {
                 fail("Unexpected next turn response")
             }

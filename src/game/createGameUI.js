@@ -32,8 +32,6 @@ Use:
 Elements created by this method accessed by their IDs
 
 */
-
-// Create elements on DOM
 export const createGameUI = (
     listOfPlayerActions,
     onPlayerSelectsAction,
@@ -42,14 +40,14 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
-    const table = $(`#player-actions-container`)[0];
-    // Create n columns in grid
+    const tableRoot = $(`#player-actions-container`)[0];
 
-    const header = createEle('tr', table);
-    const empty = createEle('td', header);
+    // Create table footer
+    const header = createEle('tr', tableRoot);
+    createEle('th', header);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
-        const date = createEle('td', header);
+        const date = createEle('th', header);
         date.innerHTML = `${i + 1}/20`; // Numbered months not named
         date.className = 'noselect';
         date.style.textAlign = 'center';
@@ -73,30 +71,50 @@ export const createGameUI = (
         onPlayerSelectsAction(target.attr('data-action'));
     };
 
+    // Create the table body
+    const tableBody = createEle('tbody', tableRoot);
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
-        const tr = createEle('TR', table);
-        const title = createEle('TD', tr);
+        const tr = createEle('tr', tableBody);
+        const title = createEle('td', tr);
         title.innerHTML = action.name;
         title.className = 'noselect';
         title.style.textAlign = 'right';
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < numberOfColumns; i++) {
-            const td = createEle('TD', tr);
 
-            const btn = createEle('BUTTON', td, `turn${i}-${action.id}`);
+        for (let i = 0; i < numberOfColumns; i += 1) {
+            const td = createEle('td', tr);
+            const btn = createEle('button', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
             btn.style.height = 'auto';
             btn.style.width = '80px'; // '100%';
             btn.setAttribute('data-action', action.id);
             btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
             btn.setAttribute('data-activeLabel', action.activeLabel);
-            // btn.style.position = 'relative';
-            btn.innerHTML = action.inactiveLabel; // Icons disabled for faster load `<i class="fa ${action.icon} noselect"></i>`;
+            btn.innerHTML = action.inactiveLabel;
             btn.onclick = btnClickHandler;
         }
     }
 
+    // Create table footer
+    const tableFooter = createEle('tfoot', tableRoot);
+    ['cases', 'deaths', 'cost'].forEach((indicator) => {
+        const footerRow = createEle('tr', tableFooter);
+        for (let i = 0; i < numberOfColumns + 1; i += 1) {
+            const id = i > 0 ? `month-${indicator}-${i}` : undefined;
+            const footerCell = createEle('td', footerRow, id);
+
+            if (i === 0) {
+                footerCell.innerHTML = `${indicator.charAt(0).toUpperCase()}${indicator.slice(1)}`;
+                footerCell.className = 'noselect';
+                footerCell.style.textAlign = 'right';
+            } else {
+                footerCell.innerHTML = '-';
+                footerCell.style.textAlign = 'center';
+            }
+        }
+    });
+
+    // Add extra event handlers
     $(`#end-turn-btn`).on('click', () => {
         onEndTurn();
     });

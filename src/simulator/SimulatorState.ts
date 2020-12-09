@@ -50,7 +50,7 @@ export interface SimulatorState {
 }
 
 export interface VictoryState {
-    simulatorState: SimulatorState;
+    lastTurnIndicators: Indicators[];
     victoryCondition: VictoryCondition;
     score: number;
 }
@@ -60,6 +60,7 @@ export interface VictoryState {
  */
 export interface NextTurnState {
     latestIndicators: Indicators;
+    lastTurnIndicators: Indicators[];
     newInGameEvents: InGameEvent[];
 }
 
@@ -68,5 +69,5 @@ export interface NextTurnState {
  */
 
 export const isNextTurn = (nextTurn: NextTurnState | VictoryState): nextTurn is NextTurnState => {
-    return (nextTurn as any)?.latestIndicators !== undefined;
+    return (nextTurn as any)?.newInGameEvents !== undefined;
 };
