@@ -35,7 +35,7 @@ function updateCumulativeIndicators(fullHistory) {
     }
 }
 
-const updateGraphs = (history) => {
+const updateGraphs = (history, hospitalCapacity) => {
     const fullYear = 365;
     const costHistory = [];
     const caseHistory = [];
@@ -56,7 +56,7 @@ const updateGraphs = (history) => {
     }
 
     if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
     } else {
         updateCasesChart(casesChart, caseHistory, costHistory);
     }
@@ -82,10 +82,11 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
  * @param turnNumber - The number of the current turn
  * @param fullHistory - An array of Indicator, with the full game history
  * @param lastTurnHistory - An array with of Indicator with the results of the last turn
+ * @param hospitalCapacity - Number of hospital capacity
  */
-export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory) => {
+export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospitalCapacity) => {
     updateCumulativeIndicators(fullHistory);
-    updateGraphs(fullHistory);
+    updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
 };
 

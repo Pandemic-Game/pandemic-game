@@ -55,13 +55,9 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(
-            0,
-            this.scenario.initialContainmentPolicies,
-            [WelcomeEvent],
-            this.scenario.initialContainmentPolicies
-        );
-        updateIndicators(this.simulator.history(),this.simulator.scenario);
+        setControlsToTurn(0, this.currentlySelectedActions, [WelcomeEvent], this.scenario.initialContainmentPolicies);
+        const history = this.simulator.history(); // In the first turn total history is the last month history
+        updateIndicators(0, history, history, this.simulator.scenario.hospitalCapacity);
     }
 
     private undoLastTurn() {
@@ -95,7 +91,7 @@ export class GameEngine {
                 this.scenario.initialContainmentPolicies
             );
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
-            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory);
+            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory,this.simulator.scenario.hospitalCapacity);
         }
     }
 
@@ -110,10 +106,10 @@ export class GameEngine {
                 nextTurn.newInGameEvents,
                 this.scenario.initialContainmentPolicies
             );
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
         } else {
             // Do the final graph update
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
