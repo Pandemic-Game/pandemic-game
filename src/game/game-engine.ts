@@ -55,9 +55,13 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.currentlySelectedActions, [WelcomeEvent], this.scenario.initialContainmentPolicies);
-        const history = this.simulator.history(); // In the first turn total history is the last month history
-        updateIndicators(0, history, history);
+        setControlsToTurn(
+            0,
+            this.scenario.initialContainmentPolicies,
+            [WelcomeEvent],
+            this.scenario.initialContainmentPolicies
+        );
+        updateIndicators(this.simulator.history(),this.simulator.scenario);
     }
 
     private undoLastTurn() {

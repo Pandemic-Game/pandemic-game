@@ -1,7 +1,7 @@
 import * as Highcharts from 'highcharts';
 import { nFormatter } from '../lib/util';
 
-export const buildCasesChart = (containerId: string, caseSeries: any[], totalCostSeries: any[]) => {
+export const buildCasesChart = (containerId: string, caseSeries: any[], totalCostSeries: any[], hospitalCapacity:Number) => {
     return Highcharts.chart(containerId, {
         chart: {
             type: 'line'
@@ -37,7 +37,16 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
                         color: 'blue'
                     }
                 },
-                min: 0
+                min: 0,
+				plotLines: [{
+					value: hospitalCapacity,
+					color: '#C00000',
+					dashStyle: 'shortdash',
+					width: 1,
+					label: {
+						text: 'hospital capacity'
+					}
+				}],
             },
             {
                 title: {
