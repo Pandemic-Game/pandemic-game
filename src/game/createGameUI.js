@@ -40,6 +40,10 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
+
+    // Show welcome screen
+    $('#welcome-screen').modal('show');
+
     const tableRoot = $(`#player-actions-container`)[0];
 
     // Create table footer

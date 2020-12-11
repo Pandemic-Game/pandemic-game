@@ -6,7 +6,6 @@ import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-a
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
-import { WelcomeEvent } from '../simulator/in-game-events/WelcomeEvent';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -55,9 +54,10 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.currentlySelectedActions, [WelcomeEvent], this.scenario.initialContainmentPolicies);
+        setControlsToTurn(0, this.currentlySelectedActions, '', this.scenario.initialContainmentPolicies); // REMOVED welcome event - was [WelcomeEvent]
         const history = this.simulator.history(); // In the first turn total history is the last month history
         updateIndicators(0, history, history, this.simulator.scenario.hospitalCapacity);
+        
     }
 
     private undoLastTurn() {
