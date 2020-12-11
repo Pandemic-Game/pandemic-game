@@ -140,6 +140,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
             .animate({ opacity: 1 }, 'slow'); // Show
     });
 
+    // Style current action buttons
+    $('.turn-btn-grp').hide();
+    $(`#undo-btn-${playerTurn+1}`).show();
+    $(`#endTurn-btn-${playerTurn+1}`).show();
+
     // Remove styles from future choices
     $(`[id^="turn${playerTurn + 1}-"]`)
         .prop('disabled', true) // Disable
