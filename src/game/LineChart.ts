@@ -29,12 +29,14 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
                 title: {
                     text: 'Cases/day',
                     style: {
-                        color: 'blue'
+                        color: 'blue',
+						fontSize: '16px'
                     }
                 },
                 labels: {
                     style: {
-                        color: 'blue'
+                        color: 'blue',
+						fontSize: '16px'
                     }
                 },
                 min: 0,
@@ -52,12 +54,14 @@ export const buildCasesChart = (containerId: string, caseSeries: any[], totalCos
                 title: {
                     text: 'USD',
                     style: {
-                        color: 'red'
+                        color: 'red',
+						fontSize: '16px'
                     }
                 },
                 labels: {
                     style: {
-                        color: 'red'
+                        color: 'red',
+						fontSize: '16px'
                     }
                 },
                 min: 0,
