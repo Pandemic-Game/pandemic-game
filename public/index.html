@@ -57,14 +57,11 @@
     </div>
 
     <!-- Win screen modal -->
-    <div class="modal" tabindex="-1" id='win-screen'>
+    <div class="modal" tabindex="-1" id='win-screen' data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">The year is up, here's how you did...</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div class="modal-body">
             <h5>Total cases</h5>
@@ -73,7 +70,7 @@
             <p id='win-total-costs'></p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="restart-btn">Reset</button>
+            <button type="button" class="btn btn-primary" id="restart-btn">Play again</button>
           </div>
         </div>
       </div>
@@ -81,14 +78,11 @@
   </div>
 
   <!-- Introduction modal -->
-  <div class="modal" tabindex="-1" role="dialog" id='welcome-screen'>
+  <div class="modal" tabindex="-1" role="dialog" id='welcome-screen' data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Welcome</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
         </div>
         <div class="modal-body">
           <p>
@@ -137,8 +131,9 @@
           </div>
 
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <div class="modal-footer justify-content-between align-items-center">
+          <div><input type="checkbox" id="hide-welcome"><label for="hide-welcome">Do not show again</label></div>
+          <div><button type="button" class="btn btn-primary" data-dismiss="modal">Close</button></div>
         </div>
       </div>
     </div>

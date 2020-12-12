@@ -7,6 +7,7 @@ import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI'
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
+import { GameOptions, GameOptionsStore } from './GameOptions';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -25,11 +26,13 @@ export class GameEngine {
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
     private gameHistory: GameHistory;
+    private gameOptions: GameOptionsStore;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
         this.simulator = new Simulator(scenario);
         this.gameHistory = new GameHistory();
+        this.gameOptions = new GameOptionsStore();
 
         this.currentlySelectedActions = {
             transport: false,
@@ -42,6 +45,10 @@ export class GameEngine {
     start() {
         const onPlayerSelectsAction = (action: AvailableActions) => {
             this.currentlySelectedActions[action] = !this.currentlySelectedActions[action];
+        };
+
+        const toggleWelcomeScreen = (showWelcomeScreenAtStart: boolean) => {
+            this.gameOptions.setGameOptions({ showWelcomeScreenAtStart });
         };
 
         const onEndTurn = () => {
@@ -59,7 +66,15 @@ export class GameEngine {
             this.onPlayAgain();
         };
 
-        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onPlayAgain);
+        createGameUI(
+            this.gameOptions.getGameOptions(),
+            this.scenario.initialContainmentPolicies,
+            toggleWelcomeScreen,
+            onPlayerSelectsAction,
+            onEndTurn,
+            onUndo,
+            onPlayAgain
+        );
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
         updateIndicators(0, history, history, this.scenario.hospitalCapacity);

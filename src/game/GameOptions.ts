@@ -1,8 +1,8 @@
 export interface GameOptions {
-    welcomeScreenVisibility: boolean;
+    showWelcomeScreenAtStart: boolean;
 }
 
-const defaultGameOptions = { welcomeScreenVisibility: false };
+const defaultGameOptions = { showWelcomeScreenAtStart: true };
 
 export class GameOptionsStore {
     private optionStore: Storage;

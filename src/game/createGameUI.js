@@ -33,15 +33,24 @@ Elements created by this method accessed by their IDs
 
 */
 export const createGameUI = (
+    gameOptions,
     listOfPlayerActions,
+    showWelcomeScreenAtStart,
     onPlayerSelectsAction,
     onEndTurn,
     onUndo,
     onRestart,
     numberOfColumns = 12
 ) => {
-    // Show welcome screen
-    $('#welcome-screen').modal('show');
+    // Show welcome screen if the options allow for it
+    if (gameOptions.showWelcomeScreenAtStart) {
+        $('#hide-welcome').on('click', (e) => {
+            const isChecked = $(e.target).is(':checked');
+            showWelcomeScreenAtStart(!isChecked);
+        });
+
+        $('#welcome-screen').modal('show');
+    }
 
     const tableRoot = $(`#player-actions-container`)[0];
 
