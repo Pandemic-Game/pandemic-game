@@ -44,11 +44,6 @@ export const createGameUI = (
 ) => {
     // Show welcome screen if the options allow for it
     if (gameOptions.showWelcomeScreenAtStart) {
-        $('#hide-welcome').on('click', (e) => {
-            const isChecked = $(e.target).is(':checked');
-            showWelcomeScreenAtStart(!isChecked);
-        });
-
         $('#welcome-screen').modal('show');
     }
 
@@ -167,6 +162,8 @@ export const createGameUI = (
 
     // Add extra event handlers
     $(`#restart-btn`).on('click', () => {
+        const isChecked = $('#hide-welcome').is(':checked');
+        showWelcomeScreenAtStart(!isChecked);
         onRestart();
     });
 };

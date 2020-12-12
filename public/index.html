@@ -64,10 +64,37 @@
             <h4 class="modal-title">The year is up, here's how you did...</h4>
           </div>
           <div class="modal-body">
-            <h5>Total cases</h5>
-            <p id='win-total-cases'></p>
-            <h5>Total costs</h5>
-            <p id='win-total-costs'></p>
+
+            <!-- Results for the current game-->
+            <div class="d-flex justify-content-center">
+              <div width="300px" class="alert alert-secondary">
+                <h5>This game:</h5>
+                <div>
+                  <p><span class="font-weight-bold">Total cases: </span><span id="win-total-cases"></span></p>
+                  <p><span class="font-weight-bold">Total cost: </span><span id="win-total-costs"></span></p>
+                </div>
+              </div>
+            </div>
+            <br />
+            <!-- Results for up to the last three games -->
+            <div id="prev-games-container" class="d-none">
+              <h5>You previous games:</h5>
+              <table class="table table-condensed">
+                <tbody>
+                  <tr id="past-cases-row">
+                    <td class="font-weight-bold">Total cases</td>
+                  </tr>
+                  <tr id="past-cost-row">
+                    <td class="font-weight-bold">Total cost</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between align-items-center"></div>
+            </div>
+            <!-- First game message-->
+            <div id="first-game-message" class="d-none font-weight-bold">
+              If you play again you will be able to compare your score with up to three previous games.
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="restart-btn">Play again</button>

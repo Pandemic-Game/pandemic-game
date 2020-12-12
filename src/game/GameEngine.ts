@@ -154,7 +154,15 @@ export class GameEngine {
         const totalCases = history.reduce(totalCasesReducer, 0);
         const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
         const totalCost = history.reduce(totalCostReducer, 0);
-        showWinScreen(totalCost, totalCases);
+
+        const prevGames = this.gameHistory.getPreviousGames().map((it) => {
+            return {
+                totalCases: it.history.reduce(totalCasesReducer, 0),
+                totalCost: it.history.reduce(totalCostReducer, 0)
+            };
+        });
+
+        showWinScreen(totalCost, totalCases, prevGames);
     }
 
     /**
