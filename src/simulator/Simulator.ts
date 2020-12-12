@@ -9,6 +9,7 @@ import {
     WorldState
 } from './SimulatorState';
 import { FakeNegativeBinomial } from '../lib/Probabilities';
+import jStat from 'jstat';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
@@ -137,6 +138,7 @@ export class Simulator {
         } else {
             return this.clone({
                 newInGameEvents: this.currentTurn.nextInGameEvents,
+                lastTurnIndicators: history,
                 latestIndicators: latestIndicators
             });
         }
@@ -154,13 +156,13 @@ export class Simulator {
     }
 
     private computeVictory(victoryCondition: VictoryCondition): VictoryState {
-        return {
-            simulatorState: this.mutableState(),
+        return this.clone({
+            lastTurnIndicators: this.timeline[this.timeline.length - 1].history,
             score: this.mutableHistory().reduce((prev, current) => {
                 return prev + current.totalCost;
             }, 0),
             victoryCondition: victoryCondition
-        };
+        });
     }
 
     private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators): Indicators {
@@ -259,16 +261,25 @@ export class Simulator {
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
         const lam = this.generateNewCases(num_infected, action_r);
-        const r = 50.0;
-        const p = lam / (r + lam);
-        const new_num_infected = new FakeNegativeBinomial(r, p).sample();
-        return new_num_infected;
+        const r_single_chain = 0.17; // 50.0;
+        const lam_single_chain = 1.0 * action_r;
+        const p_single_chain = lam_single_chain / (r_single_chain + lam_single_chain);
+
+        const single_chain_distr = new FakeNegativeBinomial(r_single_chain, p_single_chain);
+        const new_num_infected_mean = single_chain_distr.getMean() * lam;
+        const new_num_infected_variance = single_chain_distr.getVariance() * lam;
+
+        const new_num_infected = Math.max(
+            0,
+            Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5))
+        );
+
+        return new_num_infected + this.currentTurn.indicators.importedCasesPerDay; // remove stochasticity; was: return new_num_infected;
     }
 
     private generateNewCases(numInfected: number, r: number) {
         const fractionSusceptible = 1; // immune population?
-        const expectedNewCases =
-            numInfected * r * fractionSusceptible + this.currentTurn.indicators.importedCasesPerDay;
+        const expectedNewCases = numInfected * r * fractionSusceptible; // + this.currentTurn.indicators.importedCasesPerDay;
         return expectedNewCases;
     }
 

@@ -11,11 +11,106 @@ Sets UI display given the player's in-game turn and actions
 */
 
 import * as $ from 'jquery';
-import { nFormatter, months } from '../lib/util';
+import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
+// Object that will keep track of the chart instance
+let casesChart;
+
+const updateCumulativeIndicators = (fullHistory) => {
+    if (fullHistory.length === 0) {
+        console.warn('History should not be empty. Indicators will not be renderer correctly');
+    } else {
+        const totalcases = fullHistory.reduce((acc, cur) => {
+            return acc + cur.numInfected;
+        }, 0);
+        const totaldeaths = fullHistory.reduce((acc, cur) => {
+            return acc + cur.numDead;
+        }, 0);
+        const totalcosts = fullHistory.reduce((acc, cur) => {
+            return acc + cur.totalCost;
+        }, 0);
+        $(`#cases-total`).html(nFormatter(totalcases - fullHistory[0].numInfected, 1));
+        $(`#deaths-total`).html(nFormatter(totaldeaths - fullHistory[0].numDead, 0));
+        $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
+    }
+};
+
+const updateGraphs = (history, hospitalCapacity) => {
+    const fullYear = 365;
+    const costHistory = [];
+    const caseHistory = [];
+    history.forEach((entry) => {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + entry.days);
+        costHistory.push({ x: targetDate, y: entry.totalCost });
+        caseHistory.push({ x: targetDate, y: entry.numInfected });
+    });
+
+    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+
+    for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + futureDay);
+        costHistory.push({ x: targetDate, y: null });
+        caseHistory.push({ x: targetDate, y: null });
+    }
+
+    if (!casesChart) {
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
+    } else {
+        updateCasesChart(casesChart, caseHistory, costHistory);
+    }
+};
+
+const updateMonthlyIndicators = (turnNumber, monthHistory) => {
+    const totalCases = monthHistory.reduce((acc, cur) => {
+        return acc + cur.numInfected;
+    }, 0);
+    const totalDeaths = monthHistory.reduce((acc, cur) => {
+        return acc + cur.numDead;
+    }, 0);
+    const totalCosts = monthHistory.reduce((acc, cur) => {
+        return acc + cur.totalCost;
+    }, 0);
+    $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
+    $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
+    $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
+};
+
+/**
+ * Updates all the on-screen indicators including graphs.
+ * @param turnNumber - The number of the current turn
+ * @param fullHistory - An array of Indicator, with the full game history
+ * @param lastTurnHistory - An array with of Indicator with the results of the last turn
+ * @param hospitalCapacity - Number of hospital capacity
+ */
+export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospitalCapacity) => {
+    updateCumulativeIndicators(fullHistory);
+    updateGraphs(fullHistory, hospitalCapacity);
+    updateMonthlyIndicators(turnNumber, lastTurnHistory);
+};
+
+export const showWinScreen = (totalCost, totalCases, prevGames) => {
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
+    $('#win-screen').modal('show');
+
+    const prevGamesContainer = $('#prev-games-container');
+    if (prevGames.length > 0) {
+        prevGamesContainer.removeClass('d-none');
+        const costRow = $('#past-cost-row');
+        const casesRow = $('#past-cases-row');
+        prevGames.forEach((pastGame) => {
+            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
+        });
+    } else {
+        $('#first-game-message').removeClass('d-none');
+    }
+};
 
 // Hide and disable all buttons
-export const resetControls = () => {
+const resetControls = () => {
     // Disable and hide all choices
     $('.player-action')
         .prop('disabled', true) // Disable
@@ -58,6 +153,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
             .animate({ opacity: 1 }, 'slow'); // Show
     });
 
+    // Style current action buttons
+    $('.turn-btn-grp').hide();
+    $(`#undo-btn-${playerTurn + 1}`).show();
+    $(`#endTurn-btn-${playerTurn + 1}`).show();
+
     // Remove styles from future choices
     $(`[id^="turn${playerTurn + 1}-"]`)
         .prop('disabled', true) // Disable
@@ -65,146 +165,12 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         .removeClass('btn-success')
         .animate({ opacity: 0.1 }, 'slow'); // Hide
 
+    $(`[id^="month-deaths-${playerTurn + 1}"]`).html('-');
+    $(`[id^="month-cases-${playerTurn + 1}"]`).html('-');
+    $(`[id^="month-cost-${playerTurn + 1}"]`).html('-');
+
     $('#events-holder').html('');
     inGameEvents.forEach((evt) => {
         $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
     });
-};
-
-const setChangeValues = (newValue, oldValue, diffElm, grothElm, currentElm) => {
-    if (newValue > oldValue) {
-        diffElm
-            .removeClass('negative')
-            .addClass('positive')
-            .html(`+${nFormatter(newValue - oldValue)}`);
-        grothElm
-            .removeClass('negative')
-            .addClass('positive')
-            .html(oldValue === 0 ? '' : `+${Math.floor((1000 * (newValue - oldValue)) / oldValue / 10)}%`);
-        currentElm.removeClass('negative').addClass('positive');
-    } else if (newValue < oldValue) {
-        diffElm
-            .removeClass('positive')
-            .addClass('negative')
-            .html(nFormatter(newValue - oldValue));
-        grothElm
-            .removeClass('positive')
-            .addClass('negative')
-            .html(`${Math.floor((1000 * (newValue - oldValue)) / oldValue / 10)}%`);
-        currentElm.removeClass('positive').addClass('negative');
-    } else {
-        diffElm.removeClass('positive negative').html('0');
-        grothElm.removeClass('positive negative').html('0%');
-        currentElm.removeClass('positive negative');
-    }
-};
-
-let casesChart;
-
-const getMonthValues = (history, passedDays) => {
-    if (history.length >= passedDays + 30) {
-        const monthHistory = history.slice(history.length - passedDays - 30, history.length - passedDays);
-        return {
-            cases: monthHistory.reduce((acc, cur) => {
-                return acc + cur.numInfected;
-            }, 0),
-            death: monthHistory.reduce((acc, cur) => {
-                return acc + cur.numDead;
-            }, 0),
-            cost: monthHistory.reduce((acc, cur) => {
-                return acc + cur.totalCost;
-            }, 0)
-        };
-    }
-    if (history.length > passedDays) {
-        const lastHistoryEntry = history[history.length - passedDays - 1];
-        return {
-            cases: lastHistoryEntry.numInfected,
-            death: lastHistoryEntry.numDead,
-            cost: lastHistoryEntry.totalCost
-        };
-    }
-    return null;
-};
-
-export const updateIndicators = (history) => {
-    if (history.length === 0) {
-        console.warn('History should not be empty. Indicators will not be renderer correctly');
-    } else {
-        const totalcases = history.reduce((acc, cur) => {
-            return acc + cur.numInfected;
-        }, 0);
-        const totaldeaths = history.reduce((acc, cur) => {
-            return acc + cur.numDead;
-        }, 0);
-        const totalcosts = history.reduce((acc, cur) => {
-            return acc + cur.totalCost;
-        }, 0);
-        $(`#cases-total`).html(nFormatter(totalcases, 1));
-        $(`#deaths-total`).html(nFormatter(totaldeaths, 0));
-        $(`#cost-total`).html('$ ' + nFormatter(totalcosts, 1));
-
-        const monthValues = getMonthValues(history, 0);
-        $(`#cases-current`).html(nFormatter(monthValues.cases, 1));
-        $(`#deaths-current`).html(nFormatter(monthValues.death, 0));
-        $(`#cost-current`).html(`$ ${nFormatter(monthValues.cost, 1)}`);
-
-        const oldMonthValues = getMonthValues(history, 30);
-        if (oldMonthValues !== null) {
-            setChangeValues(
-                monthValues.cases,
-                oldMonthValues.cases,
-                $(`#cases-differeces`),
-                $(`#cases-growth`),
-                $(`#cases-current`)
-            );
-            setChangeValues(
-                monthValues.death,
-                oldMonthValues.death,
-                $(`#deaths-differeces`),
-                $(`#deaths-growth`),
-                $(`#deaths-current`)
-            );
-            setChangeValues(
-                monthValues.cost,
-                oldMonthValues.cost,
-                $(`#cost-differeces`),
-                $(`#cost-growth`),
-                $(`#cost-current`)
-            );
-        }
-        const monthIdx = Math.floor(history.length / 30) % months.length;
-        $('#date-current').html(`Month of ${months[monthIdx].longName}:`);
-    }
-
-    const fullYear = 365;
-    const costHistory = [];
-    const caseHistory = [];
-    history.forEach((entry) => {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.totalCost });
-        caseHistory.push({ x: targetDate, y: entry.numInfected });
-    });
-
-    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
-    // eslint-disable-next-line no-plusplus
-    for (let futureDay = lastDay; futureDay <= fullYear; futureDay++) {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + futureDay);
-        costHistory.push({ x: targetDate, y: null });
-        caseHistory.push({ x: targetDate, y: null });
-    }
-
-    if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
-    } else {
-        updateCasesChart(casesChart, caseHistory, costHistory);
-    }
-};
-
-export const showWinScreen = (totalCost, totalCases) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
-    $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
-    $('#win-screen').modal('show');
 };

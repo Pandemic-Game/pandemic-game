@@ -22,50 +22,21 @@
         <div id="indicator-panel">
           <div class="p-2 row">
             <div class="col-sm-3">
-              <div class="col-values">
-                <h3 id="date-current">Month of January:</h3>
-              </div>
-              <div class="col-changes">
-                <p><span>&nbsp;</span><br />
-                  <span>&nbsp;</span></p>
-              </div>
               <h4>Year-to-Date:</h4>
             </div>
             <div class="col-sm-3">
-              <div class="col-values">
-                <h3 id="cases-current" class="current-value"></h3>
-              </div>
-              <div class="col-changes">
-                <p><span id="cases-growth">&nbsp;</span><br />
-                  <span id="cases-differeces">&nbsp;</span></p>
-              </div>
               <h4 id="cases-total">0</h4>
               <p>Cases</p>
             </div>
             <div class="col-sm-3">
-              <div class="col-values">
-                <h3 id="deaths-current" class="current-value"></h3>
-              </div>
-              <div class="col-changes">
-                <p><span id="deaths-growth">&nbsp;</span><br />
-                  <span id="deaths-differeces">&nbsp;</span></p>
-              </div>
               <h4 id="deaths-total">0</h4>
               <p>Deaths</p>
             </div>
             <div class="col-sm-3">
-              <div class="col-values">
-                <h3 id="cost-current" class="current-value"></h3>
-              </div>
-              <div class="col-changes">
-                <p><span id="cost-growth">&nbsp;</span><br />
-                  <span id="cost-differeces">&nbsp;</span></p>
-              </div>
               <h4 id="cost-total">$ 0</h4>
               <p>Cost</p>
             </div>
           </div>
-
 
           <!-- in game events panel-->
           <div id="events-holder" style="height: 80px;"></div>
@@ -85,36 +56,111 @@
       </div>
     </div>
 
-    <div class="row justify-content-between" style="margin-top: 40px;">
-      <div class="col-sm-2">
-        <button class="w-100 m-2 btn btn-lg btn-secondary" id="undo-btn"><i class="fas fa-arrow-left"></i>
-          Undo</button>
-      </div>
-      <div class="col-sm-2">
-        <button class="w-100 m-2 btn btn-lg btn-secondary" id="end-turn-btn">Next turn <i
-            class="fas fa-arrow-right"></i></button>
-      </div>
-    </div>
-
     <!-- Win screen modal -->
-    <div class="modal" tabindex="-1" id='win-screen'>
+    <div class="modal" tabindex="-1" id='win-screen' data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">The year is up, here's how you did...</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           <div class="modal-body">
-            <h5>Total cases</h5>
-            <p id='win-total-cases'></p>
-            <h5>Total costs</h5>
-            <p id='win-total-costs'></p>
+
+            <!-- Results for the current game-->
+            <div class="d-flex justify-content-center">
+              <div width="300px" class="alert alert-secondary">
+                <h5>This game:</h5>
+                <div>
+                  <p><span class="font-weight-bold">Total cases: </span><span id="win-total-cases"></span></p>
+                  <p><span class="font-weight-bold">Total cost: </span><span id="win-total-costs"></span></p>
+                </div>
+              </div>
+            </div>
+            <br />
+            <!-- Results for up to the last three games -->
+            <div id="prev-games-container" class="d-none">
+              <h5>You previous games:</h5>
+              <table class="table table-condensed">
+                <tbody>
+                  <tr id="past-cases-row">
+                    <td class="font-weight-bold">Total cases</td>
+                  </tr>
+                  <tr id="past-cost-row">
+                    <td class="font-weight-bold">Total cost</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between align-items-center"></div>
+            </div>
+            <!-- First game message-->
+            <div id="first-game-message" class="d-none font-weight-bold">
+              If you play again you will be able to compare your score with up to three previous games.
+            </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="restart-btn">Reset</button>
+            <button type="button" class="btn btn-primary" id="restart-btn">Play again</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Introduction modal -->
+  <div class="modal" tabindex="-1" role="dialog" id='welcome-screen' data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Welcome</h5>
+        </div>
+        <div class="modal-body">
+          <p>
+            Welcome, you will be responsible for coordinating the response to the Covid-19 pandemic over the next twelve
+            months.
+          </p>
+          <p>
+            Your goal is to minimize the loss of life and the economic impacts
+          </p>
+          <hr>
+          <h5>How to play</h5>
+          <br>
+          <strong>Interacting with the simulation</strong>
+          <p>
+            Please choose your course of action in the <strong>Actions</strong> panel
+            <br>Businesses <button class='player-action-demo m-2 btn btn-sm'>Open</button>
+            <br>Masks <button class='player-action-demo m-2 btn btn-sm'>Optional</button>
+          </p>
+          <strong>Viewing policy consequences</strong>
+          <p>
+            Click
+            <button class='btn btn-sm btn-light' style='color: red;'>
+              Advance<br />
+              <svg width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-caret-right-fill" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+              </svg>
+            </button>
+            to go forwards in time and see the consequences
+          </p>
+          <p>
+            Click
+            <button class='btn btn-sm btn-light' style='color: red;'>
+              Undo<br />
+              <svg width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-caret-left-fill" fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+              </svg>
+            </button>
+            to go backwards in time and change your actions
+          </p>
+          <div>
+
+          </div>
+
+        </div>
+        <div class="modal-footer justify-content-between align-items-center">
+          <div><input type="checkbox" id="hide-welcome"><label for="hide-welcome">Do not show again</label></div>
+          <div><button type="button" class="btn btn-primary" data-dismiss="modal">Close</button></div>
         </div>
       </div>
     </div>
