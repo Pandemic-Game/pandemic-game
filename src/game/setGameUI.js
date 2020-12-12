@@ -16,7 +16,7 @@ import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
 
-function updateCumulativeIndicators(fullHistory) {
+const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
@@ -33,9 +33,9 @@ function updateCumulativeIndicators(fullHistory) {
         $(`#deaths-total`).html(nFormatter(totaldeaths - fullHistory[0].numDead, 0));
         $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
-}
+};
 
-const updateGraphs = (history) => {
+const updateGraphs = (history, hospitalCapacity) => {
     const fullYear = 365;
     const costHistory = [];
     const caseHistory = [];
@@ -56,7 +56,7 @@ const updateGraphs = (history) => {
     }
 
     if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory);
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
     } else {
         updateCasesChart(casesChart, caseHistory, costHistory);
     }
@@ -88,18 +88,32 @@ const adjustIndicator = (turnNumber) => {
  * @param turnNumber - The number of the current turn
  * @param fullHistory - An array of Indicator, with the full game history
  * @param lastTurnHistory - An array with of Indicator with the results of the last turn
+ * @param hospitalCapacity - Number of hospital capacity
  */
-export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory) => {
+export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospitalCapacity) => {
     updateCumulativeIndicators(fullHistory);
-    updateGraphs(fullHistory);
+    updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
     adjustIndicator(turnNumber);
 };
 
-export const showWinScreen = (totalCost, totalCases) => {
+export const showWinScreen = (totalCost, totalCases, prevGames) => {
     $(`#win-total-cases`).html(nFormatter(totalCases, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
+
+    const prevGamesContainer = $('#prev-games-container');
+    if (prevGames.length > 0) {
+        prevGamesContainer.removeClass('d-none');
+        const costRow = $('#past-cost-row');
+        const casesRow = $('#past-cases-row');
+        prevGames.forEach((pastGame) => {
+            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
+        });
+    } else {
+        $('#first-game-message').removeClass('d-none');
+    }
 };
 
 // Hide and disable all buttons
@@ -145,6 +159,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
+
+    // Style current action buttons
+    $('.turn-btn-grp').hide();
+    $(`#undo-btn-${playerTurn + 1}`).show();
+    $(`#endTurn-btn-${playerTurn + 1}`).show();
 
     // Remove styles from future choices
     $(`[id^="turn${playerTurn + 1}-"]`)

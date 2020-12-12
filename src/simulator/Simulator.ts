@@ -266,8 +266,8 @@ export class Simulator {
         const p_single_chain = lam_single_chain / (r_single_chain + lam_single_chain);
 
         const single_chain_distr = new FakeNegativeBinomial(r_single_chain, p_single_chain);
-        const new_num_infected_mean = single_chain_distr.mean * lam;
-        const new_num_infected_variance = single_chain_distr.variance * lam;
+        const new_num_infected_mean = single_chain_distr.getMean() * lam;
+        const new_num_infected_variance = single_chain_distr.getVariance() * lam;
 
         const new_num_infected = Math.max(
             0,
