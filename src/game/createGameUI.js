@@ -40,7 +40,6 @@ export const createGameUI = (
     onRestart,
     numberOfColumns = 12
 ) => {
-
     // Show welcome screen
     $('#welcome-screen').modal('show');
 
@@ -117,38 +116,38 @@ export const createGameUI = (
             }
         }
     });
-    
+
     const footerRow = createEle('tr', tableFooter);
 
     for (let i = 0; i < numberOfColumns + 1; i += 1) {
         const id = i > 0 ? `month-btns-${i}` : undefined;
         const footerCell = createEle('td', footerRow, id);
-            footerCell.style.textAlign = 'center';
-        const btnGrp = createEle('DIV', footerCell)
-            btnGrp.className = 'btn-group';
-            btnGrp.role = 'group';
-        
-        if (!(i === 0)) { 
-            let btn = createEle('button', btnGrp, `endTurn-btn-${i}`);
+        footerCell.style.textAlign = 'center';
+        const btnGrp = createEle('DIV', footerCell);
+        btnGrp.className = 'btn-group';
+        btnGrp.role = 'group';
+
+        if (!(i === 0)) {
+            const btn = createEle('button', btnGrp, `endTurn-btn-${i}`);
             btn.className = `btn btn-sm btn-light turn-btn-grp`;
             btn.style.width = '80px'; // '100%';
             btn.name = 'Go forwards in time';
             btn.type = 'button';
             btn.innerHTML = `
-                Advance 
+                Advance<br/>
                 <svg width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-caret-right-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
                 </svg>
             `;
             btn.onclick = onEndTurn; // END TURN EVENT (in game-engine.ts)
         } else {
-            let btn = createEle('button', btnGrp, `undo-btn`);
+            const btn = createEle('button', btnGrp, `undo-btn`);
             btn.className = `btn btn-sm btn-light undo-btn-grp`;
             btn.style.width = '80px'; // '100%';
             btn.name = 'Go backwards in time';
             btn.type = 'button';
             btn.innerHTML = `
-                Undo 
+                Undo<br/>
                 <svg width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-caret-left-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                 </svg>
@@ -156,7 +155,7 @@ export const createGameUI = (
             btn.onclick = onUndo; // UNDO EVENT (in game-engine.ts)
         }
     }
-    
+
     // Add extra event handlers
     $(`#restart-btn`).on('click', () => {
         onRestart();

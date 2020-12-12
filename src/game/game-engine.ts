@@ -54,10 +54,9 @@ export class GameEngine {
         };
 
         createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.currentlySelectedActions, '', this.scenario.initialContainmentPolicies); // REMOVED welcome event - was [WelcomeEvent]
+        setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
-        updateIndicators(0, history, history, this.simulator.scenario.hospitalCapacity);
-        
+        updateIndicators(0, history, history, this.scenario.hospitalCapacity);
     }
 
     private undoLastTurn() {
@@ -91,7 +90,7 @@ export class GameEngine {
                 this.scenario.initialContainmentPolicies
             );
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
-            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory,this.simulator.scenario.hospitalCapacity);
+            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
     }
 
@@ -106,10 +105,10 @@ export class GameEngine {
                 nextTurn.newInGameEvents,
                 this.scenario.initialContainmentPolicies
             );
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
         } else {
             // Do the final graph update
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
+            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
 
             // Show the win screen
             const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
