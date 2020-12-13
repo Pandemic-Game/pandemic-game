@@ -40,23 +40,6 @@ export const buildCasesChart = (
 						fontSize: '16px'
                     }
                 },
-                labels: {
-                    style: {
-                        color: 'blue',
-						fontSize: '16px'
-                    }
-                },
-                min: 0,
-				plotLines: [{
-					value: hospitalCapacity,
-					color: '#C00000',
-					dashStyle: 'shortdash',
-					width: 1,
-					label: {
-						text: 'hospital capacity'
-					}
-				}],
-            },
             {
                 max: maxCost,
 				title: {
@@ -66,47 +49,57 @@ export const buildCasesChart = (
 						fontSize: '16px'
                     }
                 },
-                labels: {
-                    style: {
-                        color: 'red',
-						fontSize: '16px'
-                    }
+                {
+                    title: {
+                        text: 'USD',
+                        style: {
+                            color: 'red',
+                            fontSize: '16px'
+                        }
+                    },
+                    labels: {
+                        style: {
+                            color: 'red',
+                            fontSize: '16px'
+                        }
+                    },
+                    min: 0,
+                    opposite: true
+                }
+            ],
+            tooltip: {
+                formatter: function () {
+                    const date = (this.x as any).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    console.log(date);
+                    return this.points.reduce(function (prev, point) {
+                        return `${prev}<br/> ${point.series.name}: ${nFormatter(point.y, 1)}`;
+                    }, `<b>${date}<br/>`);
                 },
-                min: 0,
-                opposite: true
-            }
-        ],
-        tooltip: {
-            formatter: function () {
-                const date = (this.x as any).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-                console.log(date);
-                return this.points.reduce(function (prev, point) {
-                    return `${prev}<br/> ${point.series.name}: ${nFormatter(point.y, 1)}`;
-                }, `<b>${date}<br/>`);
+                shared: true
             },
-            shared: true
+            series: [
+                {
+                    type: 'line',
+                    name: 'Cases/day',
+                    data: caseSeries,
+                    yAxis: 0,
+                    color: 'blue'
+                },
+                {
+                    type: 'line',
+                    name: 'Costs',
+                    data: totalCostSeries,
+                    yAxis: 1,
+                    color: 'red'
+                }
+            ]
         },
-        series: [
-            {
-                type: 'line',
-                name: 'Cases/day',
-                data: caseSeries,
-                yAxis: 0,
-                color: 'blue'
-            },
-            {
-                type: 'line',
-                name: 'Costs',
-                data: totalCostSeries,
-                yAxis: 1,
-                color: 'red'
-            }
-        ]
-    });
+        () => {}
+    );
 };
 
 export const updateCasesChart = (casesChart: any, caseSeries: any[], totalCostSeries: any[], maxCases:Number, maxCost:Number) => {

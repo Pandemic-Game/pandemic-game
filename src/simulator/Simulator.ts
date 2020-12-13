@@ -264,20 +264,22 @@ export class Simulator {
         const r_single_chain = 0.17; // 50.0;
         const lam_single_chain = 1.0 * action_r;
         const p_single_chain = lam_single_chain / (r_single_chain + lam_single_chain);
-        
+
         const single_chain_distr = new FakeNegativeBinomial(r_single_chain, p_single_chain);
-        const new_num_infected_mean = single_chain_distr.mean * lam;
-        const new_num_infected_variance = single_chain_distr.variance * lam;
-        
-        const new_num_infected = Math.max(0, Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5)));
-        
+        const new_num_infected_mean = single_chain_distr.getMean() * lam;
+        const new_num_infected_variance = single_chain_distr.getVariance() * lam;
+
+        const new_num_infected = Math.max(
+            0,
+            Math.floor(jStat.normal.sample(new_num_infected_mean, new_num_infected_variance ** 0.5))
+        );
+
         return new_num_infected + this.currentTurn.indicators.importedCasesPerDay; // remove stochasticity; was: return new_num_infected;
     }
 
     private generateNewCases(numInfected: number, r: number) {
         const fractionSusceptible = 1; // immune population?
-        const expectedNewCases =
-            numInfected * r * fractionSusceptible; // + this.currentTurn.indicators.importedCasesPerDay;
+        const expectedNewCases = numInfected * r * fractionSusceptible; // + this.currentTurn.indicators.importedCasesPerDay;
         return expectedNewCases;
     }
 

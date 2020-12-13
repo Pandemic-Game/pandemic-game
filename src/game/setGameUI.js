@@ -17,7 +17,7 @@ import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 let casesChart;
 let chartAxisRatio = 0;
 
-function updateCumulativeIndicators(fullHistory) {
+const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
     } else {
@@ -34,7 +34,7 @@ function updateCumulativeIndicators(fullHistory) {
         $(`#deaths-total`).html(nFormatter(totaldeaths - fullHistory[0].numDead, 0));
         $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
-}
+};
 
 const updateGraphs = (history, hospitalCapacity, axisRatio) => {
     const fullYear = 365;
@@ -111,10 +111,23 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
 };
 
-export const showWinScreen = (totalCost, totalCases) => {
+export const showWinScreen = (totalCost, totalCases, prevGames) => {
     $(`#win-total-cases`).html(nFormatter(totalCases, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
+
+    const prevGamesContainer = $('#prev-games-container');
+    if (prevGames.length > 0) {
+        prevGamesContainer.removeClass('d-none');
+        const costRow = $('#past-cost-row');
+        const casesRow = $('#past-cases-row');
+        prevGames.forEach((pastGame) => {
+            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
+        });
+    } else {
+        $('#first-game-message').removeClass('d-none');
+    }
 };
 
 // Hide and disable all buttons
@@ -163,8 +176,8 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
 
     // Style current action buttons
     $('.turn-btn-grp').hide();
-    $(`#undo-btn-${playerTurn+1}`).show();
-    $(`#endTurn-btn-${playerTurn+1}`).show();
+    $(`#undo-btn-${playerTurn + 1}`).show();
+    $(`#endTurn-btn-${playerTurn + 1}`).show();
 
     // Remove styles from future choices
     $(`[id^="turn${playerTurn + 1}-"]`)
