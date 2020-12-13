@@ -1,4 +1,4 @@
-import { GameEngine } from './game/game-engine';
+import { GameEngine } from './game/GameEngine';
 import { US } from './simulator/scenarios/US';
 import * as $ from 'jquery';
 import 'bootstrap/js/dist/modal';

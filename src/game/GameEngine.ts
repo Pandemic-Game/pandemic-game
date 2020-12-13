@@ -6,6 +6,8 @@ import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-a
 import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
+import { GameHistory } from './GameHistory';
+import { GameOptions, GameOptionsStore } from './GameOptions';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -16,14 +18,22 @@ interface CurrentUISelection {
 
 type AvailableActions = 'transport' | 'masks' | 'schools' | 'business';
 
+/***
+ * Class that interfaces the UI code with the simulator. It also keeps track of the history of past games.
+ */
 export class GameEngine {
     private scenario: Scenario;
     private simulator: Simulator;
     private currentlySelectedActions: CurrentUISelection;
+    private gameHistory: GameHistory;
+    private gameOptions: GameOptionsStore;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
         this.simulator = new Simulator(scenario);
+        this.gameHistory = new GameHistory();
+        this.gameOptions = new GameOptionsStore();
+
         this.currentlySelectedActions = {
             transport: false,
             masks: false,
@@ -37,6 +47,10 @@ export class GameEngine {
             this.currentlySelectedActions[action] = !this.currentlySelectedActions[action];
         };
 
+        const toggleWelcomeScreen = (showWelcomeScreenAtStart: boolean) => {
+            this.gameOptions.setGameOptions({ showWelcomeScreenAtStart });
+        };
+
         const onEndTurn = () => {
             const month = months[this.simulator.lastTurn() % months.length];
             const playerActions = this.collectPlayerActions();
@@ -48,16 +62,22 @@ export class GameEngine {
             this.undoLastTurn();
         };
 
-        const onRestart = () => {
-            // Quick and dirty restart
-            window.location.reload();
+        const onPlayAgain = () => {
+            this.onPlayAgain();
         };
 
-        createGameUI(this.scenario.initialContainmentPolicies, onPlayerSelectsAction, onEndTurn, onUndo, onRestart);
-        setControlsToTurn(0, this.currentlySelectedActions, '', this.scenario.initialContainmentPolicies); // REMOVED welcome event - was [WelcomeEvent]
+        createGameUI(
+            this.gameOptions.getGameOptions(),
+            this.scenario.initialContainmentPolicies,
+            toggleWelcomeScreen,
+            onPlayerSelectsAction,
+            onEndTurn,
+            onUndo,
+            onPlayAgain
+        );
+        setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
-        updateIndicators(0, history, history, this.simulator.scenario.hospitalCapacity);
-        
+        updateIndicators(0, history, history, this.scenario.hospitalCapacity);
     }
 
     private undoLastTurn() {
@@ -91,33 +111,66 @@ export class GameEngine {
                 this.scenario.initialContainmentPolicies
             );
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
-            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory,this.simulator.scenario.hospitalCapacity);
+            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
     }
 
+    /**
+     * Processes the next turn of the game that can be either a next turn or a victory state
+     */
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
         const history = this.simulator.history();
         const currentTurn = this.simulator.lastTurn();
         if (isNextTurn(nextTurn)) {
             // Just another turn. Update the controls and indicators
-            setControlsToTurn(
-                currentTurn,
-                this.currentlySelectedActions,
-                nextTurn.newInGameEvents,
-                this.scenario.initialContainmentPolicies
-            );
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
+            this.prepareNextTurn(currentTurn, nextTurn, history);
         } else {
-            // Do the final graph update
-            updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators,this.simulator.scenario.hospitalCapacity);
-
-            // Show the win screen
-            const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
-            const totalCases = history.reduce(totalCasesReducer, 0);
-            const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
-            const totalCost = history.reduce(totalCostReducer, 0);
-            showWinScreen(totalCost, totalCases);
+            // Render the win screen
+            this.prepareWinScreen(currentTurn, history, nextTurn);
         }
+    }
+
+    /**
+     * Prepares the UI for the next turn of the game
+     */
+    private prepareNextTurn(currentTurn: number, nextTurn: NextTurnState, history: Indicators[]) {
+        setControlsToTurn(
+            currentTurn,
+            this.currentlySelectedActions,
+            nextTurn.newInGameEvents,
+            this.scenario.initialContainmentPolicies
+        );
+        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
+    }
+
+    /**
+     * Prepares the win screen.
+     */
+    private prepareWinScreen(currentTurn: number, history: Indicators[], nextTurn: VictoryState) {
+        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
+
+        // Show the win screen
+        const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
+        const totalCases = history.reduce(totalCasesReducer, 0);
+        const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
+        const totalCost = history.reduce(totalCostReducer, 0);
+
+        const prevGames = this.gameHistory.getPreviousGames().map((it) => {
+            return {
+                totalCases: it.history.reduce(totalCasesReducer, 0),
+                totalCost: it.history.reduce(totalCostReducer, 0)
+            };
+        });
+
+        showWinScreen(totalCost, totalCases, prevGames);
+    }
+
+    /**
+     * Saves the current game in the history, and resets the game.
+     */
+    private onPlayAgain() {
+        this.gameHistory.saveGame(this.simulator.state());
+        window.location.reload();
     }
 
     private collectPlayerActions(): PlayerActions {
