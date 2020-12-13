@@ -89,9 +89,9 @@ export const createGameUI = (
         '75px',
         '75px',
         '75px',
+        '72px',
         '75px',
-        '75px',
-        '75px',
+        '72px',
         '75px'
     ];
     // eslint-disable-next-line no-restricted-syntax
