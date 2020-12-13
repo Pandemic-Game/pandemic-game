@@ -5,9 +5,9 @@ export const buildCasesChart = (
 			containerId: string, 
 			caseSeries: any[], 
 			totalCostSeries: any[], 
-			hospitalCapacity:Number, 
-			maxCases:Number,
-			maxCost:Number) => {
+			hospitalCapacity:number, 
+			maxCases:number,
+			maxCost:number) => {
 	return Highcharts.chart(containerId, {
         chart: {
             type: 'line'
