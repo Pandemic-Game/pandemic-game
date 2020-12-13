@@ -78,9 +78,42 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
 };
 
 const adjustIndicator = (turnNumber) => {
-    const basePosition = 375;
-    const leftCorner = turnNumber * 97 + basePosition;
-    $('#turn-indicator').animate({ left: `${leftCorner}px` });
+    const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
+    if (turnNumber < 12) {
+        /* const monthPositions = [
+            '405px',
+            '496px',
+            '584px',
+            '675px',
+            '764px',
+            '858px',
+            '948px',
+            '1043px',
+            '1136px',
+            '1228px',
+            '1320px',
+            '1411px'
+        ]; */
+        const monthPositions = [
+            `${basePosition + 165}px`,
+            `${basePosition + 256}px`,
+            `${basePosition + 344}px`,
+            `${basePosition + 435}px`,
+            `${basePosition + 525}px`,
+            `${basePosition + 618}px`,
+            `${basePosition + 708}px`,
+            `${basePosition + 803}px`,
+            `${basePosition + 896}px`,
+            `${basePosition + 988}px`,
+            `${basePosition + 1080}px`,
+            `${basePosition + 1171}px`
+        ];
+
+        const position = monthPositions[turnNumber % monthPositions.length];
+        $('#turn-indicator').animate({ left: position });
+    } else {
+        $('#turn-indicator').addClass('d-none');
+    }
 };
 
 /**
