@@ -80,6 +80,20 @@ export const createGameUI = (
 
     // Create the table body
     const tableBody = createEle('tbody', tableRoot);
+    const buttonLengths = [
+        '75px',
+        '70px',
+        '72px',
+        '72px',
+        '75px',
+        '75px',
+        '75px',
+        '75px',
+        '72px',
+        '75px',
+        '72px',
+        '75px'
+    ];
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
         const tr = createEle('tr', tableBody);
@@ -87,13 +101,16 @@ export const createGameUI = (
         title.innerHTML = action.name;
         title.className = 'noselect';
         title.style.textAlign = 'right';
+        title.style.width = '115px';
 
         for (let i = 0; i < numberOfColumns; i += 1) {
             const td = createEle('td', tr);
             const btn = createEle('button', td, `turn${i}-${action.id}`);
             btn.className = `player-action m-2 btn btn-sm`;
+            btn.style.position = 'relative';
+            btn.style.zIndex = '200';
             btn.style.height = 'auto';
-            btn.style.width = '80px'; // '100%';
+            btn.style.width = buttonLengths[i];
             btn.setAttribute('data-action', action.id);
             btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
             btn.setAttribute('data-activeLabel', action.activeLabel);
