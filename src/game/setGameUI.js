@@ -24,14 +24,14 @@ const updateCumulativeIndicators = (fullHistory) => {
         const totalcases = fullHistory.reduce((acc, cur) => {
             return acc + cur.numInfected;
         }, 0);
-        const totaldeaths = fullHistory.reduce((acc, cur) => {
+        const totaldead = fullHistory.reduce((acc, cur) => {
             return acc + cur.numDead;
         }, 0);
         const totalcosts = fullHistory.reduce((acc, cur) => {
             return acc + cur.totalCost;
         }, 0);
         $(`#cases-total`).html(nFormatter(totalcases - fullHistory[0].numInfected, 1));
-        $(`#deaths-total`).html(nFormatter(totaldeaths - fullHistory[0].numDead, 0));
+        $(`#deaths-total`).html(nFormatter(totaldead - fullHistory[0].numDead, 0));
         $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
 };
@@ -66,7 +66,6 @@ const updateGraphs = (history, hospitalCapacity, axisRatio) => {
 			caseMax = costMax/chartAxisRatio;
 		}
 	}
-	console.log(caseMax,costMax,chartAxisRatio);
     const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
 
     for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
@@ -151,8 +150,10 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     adjustIndicator(turnNumber);
 };
 
-export const showWinScreen = (totalCost, totalCases, prevGames) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
+    console.log("WIN",totalCost, totalCases, totalDeath, prevGames);
+	$(`#win-total-cases`).html(nFormatter(totalCases, 1));
+	$(`#win-total-dead`).html(nFormatter(totalDeath, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
 
@@ -160,9 +161,11 @@ export const showWinScreen = (totalCost, totalCases, prevGames) => {
     if (prevGames.length > 0) {
         prevGamesContainer.removeClass('d-none');
         const costRow = $('#past-cost-row');
+		const deadRow = $('#past-dead-row');
         const casesRow = $('#past-cases-row');
         prevGames.forEach((pastGame) => {
             casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+			deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
             costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
         });
     } else {

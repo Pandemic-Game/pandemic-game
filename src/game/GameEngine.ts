@@ -152,17 +152,20 @@ export class GameEngine {
         // Show the win screen
         const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
         const totalCases = history.reduce(totalCasesReducer, 0);
+		const totalDeadReducer = (acc: number, it: Indicators) => acc + it.numDead;
+        const totalDead = history.reduce(totalDeadReducer, 0);
         const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
         const totalCost = history.reduce(totalCostReducer, 0);
 
         const prevGames = this.gameHistory.getPreviousGames().map((it) => {
             return {
                 totalCases: it.history.reduce(totalCasesReducer, 0),
-                totalCost: it.history.reduce(totalCostReducer, 0)
+                totalCost: it.history.reduce(totalCostReducer, 0),
+				totalDead: it.history.reduce(totalDeadReducer, 0),
             };
         });
 
-        showWinScreen(totalCost, totalCases, prevGames);
+        showWinScreen(totalCost, totalCases, totalDead, prevGames);
     }
 
     /**
