@@ -23,7 +23,7 @@ export class Simulator {
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
-        this.scaleFactor = scenario.gdpPerDay * 0.2;
+        this.scaleFactor = scenario.gdpPerDay * 0.35;
         this.currentTurn = this.computeInitialWorldState();
         this.timeline = [];
     }
@@ -255,8 +255,10 @@ export class Simulator {
         if (r >= this.scenario.r0) {
             return 0;
         }
-
-        return (this.scaleFactor * (this.scenario.r0 ** 10 - r ** 10)) / this.scenario.r0 ** 10;
+	const daysTilDoubling = 10;
+	const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
+	const growthRateNew = r ** daysTilDoubling;
+        return (this.scaleFactor * (growthRateOriginal - growthRateNew)) / growthRateOriginal;
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
