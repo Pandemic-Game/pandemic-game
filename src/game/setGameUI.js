@@ -15,7 +15,6 @@ import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
-let chartAxisRatio = 0;
 
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
@@ -36,36 +35,16 @@ const updateCumulativeIndicators = (fullHistory) => {
     }
 };
 
-const updateGraphs = (history, hospitalCapacity, axisRatio) => {
+const updateGraphs = (history, hospitalCapacity) => {
     const fullYear = 365;
     const costHistory = [];
     const caseHistory = [];
-	let costMax = 0;
-	let caseMax = 0;
-	let caseHostitalratio = 2;
-	if(axisRatio){
-		chartAxisRatio = axisRatio;
-	}
     history.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
         costHistory.push({ x: targetDate, y: entry.totalCost });
         caseHistory.push({ x: targetDate, y: entry.numInfected });
-		costMax = costMax > entry.totalCost ? costMax : entry.totalCost;
-		caseMax = caseMax > entry.numInfected ? caseMax : entry.numInfected;
-    }); 
-	if(caseHostitalratio * caseMax > hospitalCapacity){
-		caseMax = hospitalCapacity*5/6;
-	}
-	if(chartAxisRatio === 0){
-		chartAxisRatio = costMax/caseMax;
-	} else {
-		if(chartAxisRatio*caseMax > costMax){
-			costMax = chartAxisRatio*caseMax;
-		} else{
-			caseMax = costMax/chartAxisRatio;
-		}
-	}
+    });
     const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
 
     for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
@@ -76,9 +55,9 @@ const updateGraphs = (history, hospitalCapacity, axisRatio) => {
     }
 
     if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity, caseMax, costMax);
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
     } else {
-        updateCasesChart(casesChart, caseHistory, costHistory, caseMax, costMax);
+        updateCasesChart(casesChart, caseHistory, costHistory);
     }
 };
 
