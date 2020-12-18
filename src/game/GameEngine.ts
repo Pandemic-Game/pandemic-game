@@ -3,7 +3,7 @@ import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } fr
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
-import { setControlsToTurn, showWinScreen, updateIndicators } from './setGameUI';
+import { setControlsToTurn, showWinScreen, updateIndicators, adjustIndicator } from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
@@ -114,6 +114,11 @@ export class GameEngine {
             updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
     }
+	
+	updateSize(){
+		const updatedTurn = this.simulator.lastTurn();
+		adjustIndicator(updatedTurn,false);
+	}
 
     /**
      * Processes the next turn of the game that can be either a next turn or a victory state

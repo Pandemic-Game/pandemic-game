@@ -97,7 +97,7 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
 };
 
-const adjustIndicator = (turnNumber) => {
+export const adjustIndicator = (turnNumber,animate) => {
     const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
     if (turnNumber < 12) {
         /* const monthPositions = [
@@ -114,7 +114,7 @@ const adjustIndicator = (turnNumber) => {
             '1320px',
             '1411px'
         ]; */
-        const monthPositions = [
+        /*const monthPositions = [
             `${basePosition + 165}px`,
             `${basePosition + 256}px`,
             `${basePosition + 344}px`,
@@ -127,10 +127,27 @@ const adjustIndicator = (turnNumber) => {
             `${basePosition + 988}px`,
             `${basePosition + 1080}px`,
             `${basePosition + 1171}px`
-        ];
-
-        const position = monthPositions[turnNumber % monthPositions.length];
-        $('#turn-indicator').animate({ left: position });
+        ]*/;
+		const monthPositions = [
+            basePosition + 165,
+            basePosition + 256,
+            basePosition + 344,
+            basePosition + 435,
+            basePosition + 525,
+            basePosition + 618,
+            basePosition + 708,
+            basePosition + 803,
+            basePosition + 896,
+            basePosition + 988,
+            basePosition + 1080,
+            basePosition + 1171
+        ]
+        const position = `${monthPositions[turnNumber % monthPositions.length]}px`;
+		if(animate){
+			$('#turn-indicator').animate({ left: position });
+		} else{
+			$('#turn-indicator').offset({ left: monthPositions[turnNumber % monthPositions.length]});
+		}
     } else {
         $('#turn-indicator').addClass('d-none');
     }
@@ -147,12 +164,11 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     updateCumulativeIndicators(fullHistory);
     updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
-    adjustIndicator(turnNumber);
+    adjustIndicator(turnNumber,true);
 };
 
 export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
-    console.log("WIN",totalCost, totalCases, totalDeath, prevGames);
-	$(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
 	$(`#win-total-dead`).html(nFormatter(totalDeath, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
