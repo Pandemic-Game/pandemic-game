@@ -108,11 +108,13 @@ export class Simulator {
         let indicatorsAtTurnStart = this.currentTurn.indicators;
         // The initial state is added on the first play
         let history = this.timeline.length === 0 ? [this.currentTurn.indicators] : [];
+	let complete_history = this.mutableHistory().concat(history);
         for (let i = 0; i < daysToAdvance; i++) {
-            latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart);
+            latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart, complete_history);
             indicatorsAtTurnStart = latestIndicators;
             // Add the last indicators to the world timeline.
             history.push(this.clone(latestIndicators));
+	    complete_history = this.mutableHistory().concat(history);
         }
 
         // Update the next turn's indicators
@@ -130,6 +132,12 @@ export class Simulator {
         // Add any new random events that will trigger on the next turn at this point in time
         // These will be in effect in the next turn
         this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
+
+        console.log("history: ")
+	console.log(this.mutableHistory())
+
+	console.log("timeline: ")
+	console.log(this.timeline)
 
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
@@ -165,9 +173,11 @@ export class Simulator {
         });
     }
 
-    private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators): Indicators {
+    private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators, history: Indicators[]): Indicators {
         let actionR = candidateState.indicators.r;
         const prevCases = lastResult.numInfected;
+
+	debugger;
 
         // Don't allow cases to exceed hospital capacity
         const hospitalCapacity = lastResult.hospitalCapacity;
@@ -182,9 +192,10 @@ export class Simulator {
         // Deaths from infections started 20 days ago
 
         const lag = 20;
-        const history = this.mutableHistory();
         const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
+	console.log("history.length");
+	console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
 
         const currentDay = lastResult.days + 1;
