@@ -11,58 +11,74 @@
 </head>
 
 <body>
-  <div id="turn-indicator" style="
-	width: 92px;
-	height: 570px;
-  background: linear-gradient(-90deg, rgba(255,250,0,0) 0%, rgba(255,250,0,1) 100%);
-	opacity: 0.5;
-	position: absolute;
-	z-index: 100;
-	top: 150px;"></div>
+
   <div class="container-fluid" style="width:1380px;">
-    <!-- consequences panel -->
-    <div class="row">
-      <div class="col-xs-1" style="width:32px;">
-        <div class="rotated-text" style="top: 330px">Consequences</div>
-      </div>
-      <div class="col">
-        <!-- Cases panel -->
-        <div id="indicator-panel">
+        <!-- Metrics Panels -->
+        <div id="metrics-panel">
           <div class="p-2 row">
-            <div class="col-sm-3">
-              <h4>Year-to-Date:</h4>
+            <div class="col-sm-1">
+              <h4>Date</h4>
+              <h4 id="date">0</h4>
             </div>
-            <div class="col-sm-3">
-              <h4 id="cases-total">0</h4>
-              <p>Cases</p>
-            </div>
-            <div class="col-sm-3">
-              <h4 id="deaths-total">0</h4>
+            <div class="col-sm-1">
+              <h4 id="deaths-month">0</h4>
               <p>Deaths</p>
             </div>
-            <div class="col-sm-3">
-              <h4 id="cost-total">$ 0</h4>
-              <p>Cost</p>
+            <div class="col-sm-1">
+              <h4 id="cases-hospitalized">0</h4>
+              <p>Hospitalized Cases</p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="gdp">0</h4>
+              <p>GDP</p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="public-support">0</h4>
+              <p>Public support </p>
+            </div>
+          
+          </div>
+        </div>
+
+        <div id="indicator-panel">
+          <div class="p-2 row">
+            <div class="col-sm-1">
+              <h4 id="hospital-capacity">-</h4>
+              <p> Hospital Capacity </p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="test-capacity">0</h4>
+              <p>Test Capacity </p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="positively-tested">-</h4>
+              <p>Positively Tested </p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="tracing-capacity">0</h4>
+              <p>Contact Tracing Capacity </p>
+            </div>
+            <div class="col-sm-1">
+              <h4 id="isolated-cases">-</h4>
+              <p>Isolated contacts </p>
             </div>
           </div>
-
-          <!-- in game events panel-->
-          <div id="events-holder" style="height: 80px;"></div>
-
-          <!-- Graph panel-->
-          <div id="cases-graph" style="width:100%;height:250px;"></div>
+        </div>
+      <!-- events panel -->  
+      <div id="events-panel" style="width:50%;height:250px;"> Events ... </div>
+      <!-- actions panel -->
+      <div class="row">
+        <div class="col-xs-1" style="width:32px">
+          <div class="rotated-text" style="top: 160px">Actions</div>
+        </div>
+        <div class="col">
+          <table id="player-actions-container"></table>
         </div>
       </div>
-    </div>
-    <!-- actions panel -->
-    <div class="row">
-      <div class="col-xs-1" style="width:32px">
-        <div class="rotated-text" style="top: 160px">Actions</div>
-      </div>
-      <div class="col">
-        <table id="player-actions-container"></table>
-      </div>
-    </div>
+      <!-- Graph panel-->
+      <div id="cases-graph" style="width:100%;height:250px;"></div>
+
+  </div>
 
     <!-- Win screen modal -->
     <div class="modal" tabindex="-1" id='win-screen' data-backdrop="static" data-keyboard="false">
