@@ -11,5 +11,5 @@ $(window).on('load', () => {
 });
 
 $(window).on('resize', () => {
-	gameEngine.updateSize();
+    gameEngine.updateSize();
 });

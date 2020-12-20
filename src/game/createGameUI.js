@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-
+import { months } from '../lib/util';
 /* 
 Shorthand functions to create DOM elements
 
@@ -55,7 +55,7 @@ export const createGameUI = (
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('th', header);
-        date.innerHTML = `${i + 1}/20`; // Numbered months not named
+        date.innerHTML = `${months[i].name}<br/>2021`; // Numbered months not named
         date.className = 'noselect';
         date.style.textAlign = 'center';
     }
