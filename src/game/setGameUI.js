@@ -77,54 +77,13 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
 };
 
 export const adjustIndicator = (turnNumber, animate) => {
-    const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
+    const columns = $('#player-actions-container tbody tr')[0].children;
     if (turnNumber < 12) {
-        /* const monthPositions = [
-            '405px',
-            '496px',
-            '584px',
-            '675px',
-            '764px',
-            '858px',
-            '948px',
-            '1043px',
-            '1136px',
-            '1228px',
-            '1320px',
-            '1411px'
-        ]; */
-        /*const monthPositions = [
-            `${basePosition + 165}px`,
-            `${basePosition + 256}px`,
-            `${basePosition + 344}px`,
-            `${basePosition + 435}px`,
-            `${basePosition + 525}px`,
-            `${basePosition + 618}px`,
-            `${basePosition + 708}px`,
-            `${basePosition + 803}px`,
-            `${basePosition + 896}px`,
-            `${basePosition + 988}px`,
-            `${basePosition + 1080}px`,
-            `${basePosition + 1171}px`
-        ]*/ const monthPositions = [
-            basePosition + 165,
-            basePosition + 256,
-            basePosition + 344,
-            basePosition + 435,
-            basePosition + 525,
-            basePosition + 618,
-            basePosition + 708,
-            basePosition + 803,
-            basePosition + 896,
-            basePosition + 988,
-            basePosition + 1080,
-            basePosition + 1171
-        ];
-        const position = `${monthPositions[turnNumber % monthPositions.length]}px`;
+        const position = columns[turnNumber + 1].getBoundingClientRect().left;
         if (animate) {
-            $('#turn-indicator').animate({ left: position });
+            $('#turn-indicator').animate({ left: `${position}px` });
         } else {
-            $('#turn-indicator').offset({ left: monthPositions[turnNumber % monthPositions.length] });
+            $('#turn-indicator').offset({ left: position });
         }
     } else {
         $('#turn-indicator').addClass('d-none');

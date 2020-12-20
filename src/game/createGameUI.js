@@ -101,7 +101,7 @@ export const createGameUI = (
         title.innerHTML = action.name;
         title.className = 'noselect';
         title.style.textAlign = 'right';
-        title.style.width = '115px';
+        title.style.width = '140px';
 
         for (let i = 0; i < numberOfColumns; i += 1) {
             const td = createEle('td', tr);
@@ -119,16 +119,23 @@ export const createGameUI = (
         }
     }
 
-    // Create table footer
+    // Create table footer - current turn
     const tableFooter = createEle('tfoot', tableRoot);
-    ['cases', 'deaths', 'cost'].forEach((indicator) => {
+    const indicators = ['cases', 'deaths', 'cost'];
+
+    // HOF to create the footer rows
+    const createMonthlyIndictorCells = (isPreviousGameCell) => (indicator) => {
         const footerRow = createEle('tr', tableFooter);
+        if (isPreviousGameCell) {
+            footerRow.className = 'requires-previous-play';
+        }
         for (let i = 0; i < numberOfColumns + 1; i += 1) {
-            const id = i > 0 ? `month-${indicator}-${i}` : undefined;
+            const id = i > 0 ? `${isPreviousGameCell ? 'last-game-' : ''}month-${indicator}-${i}` : undefined;
             const footerCell = createEle('td', footerRow, id);
 
             if (i === 0) {
-                footerCell.innerHTML = `${indicator.charAt(0).toUpperCase()}${indicator.slice(1)}`;
+                footerCell.innerHTML = `${indicator.charAt(0).toUpperCase()}${indicator.slice(1)} 
+                - ${isPreviousGameCell ? 'last game' : 'this game'}`;
                 footerCell.className = 'noselect';
                 footerCell.style.textAlign = 'right';
             } else {
@@ -136,7 +143,13 @@ export const createGameUI = (
                 footerCell.style.textAlign = 'center';
             }
         }
-    });
+    };
+
+    // Create monthly indicator cells for current playthough
+    indicators.forEach(createMonthlyIndictorCells(false));
+
+    // Create monthly indicator cells for next playthroug
+    indicators.forEach(createMonthlyIndictorCells(true));
 
     const footerRow = createEle('tr', tableFooter);
 

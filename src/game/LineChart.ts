@@ -84,7 +84,6 @@ export const buildCasesChart = (
                         month: 'short',
                         day: 'numeric'
                     });
-                    console.log(date);
                     return this.points.reduce(function (prev, point) {
                         return `${prev}<br/> ${point.series.name}: ${nFormatter(point.y, 1)}`;
                     }, `<b>${date}<br/>`);

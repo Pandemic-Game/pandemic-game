@@ -133,12 +133,6 @@ export class Simulator {
         // These will be in effect in the next turn
         this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
 
-        console.log('history: ');
-        console.log(this.mutableHistory());
-
-        console.log('timeline: ');
-        console.log(this.timeline);
-
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
         if (victoryCondition) {
@@ -195,8 +189,6 @@ export class Simulator {
         const lag = 20;
         const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
-        console.log('history.length');
-        console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
 
         const currentDay = lastResult.days + 1;
