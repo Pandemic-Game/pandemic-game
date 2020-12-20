@@ -40,7 +40,7 @@ const updateGraphs = (history, hospitalCapacity) => {
     const costHistory = [];
     const caseHistory = [];
 
-    const visibleHistory = history.slice(16); // Hack to make thinks align well on screen
+    const visibleHistory = history.slice(13); // Hack to make thinks align well on screen
 
     visibleHistory.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));

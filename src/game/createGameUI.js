@@ -81,18 +81,18 @@ export const createGameUI = (
     // Create the table body
     const tableBody = createEle('tbody', tableRoot);
     const buttonLengths = [
-        '75px',
+        '78px',
+        '65px',
         '70px',
-        '72px',
-        '72px',
-        '75px',
-        '75px',
-        '72px',
-        '75px',
-        '72px',
-        '75px',
-        '72px',
-        '75px'
+        '68px',
+        '70px',
+        '68px',
+        '70px',
+        '70px',
+        '68px',
+        '70px',
+        '68px',
+        '70px'
     ];
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
@@ -101,7 +101,7 @@ export const createGameUI = (
         title.innerHTML = action.name;
         title.className = 'noselect';
         title.style.textAlign = 'right';
-        title.style.width = '140px';
+        title.style.width = '155px';
 
         for (let i = 0; i < numberOfColumns; i += 1) {
             const td = createEle('td', tr);
