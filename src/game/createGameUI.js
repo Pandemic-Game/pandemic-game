@@ -81,7 +81,7 @@ export const createGameUI = (
     // Create the table body
     const tableBody = createEle('tbody', tableRoot);
     const buttonLengths = [
-        '78px',
+        '75px',
         '65px',
         '70px',
         '68px',
