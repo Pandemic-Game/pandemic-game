@@ -46,7 +46,7 @@ export const buildCasesChart = (
                             fontSize: '16px'
                         },
                         formatter: function () {
-                            return `${nFormatter(this.value, 1)}`
+                            return `${nFormatter(this.value, 1)}`;
                         }
                     },
                     min: 0,
@@ -76,7 +76,7 @@ export const buildCasesChart = (
                             fontSize: '16px'
                         },
                         formatter: function () {
-                            return `${nFormatter(this.value, 1)}`
+                            return `${nFormatter(this.value, 1)}`;
                         }
                     },
                     min: 0,
@@ -113,7 +113,7 @@ export const buildCasesChart = (
                 }
             ]
         },
-        () => { }
+        () => {}
     );
 };
 
