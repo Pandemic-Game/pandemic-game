@@ -124,10 +124,10 @@ export const createGameUI = (
     const indicators = ['cases', 'deaths', 'cost'];
 
     // HOF to create the footer rows
-    const createMonthlyIndictorCells = (isPreviousGameCell) => (indicator) => {
+    const createMonthlyIndictorCells = (isPreviousGameCell) => (indicator, indicatorNum) => {
         const footerRow = createEle('tr', tableFooter);
-        if (isPreviousGameCell) {
-            footerRow.className = 'requires-previous-play';
+        if (isPreviousGameCell && indicatorNum === 0) {
+            footerRow.style.borderTop = '1px solid #999999';
         }
         for (let i = 0; i < numberOfColumns + 1; i += 1) {
             const id = i > 0 ? `${isPreviousGameCell ? 'last-game-' : ''}month-${indicator}-${i}` : undefined;

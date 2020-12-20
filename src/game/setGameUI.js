@@ -104,6 +104,29 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     adjustIndicator(turnNumber, true);
 };
 
+export const updatePreviousGameIndicators = (previousIndicators) => {
+    const totalCasesFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.numInfected;
+        }, 0);
+
+    const totalDeathsFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.numDead;
+        }, 0);
+    const totalCostsFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.totalCost;
+        }, 0);
+
+    previousIndicators.forEach((turn, i) => {
+        const turnNumber = i + 1;
+        $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totalCasesFn(turn.history), 1)}`);
+        $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totalDeathsFn(turn.history), 0)}`);
+        $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totalCostsFn(turn.history), 1)}`);
+    });
+};
+
 export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     $(`#win-total-cases`).html(nFormatter(totalCases, 1));
     $(`#win-total-dead`).html(nFormatter(totalDeath, 1));
