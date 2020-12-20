@@ -108,13 +108,13 @@ export class Simulator {
         let indicatorsAtTurnStart = this.currentTurn.indicators;
         // The initial state is added on the first play
         let history = this.timeline.length === 0 ? [this.currentTurn.indicators] : [];
-	let complete_history = this.mutableHistory().concat(history);
+        let complete_history = this.mutableHistory().concat(history);
         for (let i = 0; i < daysToAdvance; i++) {
             latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart, complete_history);
             indicatorsAtTurnStart = latestIndicators;
             // Add the last indicators to the world timeline.
             history.push(this.clone(latestIndicators));
-	    complete_history = this.mutableHistory().concat(history);
+            complete_history = this.mutableHistory().concat(history);
         }
 
         // Update the next turn's indicators
@@ -133,11 +133,11 @@ export class Simulator {
         // These will be in effect in the next turn
         this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
 
-        console.log("history: ")
-	console.log(this.mutableHistory())
+        console.log('history: ');
+        console.log(this.mutableHistory());
 
-	console.log("timeline: ")
-	console.log(this.timeline)
+        console.log('timeline: ');
+        console.log(this.timeline);
 
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
@@ -173,12 +173,13 @@ export class Simulator {
         });
     }
 
-    private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators, history: Indicators[]): Indicators {
+    private computeNextPandemicDay(
+        candidateState: WorldState,
+        lastResult: Indicators,
+        history: Indicators[]
+    ): Indicators {
         let actionR = candidateState.indicators.r;
         const prevCases = lastResult.numInfected;
-
-	debugger;
-
         // Don't allow cases to exceed hospital capacity
         const hospitalCapacity = lastResult.hospitalCapacity;
         const lockdownRatio = hospitalCapacity / prevCases;
@@ -194,8 +195,8 @@ export class Simulator {
         const lag = 20;
         const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
-	console.log("history.length");
-	console.log(history.length);
+        console.log('history.length');
+        console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
 
         const currentDay = lastResult.days + 1;
@@ -266,9 +267,9 @@ export class Simulator {
         if (r >= this.scenario.r0) {
             return 0;
         }
-	const daysTilDoubling = 10;
-	const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
-	const growthRateNew = r ** daysTilDoubling;
+        const daysTilDoubling = 10;
+        const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
+        const growthRateNew = r ** daysTilDoubling;
         return (this.scaleFactor * (growthRateOriginal - growthRateNew)) / growthRateOriginal;
     }
 

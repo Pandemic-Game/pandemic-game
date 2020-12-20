@@ -7,7 +7,7 @@ import { setControlsToTurn, showWinScreen, updateIndicators, adjustIndicator } f
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
-import { GameOptions, GameOptionsStore } from './GameOptions';
+import { GameOptionsStore } from './GameOptions';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -114,11 +114,11 @@ export class GameEngine {
             updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
     }
-	
-	updateSize(){
-		const updatedTurn = this.simulator.lastTurn();
-		adjustIndicator(updatedTurn,false);
-	}
+
+    updateSize() {
+        const updatedTurn = this.simulator.lastTurn();
+        adjustIndicator(updatedTurn, false);
+    }
 
     /**
      * Processes the next turn of the game that can be either a next turn or a victory state
@@ -157,7 +157,7 @@ export class GameEngine {
         // Show the win screen
         const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
         const totalCases = history.reduce(totalCasesReducer, 0);
-		const totalDeadReducer = (acc: number, it: Indicators) => acc + it.numDead;
+        const totalDeadReducer = (acc: number, it: Indicators) => acc + it.numDead;
         const totalDead = history.reduce(totalDeadReducer, 0);
         const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
         const totalCost = history.reduce(totalCostReducer, 0);
@@ -166,7 +166,7 @@ export class GameEngine {
             return {
                 totalCases: it.history.reduce(totalCasesReducer, 0),
                 totalCost: it.history.reduce(totalCostReducer, 0),
-				totalDead: it.history.reduce(totalDeadReducer, 0),
+                totalDead: it.history.reduce(totalDeadReducer, 0)
             };
         });
 

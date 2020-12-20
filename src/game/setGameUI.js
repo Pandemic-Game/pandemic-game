@@ -76,7 +76,7 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
 };
 
-export const adjustIndicator = (turnNumber,animate) => {
+export const adjustIndicator = (turnNumber, animate) => {
     const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
     if (turnNumber < 12) {
         /* const monthPositions = [
@@ -106,8 +106,7 @@ export const adjustIndicator = (turnNumber,animate) => {
             `${basePosition + 988}px`,
             `${basePosition + 1080}px`,
             `${basePosition + 1171}px`
-        ]*/;
-		const monthPositions = [
+        ]*/ const monthPositions = [
             basePosition + 165,
             basePosition + 256,
             basePosition + 344,
@@ -120,13 +119,13 @@ export const adjustIndicator = (turnNumber,animate) => {
             basePosition + 988,
             basePosition + 1080,
             basePosition + 1171
-        ]
+        ];
         const position = `${monthPositions[turnNumber % monthPositions.length]}px`;
-		if(animate){
-			$('#turn-indicator').animate({ left: position });
-		} else{
-			$('#turn-indicator').offset({ left: monthPositions[turnNumber % monthPositions.length]});
-		}
+        if (animate) {
+            $('#turn-indicator').animate({ left: position });
+        } else {
+            $('#turn-indicator').offset({ left: monthPositions[turnNumber % monthPositions.length] });
+        }
     } else {
         $('#turn-indicator').addClass('d-none');
     }
@@ -143,12 +142,12 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     updateCumulativeIndicators(fullHistory);
     updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
-    adjustIndicator(turnNumber,true);
+    adjustIndicator(turnNumber, true);
 };
 
 export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     $(`#win-total-cases`).html(nFormatter(totalCases, 1));
-	$(`#win-total-dead`).html(nFormatter(totalDeath, 1));
+    $(`#win-total-dead`).html(nFormatter(totalDeath, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
 
@@ -156,11 +155,11 @@ export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     if (prevGames.length > 0) {
         prevGamesContainer.removeClass('d-none');
         const costRow = $('#past-cost-row');
-		const deadRow = $('#past-dead-row');
+        const deadRow = $('#past-dead-row');
         const casesRow = $('#past-cases-row');
         prevGames.forEach((pastGame) => {
             casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
-			deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
+            deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`);
             costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
         });
     } else {
