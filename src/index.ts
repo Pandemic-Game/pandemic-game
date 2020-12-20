@@ -8,7 +8,6 @@ $(window).on('load', () => {
     gameEngine.start();
 
     $(window).on('resize', () => {
-        console.log('resize');
         gameEngine.updateSize();
     });
 });

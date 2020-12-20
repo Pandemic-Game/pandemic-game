@@ -39,13 +39,16 @@ const updateGraphs = (history, hospitalCapacity) => {
     const fullYear = 365;
     const costHistory = [];
     const caseHistory = [];
-    history.forEach((entry) => {
+
+    const visibleHistory = history.slice(16); // Hack to make thinks align well on screen
+
+    visibleHistory.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
         costHistory.push({ x: targetDate, y: entry.totalCost });
         caseHistory.push({ x: targetDate, y: entry.numInfected });
     });
-    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+    const lastDay = visibleHistory.length > 0 ? visibleHistory[visibleHistory.length - 1].days + 1 : 1;
 
     for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
         const targetDate = new Date(Date.UTC(2020, 0, 1));

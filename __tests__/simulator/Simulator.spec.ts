@@ -14,6 +14,9 @@ import { TimeVictory } from "@src/simulator/victory-conditions/TimeVictory";
 export const TestScenario: Scenario = {
     totalPopulation: 400000000, // 400 million people -- i.e. approximate US population
     initialNumInfected: 10000, // 100,000 people infected -- we're in the middle of a pandemic!
+    initialDeathCosts: 0,
+    initialMedicalCosts: 0,
+    runUpPeriod: [],
     r0: 1.08, // infections double every 10 days
     importedCasesPerDay: 0.1,
     hospitalCapacity: 1000000, // 1 million hospital beds -- https://www.aha.org/statistics/fast-facts-us-hospitals

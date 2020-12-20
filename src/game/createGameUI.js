@@ -87,7 +87,7 @@ export const createGameUI = (
         '72px',
         '75px',
         '75px',
-        '75px',
+        '72px',
         '75px',
         '72px',
         '75px',
