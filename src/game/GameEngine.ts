@@ -3,7 +3,13 @@ import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } fr
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
-import { setControlsToTurn, showWinScreen, updateIndicators, adjustIndicator } from './setGameUI';
+import {
+    setControlsToTurn,
+    showWinScreen,
+    updateIndicators,
+    adjustIndicator,
+    updatePreviousGameIndicators
+} from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
@@ -78,6 +84,16 @@ export class GameEngine {
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
         updateIndicators(0, history, history, this.scenario.hospitalCapacity);
+
+        const previousGames = this.gameHistory.getPreviousGames();
+        if (previousGames.length > 0) {
+            updatePreviousGameIndicators(previousGames[previousGames.length - 1].timeline);
+        }
+    }
+
+    updateSize() {
+        const updatedTurn = this.simulator.lastTurn();
+        adjustIndicator(updatedTurn, false);
     }
 
     private undoLastTurn() {
@@ -113,11 +129,6 @@ export class GameEngine {
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
             updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
-    }
-
-    updateSize() {
-        const updatedTurn = this.simulator.lastTurn();
-        adjustIndicator(updatedTurn, false);
     }
 
     /**

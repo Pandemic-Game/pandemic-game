@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "./dist/",
+        "resolveJsonModule": true,
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "es6",

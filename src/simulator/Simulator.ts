@@ -74,7 +74,8 @@ export class Simulator {
     }
 
     private mutableHistory(): Indicators[] {
-        return this.timeline.length === 0 ? [this.currentTurn.indicators] : this.timeline.flatMap((it) => it.history);
+        const playthroughHistory = this.timeline.length === 0 ? [] : this.timeline.flatMap((it) => it.history);
+        return this.scenario.runUpPeriod.concat(playthroughHistory);
     }
 
     /**
@@ -133,12 +134,6 @@ export class Simulator {
         // These will be in effect in the next turn
         this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
 
-        console.log('history: ');
-        console.log(this.mutableHistory());
-
-        console.log('timeline: ');
-        console.log(this.timeline);
-
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
         if (victoryCondition) {
@@ -195,10 +190,7 @@ export class Simulator {
         const lag = 20;
         const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
-        console.log('history.length');
-        console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
-
         const currentDay = lastResult.days + 1;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
@@ -220,9 +212,9 @@ export class Simulator {
 
     private computeInitialWorldState(): WorldState {
         // TODO: The hospitalization costs will not be zero on the first turn!
-        const deathCosts = this.computeDeathCost(0);
-        const economicCosts = this.computeEconomicCosts(this.scenario.r0);
-        const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
+        const deathCosts = this.scenario.initialDeathCosts;
+        const economicCosts = this.scenario.initialEconomicCosts;
+        const medicalCosts = this.scenario.initialMedicalCosts;
         return {
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
