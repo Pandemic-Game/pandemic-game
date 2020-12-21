@@ -1,6 +1,6 @@
 import { InGameEvent } from '../in-game-events/InGameEvents';
 import { CapabilityImprovements, ContainmentPolicy } from '../player-actions/PlayerActions';
-import { PlayerActions } from '../SimulatorState';
+import { Indicators } from '../SimulatorState';
 import { VictoryCondition } from '../victory-conditions/VictoryConditon';
 /**
  * Represents the initial state of the game world.
@@ -8,8 +8,12 @@ import { VictoryCondition } from '../victory-conditions/VictoryConditon';
 export interface Scenario {
     totalPopulation: number;
     initialNumInfected: number;
+    initialMedicalCosts: number;
+    initialEconomicCosts: number;
+    initialDeathCosts: number;
     importedCasesPerDay: number;
     r0: number;
+    runUpPeriod: Indicators[];
     hospitalCapacity: number;
     gdpPerDay: number;
     power: number;

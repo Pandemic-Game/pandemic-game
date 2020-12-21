@@ -74,7 +74,8 @@ export class Simulator {
     }
 
     private mutableHistory(): Indicators[] {
-        return this.timeline.length === 0 ? [this.currentTurn.indicators] : this.timeline.flatMap((it) => it.history);
+        const playthroughHistory = this.timeline.length === 0 ? [] : this.timeline.flatMap((it) => it.history);
+        return this.scenario.runUpPeriod.concat(playthroughHistory);
     }
 
     /**
@@ -108,11 +109,13 @@ export class Simulator {
         let indicatorsAtTurnStart = this.currentTurn.indicators;
         // The initial state is added on the first play
         let history = this.timeline.length === 0 ? [this.currentTurn.indicators] : [];
+        let complete_history = this.mutableHistory().concat(history);
         for (let i = 0; i < daysToAdvance; i++) {
-            latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart);
+            latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart, complete_history);
             indicatorsAtTurnStart = latestIndicators;
             // Add the last indicators to the world timeline.
             history.push(this.clone(latestIndicators));
+            complete_history = this.mutableHistory().concat(history);
         }
 
         // Update the next turn's indicators
@@ -165,10 +168,13 @@ export class Simulator {
         });
     }
 
-    private computeNextPandemicDay(candidateState: WorldState, lastResult: Indicators): Indicators {
+    private computeNextPandemicDay(
+        candidateState: WorldState,
+        lastResult: Indicators,
+        history: Indicators[]
+    ): Indicators {
         let actionR = candidateState.indicators.r;
         const prevCases = lastResult.numInfected;
-
         // Don't allow cases to exceed hospital capacity
         const hospitalCapacity = lastResult.hospitalCapacity;
         const lockdownRatio = hospitalCapacity / prevCases;
@@ -182,11 +188,9 @@ export class Simulator {
         // Deaths from infections started 20 days ago
 
         const lag = 20;
-        const history = this.mutableHistory();
         const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
-
         const currentDay = lastResult.days + 1;
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
@@ -208,9 +212,9 @@ export class Simulator {
 
     private computeInitialWorldState(): WorldState {
         // TODO: The hospitalization costs will not be zero on the first turn!
-        const deathCosts = this.computeDeathCost(0);
-        const economicCosts = this.computeEconomicCosts(this.scenario.r0);
-        const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
+        const deathCosts = this.scenario.initialDeathCosts;
+        const economicCosts = this.scenario.initialEconomicCosts;
+        const medicalCosts = this.scenario.initialMedicalCosts;
         return {
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
@@ -255,9 +259,9 @@ export class Simulator {
         if (r >= this.scenario.r0) {
             return 0;
         }
-	const daysTilDoubling = 10;
-	const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
-	const growthRateNew = r ** daysTilDoubling;
+        const daysTilDoubling = 10;
+        const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
+        const growthRateNew = r ** daysTilDoubling;
         return (this.scaleFactor * (growthRateOriginal - growthRateNew)) / growthRateOriginal;
     }
 

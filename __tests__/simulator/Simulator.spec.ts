@@ -14,6 +14,10 @@ import { TimeVictory } from "@src/simulator/victory-conditions/TimeVictory";
 export const TestScenario: Scenario = {
     totalPopulation: 400000000, // 400 million people -- i.e. approximate US population
     initialNumInfected: 10000, // 100,000 people infected -- we're in the middle of a pandemic!
+    initialDeathCosts: 0,
+    initialMedicalCosts: 0,
+    initialEconomicCosts: 0,
+    runUpPeriod: [],
     r0: 1.08, // infections double every 10 days
     importedCasesPerDay: 0.1,
     hospitalCapacity: 1000000, // 1 million hospital beds -- https://www.aha.org/statistics/fast-facts-us-hospitals
@@ -43,7 +47,7 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario);
             const s0 = simulator.state();
             expect(s0.scenario).toEqual(TestScenario);
-            expect(s0.history.length).toBe(1)
+            expect(s0.history.length).toBe(TestScenario.runUpPeriod.length)
             expect(s0.timeline.length).toBe(0)
         })
     })
@@ -208,7 +212,7 @@ describe("The operation of the Simulator", () => {
 
             // Then the new simulator instance is at the first turn
             const resetState = resetSimulator.state()
-            expect(resetState.history.length).toBe(1)
+            expect(resetState.history.length).toBe(simulator.state().scenario.runUpPeriod.length)
             expect(resetState.scenario).toEqual(simulator.state().scenario)
             expect(resetState.timeline.length).toBe(0)
         })

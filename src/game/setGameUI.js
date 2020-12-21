@@ -15,7 +15,6 @@ import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
-let chartAxisRatio = 0;
 
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
@@ -36,49 +35,32 @@ const updateCumulativeIndicators = (fullHistory) => {
     }
 };
 
-const updateGraphs = (history, hospitalCapacity, axisRatio) => {
+const updateGraphs = (history, hospitalCapacity) => {
     const fullYear = 365;
     const costHistory = [];
     const caseHistory = [];
-	let costMax = 0;
-	let caseMax = 0;
-	let caseHostitalratio = 2;
-	if(axisRatio){
-		chartAxisRatio = axisRatio;
-	}
-    history.forEach((entry) => {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
+
+    const visibleHistory = history.slice(13); // Hack to make thinks align well on screen
+
+    visibleHistory.forEach((entry) => {
+        const targetDate = new Date(Date.UTC(2021, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
         costHistory.push({ x: targetDate, y: entry.totalCost });
         caseHistory.push({ x: targetDate, y: entry.numInfected });
-		costMax = costMax > entry.totalCost ? costMax : entry.totalCost;
-		caseMax = caseMax > entry.numInfected ? caseMax : entry.numInfected;
-    }); 
-	if(caseHostitalratio * caseMax > hospitalCapacity){
-		caseMax = hospitalCapacity*5/6;
-	}
-	if(chartAxisRatio === 0){
-		chartAxisRatio = costMax/caseMax;
-	} else {
-		if(chartAxisRatio*caseMax > costMax){
-			costMax = chartAxisRatio*caseMax;
-		} else{
-			caseMax = costMax/chartAxisRatio;
-		}
-	}
-    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+    });
+    const lastDay = visibleHistory.length > 0 ? visibleHistory[visibleHistory.length - 1].days + 1 : 1;
 
     for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        const targetDate = new Date(Date.UTC(2021, 0, 1));
         targetDate.setDate(targetDate.getDate() + futureDay);
         costHistory.push({ x: targetDate, y: null });
         caseHistory.push({ x: targetDate, y: null });
     }
 
     if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity, caseMax, costMax);
+        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
     } else {
-        updateCasesChart(casesChart, caseHistory, costHistory, caseMax, costMax);
+        updateCasesChart(casesChart, caseHistory, costHistory);
     }
 };
 
@@ -97,57 +79,15 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
 };
 
-export const adjustIndicator = (turnNumber,animate) => {
-    const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
+export const adjustIndicator = (turnNumber, animate) => {
+    const columns = $('#player-actions-container tbody tr')[0].children;
     if (turnNumber < 12) {
-        /* const monthPositions = [
-            '405px',
-            '496px',
-            '584px',
-            '675px',
-            '764px',
-            '858px',
-            '948px',
-            '1043px',
-            '1136px',
-            '1228px',
-            '1320px',
-            '1411px'
-        ]; */
-        /*const monthPositions = [
-            `${basePosition + 165}px`,
-            `${basePosition + 256}px`,
-            `${basePosition + 344}px`,
-            `${basePosition + 435}px`,
-            `${basePosition + 525}px`,
-            `${basePosition + 618}px`,
-            `${basePosition + 708}px`,
-            `${basePosition + 803}px`,
-            `${basePosition + 896}px`,
-            `${basePosition + 988}px`,
-            `${basePosition + 1080}px`,
-            `${basePosition + 1171}px`
-        ]*/;
-		const monthPositions = [
-            basePosition + 165,
-            basePosition + 256,
-            basePosition + 344,
-            basePosition + 435,
-            basePosition + 525,
-            basePosition + 618,
-            basePosition + 708,
-            basePosition + 803,
-            basePosition + 896,
-            basePosition + 988,
-            basePosition + 1080,
-            basePosition + 1171
-        ]
-        const position = `${monthPositions[turnNumber % monthPositions.length]}px`;
-		if(animate){
-			$('#turn-indicator').animate({ left: position });
-		} else{
-			$('#turn-indicator').offset({ left: monthPositions[turnNumber % monthPositions.length]});
-		}
+        const position = columns[turnNumber + 1].getBoundingClientRect().left;
+        if (animate) {
+            $('#turn-indicator').animate({ left: `${position}px` });
+        } else {
+            $('#turn-indicator').offset({ left: position });
+        }
     } else {
         $('#turn-indicator').addClass('d-none');
     }
@@ -164,12 +104,35 @@ export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospi
     updateCumulativeIndicators(fullHistory);
     updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
-    adjustIndicator(turnNumber,true);
+    adjustIndicator(turnNumber, true);
+};
+
+export const updatePreviousGameIndicators = (previousIndicators) => {
+    const totalCasesFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.numInfected;
+        }, 0);
+
+    const totalDeathsFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.numDead;
+        }, 0);
+    const totalCostsFn = (monthHistory) =>
+        monthHistory.reduce((acc, cur) => {
+            return acc + cur.totalCost;
+        }, 0);
+
+    previousIndicators.forEach((turn, i) => {
+        const turnNumber = i + 1;
+        $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totalCasesFn(turn.history), 1)}`);
+        $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totalDeathsFn(turn.history), 0)}`);
+        $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totalCostsFn(turn.history), 1)}`);
+    });
 };
 
 export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     $(`#win-total-cases`).html(nFormatter(totalCases, 1));
-	$(`#win-total-dead`).html(nFormatter(totalDeath, 1));
+    $(`#win-total-dead`).html(nFormatter(totalDeath, 1));
     $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
     $('#win-screen').modal('show');
 
@@ -177,11 +140,11 @@ export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     if (prevGames.length > 0) {
         prevGamesContainer.removeClass('d-none');
         const costRow = $('#past-cost-row');
-		const deadRow = $('#past-dead-row');
+        const deadRow = $('#past-dead-row');
         const casesRow = $('#past-cases-row');
         prevGames.forEach((pastGame) => {
             casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
-			deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
+            deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`);
             costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
         });
     } else {
