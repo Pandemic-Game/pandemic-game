@@ -24,5 +24,6 @@ export const US: Scenario = {
     initialCapabilityImprovements: [],
     availableInGameEvents: [HospitalCapacityExceeded],
     victoryConditions: [TimeVictory],
-    symptom_rate: 0.1
+    symptom_rate: 0.1,
+    start_GDP: 20540000000
 };

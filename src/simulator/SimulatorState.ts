@@ -19,6 +19,7 @@ export interface Indicators {
     economicCosts: number;
     deathCosts: number;
     totalCost: number;
+    GDP: number;
 }
 
 /**

@@ -22,4 +22,5 @@ export interface Scenario {
     availableInGameEvents: InGameEvent[];
     victoryConditions: VictoryCondition[];
     symptom_rate : number;
+    start_GDP: number;
 }

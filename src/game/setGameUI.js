@@ -74,7 +74,10 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
     $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
+    // update panel
     $(`#deaths-month`).html(nFormatter(monthHistory[turnNumber-1].numDead, 0));
+    $(`#cases-hospitalized`).html(nFormatter(monthHistory[turnNumber-1].numHospitalized, 0));
+    $(`#gdp`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
 };
 
 export const adjustIndicator = (turnNumber,animate) => {

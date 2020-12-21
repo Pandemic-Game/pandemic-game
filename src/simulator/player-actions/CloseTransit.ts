@@ -7,7 +7,11 @@ export const CloseTransit: ContainmentPolicy = {
     requirements: [],
     activeLabel: 'Closed',
     inactiveLabel: 'Open',
-    immediateEffect: (context) => context.indicators,
+    immediateEffect: (context) => {
+        const updatedWorldState = { ...context.indicators };
+        updatedWorldState.GDP = updatedWorldState.GDP * 0.95;
+        return updatedWorldState;
+    },
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
         updatedWorldState.r = Math.max(updatedWorldState.r - 0.03, 0);

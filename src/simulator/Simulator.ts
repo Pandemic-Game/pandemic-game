@@ -114,7 +114,7 @@ export class Simulator {
             indicatorsAtTurnStart = latestIndicators;
             // Add the last indicators to the world timeline.
             history.push(this.clone(latestIndicators));
-	    complete_history = this.mutableHistory().concat(history);
+	        complete_history = this.mutableHistory().concat(history);
         }
 
         // Update the next turn's indicators
@@ -205,6 +205,11 @@ export class Simulator {
 	console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
         
+        // compute economics 
+
+        // GDP
+        const new_gdp = candidateState.indicators.GDP;
+        // Costs
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
@@ -220,7 +225,8 @@ export class Simulator {
             deathCosts: deathCosts,
             economicCosts: economicCosts,
             medicalCosts: medicalCosts,
-            totalCost: deathCosts + economicCosts + medicalCosts
+            totalCost: deathCosts + economicCosts + medicalCosts,
+            GDP: new_gdp
         };
     }
 
@@ -246,7 +252,8 @@ export class Simulator {
                 economicCosts: economicCosts,
                 medicalCosts: medicalCosts,
                 numHospitalized: 0,
-                totalCost: deathCosts + economicCosts + medicalCosts
+                totalCost: deathCosts + economicCosts + medicalCosts,
+                GDP: this.scenario.start_GDP
             },
             playerActions: {
                 capabilityImprovements: [],
