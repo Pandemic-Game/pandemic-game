@@ -10,6 +10,7 @@ export interface Indicators {
     days: number;
     totalPopulation: number;
     numInfected: number;
+    numHospitalized: number;
     numDead: number;
     importedCasesPerDay: number;
     r: number;

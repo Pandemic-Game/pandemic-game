@@ -186,25 +186,32 @@ export class Simulator {
         actionR = cappedActionR;
 
         // Compute next state
+
+        const currentDay = lastResult.days + 1;
+        const lag = 20;
+        const long_enough = history.length >= lag;
+        
+        // new number of infected people
         let new_num_infected = this.generateNewCasesFromDistribution(prevCases, actionR);
         new_num_infected = Math.max(Math.floor(new_num_infected), 0);
         new_num_infected = Math.min(new_num_infected, this.scenario.totalPopulation);
+        // new number of symptomized and hospitalized people
+        const symptom_rate = this.scenario.symptom_rate;
+        const new_num_symptomized = long_enough ? history[history.length - lag].numInfected * symptom_rate : 0;
+        const new_num_hospitalized = new_num_symptomized < hospitalCapacity ? new_num_symptomized : hospitalCapacity;
         // Deaths from infections started 20 days ago
-
-        const lag = 20;
-        const long_enough = history.length >= lag;
         const mortality = this.scenario.mortality;
 	console.log("history.length");
 	console.log(history.length);
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
-
-        const currentDay = lastResult.days + 1;
+        
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
         return {
             days: currentDay,
             numDead: new_deaths_lagging,
+            numHospitalized : new_num_hospitalized,
             numInfected: new_num_infected,
             totalPopulation: this.scenario.totalPopulation,
             hospitalCapacity: this.scenario.hospitalCapacity,
@@ -238,6 +245,7 @@ export class Simulator {
                 deathCosts: deathCosts,
                 economicCosts: economicCosts,
                 medicalCosts: medicalCosts,
+                numHospitalized: 0,
                 totalCost: deathCosts + economicCosts + medicalCosts
             },
             playerActions: {

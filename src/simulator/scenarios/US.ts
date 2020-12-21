@@ -23,5 +23,6 @@ export const US: Scenario = {
     initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
     initialCapabilityImprovements: [],
     availableInGameEvents: [HospitalCapacityExceeded],
-    victoryConditions: [TimeVictory]
+    victoryConditions: [TimeVictory],
+    symptom_rate: 0.1
 };

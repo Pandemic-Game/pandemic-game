@@ -21,4 +21,5 @@ export interface Scenario {
     initialCapabilityImprovements: CapabilityImprovements[];
     availableInGameEvents: InGameEvent[];
     victoryConditions: VictoryCondition[];
+    symptom_rate : number;
 }
