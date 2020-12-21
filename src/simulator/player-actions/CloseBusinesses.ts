@@ -15,7 +15,7 @@ export const CloseBusinesses: ContainmentPolicy = {
     recurringEffect: (context) => {
         const updatedWorldState = { ...context.indicators };
         updatedWorldState.r = Math.max(updatedWorldState.r - 0.03, 0);
-        updatedWorldState.GDP = updatedWorldState.GDP * 0.98;
+        updatedWorldState.GDP = updatedWorldState.GDP * 0.9;
         return updatedWorldState;
     }
 };

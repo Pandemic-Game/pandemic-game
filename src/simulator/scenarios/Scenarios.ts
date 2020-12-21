@@ -23,4 +23,6 @@ export interface Scenario {
     victoryConditions: VictoryCondition[];
     symptom_rate : number;
     start_GDP: number;
+    GDP_normal_fluctuation: number;
+    GDP_bounce_back_rate: number 
 }

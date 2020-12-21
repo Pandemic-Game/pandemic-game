@@ -25,5 +25,7 @@ export const US: Scenario = {
     availableInGameEvents: [HospitalCapacityExceeded],
     victoryConditions: [TimeVictory],
     symptom_rate: 0.1,
-    start_GDP: 20540000000
+    start_GDP: 20540000000,
+    GDP_normal_fluctuation: 205400000,
+    GDP_bounce_back_rate: 0.1
 };

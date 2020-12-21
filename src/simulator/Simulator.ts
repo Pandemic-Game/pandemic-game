@@ -108,7 +108,7 @@ export class Simulator {
         let indicatorsAtTurnStart = this.currentTurn.indicators;
         // The initial state is added on the first play
         let history = this.timeline.length === 0 ? [this.currentTurn.indicators] : [];
-	let complete_history = this.mutableHistory().concat(history);
+	    let complete_history = this.mutableHistory().concat(history);
         for (let i = 0; i < daysToAdvance; i++) {
             latestIndicators = this.computeNextPandemicDay(stateAtTurnEnd, indicatorsAtTurnStart, complete_history);
             indicatorsAtTurnStart = latestIndicators;
@@ -208,7 +208,7 @@ export class Simulator {
         // compute economics 
 
         // GDP
-        const new_gdp = candidateState.indicators.GDP;
+        const new_gdp = this.computeGDP(candidateState.indicators.GDP);
         // Costs
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
@@ -285,6 +285,15 @@ export class Simulator {
 	const growthRateOriginal = this.scenario.r0 ** daysTilDoubling;
 	const growthRateNew = r ** daysTilDoubling;
         return (this.scaleFactor * (growthRateOriginal - growthRateNew)) / growthRateOriginal;
+    }
+
+    private computeGDP(GDP: number): number {
+        if ( GDP >= this.scenario.start_GDP - this.scenario.GDP_normal_fluctuation ) {
+            const gdp_growth = (Math.random() * this.scenario.GDP_normal_fluctuation) - ( 0.5 * this.scenario.GDP_normal_fluctuation) ;
+            return GDP + gdp_growth;
+        } else {
+            return GDP * (1 + this.scenario.GDP_bounce_back_rate);
+        }
     }
 
     private generateNewCasesFromDistribution(num_infected: number, action_r: number) {
