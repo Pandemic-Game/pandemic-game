@@ -29,9 +29,9 @@ const updateCumulativeIndicators = (fullHistory) => {
         const totalcosts = fullHistory.reduce((acc, cur) => {
             return acc + cur.totalCost;
         }, 0);
-        $(`#cases-total`).html(nFormatter(totalcases - fullHistory[0].numInfected, 1));
-        $(`#deaths-total`).html(nFormatter(totaldead - fullHistory[0].numDead, 0));
-        $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
+        $(`#cases-total`).html(`&#x1f3e5;&nbsp;${nFormatter(totalcases - fullHistory[0].numInfected, 1)}`);
+        $(`#deaths-total`).html(`\u2620&nbsp;${nFormatter(totaldead - fullHistory[0].numDead, 0)}`);
+        $(`#cost-total`).html(`&#128176;&nbsp;$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
 };
 
