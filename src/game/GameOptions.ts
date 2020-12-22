@@ -2,7 +2,7 @@ export interface GameOptions {
     showWelcomeScreenAtStart: boolean;
 }
 
-const defaultGameOptions = { showWelcomeScreenAtStart: true };
+const defaultGameOptions = { showWelcomeScreenAtStart: false };
 
 export class GameOptionsStore {
     private optionStore: Storage;

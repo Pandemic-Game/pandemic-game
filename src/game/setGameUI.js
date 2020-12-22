@@ -82,8 +82,8 @@ const updateIndicatorPanel = (turnNumber, monthHistory) => {
     $(`#deaths-month`).html(nFormatter(monthHistory[turnNumber-1].numDead, 0));
     $(`#cases-hospitalized`).html(nFormatter(monthHistory[turnNumber-1].numHospitalized, 0));
     $(`#gdp`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    $(`#public-support`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    // $(`#hospital-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    //$(`#public-support`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    $(`#hospital-capacity`).html(nFormatter(monthHistory[turnNumber-1].hospitalCapacity, 0));
     // $(`#test-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
     // $(`#positively-tested`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
     // $(`#tracing-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
@@ -201,18 +201,11 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
-        resetControls();
+       // resetControls();
 
-        // Else if game is in play
-    } else {
-        // Style previous choices
-        $(`[id^="turn${playerTurn - 1}-"]`)
-            .prop('disabled', true) // Disable
-            .animate({ opacity: 0.5 }, 'slow'); // Hide
     }
-
     // Style current choices
-    $(`[id^="turn${playerTurn}-"]`).each((_idx, domNode) => {
+    $(`[id^=""]`).each((_idx, domNode) => {
         // Enable and style by activation
         const target = $(domNode);
         const choiceIsActive = dictOfActivePolicies[target.data('action')];
@@ -228,23 +221,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
-
-    // Style current action buttons
-    $('.turn-btn-grp').hide();
-    $(`#undo-btn-${playerTurn + 1}`).show();
-    $(`#endTurn-btn-${playerTurn + 1}`).show();
-
-    // Remove styles from future choices
-    $(`[id^="turn${playerTurn + 1}-"]`)
-        .prop('disabled', true) // Disable
-        .removeClass('btn-light')
-        .removeClass('btn-success')
-        .animate({ opacity: 0.1 }, 'slow'); // Hide
-
-    $(`[id^="month-deaths-${playerTurn + 1}"]`).html('-');
-    $(`[id^="month-cases-${playerTurn + 1}"]`).html('-');
-    $(`[id^="month-cost-${playerTurn + 1}"]`).html('-');
-
+    
     $('#events-box').html('');
     inGameEvents.forEach((evt) => {
         $('#events-box').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
