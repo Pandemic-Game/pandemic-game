@@ -12,6 +12,15 @@ h4{
 .btn-danger, .btn-success, .btn-primary{
     text-shadow: 0 0 3px black;
 }
+
+.events-panel{
+	border: 2px solid;
+    border-radius: 5px;
+	width:50%;
+	height:250px;
+
+}
+
 .player-action{
     -webkit-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
 -moz-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);

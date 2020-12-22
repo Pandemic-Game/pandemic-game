@@ -74,11 +74,23 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
     $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
     $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
-    // update panel
+    
+};
+
+const updateIndicatorPanel = (turnNumber, monthHistory) => {
+    $(`#date`).html(nFormatter(turnNumber, 0));
     $(`#deaths-month`).html(nFormatter(monthHistory[turnNumber-1].numDead, 0));
     $(`#cases-hospitalized`).html(nFormatter(monthHistory[turnNumber-1].numHospitalized, 0));
     $(`#gdp`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-};
+    $(`#public-support`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    // $(`#hospital-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    // $(`#test-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    // $(`#positively-tested`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    // $(`#tracing-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+    // $(`#isolated-cases`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
+
+
+}
 
 export const adjustIndicator = (turnNumber,animate) => {
     const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
@@ -144,6 +156,7 @@ export const adjustIndicator = (turnNumber,animate) => {
  * @param hospitalCapacity - Number of hospital capacity
  */
 export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospitalCapacity) => {
+    updateIndicatorPanel(turnNumber,lastTurnHistory)
     updateCumulativeIndicators(fullHistory);
     updateGraphs(fullHistory, hospitalCapacity);
     updateMonthlyIndicators(turnNumber, lastTurnHistory);
@@ -232,8 +245,8 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     $(`[id^="month-cases-${playerTurn + 1}"]`).html('-');
     $(`[id^="month-cost-${playerTurn + 1}"]`).html('-');
 
-    $('#events-holder').html('');
+    $('#events-box').html('');
     inGameEvents.forEach((evt) => {
-        $('#events-holder').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
+        $('#events-box').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
     });
 };

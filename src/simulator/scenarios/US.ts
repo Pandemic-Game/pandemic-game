@@ -22,7 +22,7 @@ export const US: Scenario = {
     time_lumping: false,
     initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
     initialCapabilityImprovements: [],
-    availableInGameEvents: [HospitalCapacityExceeded],
+    availableInGameEvents: [HospitalCapacityExceeded,WelcomeEvent],
     victoryConditions: [TimeVictory],
     symptom_rate: 0.1,
     start_GDP: 20540000000,
