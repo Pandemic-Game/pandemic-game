@@ -32,6 +32,10 @@ const updateCumulativeIndicators = (fullHistory) => {
         $(`#cases-total`).html(`&#x1f3e5;&nbsp;${nFormatter(totalcases - fullHistory[0].numInfected, 1)}`);
         $(`#deaths-total`).html(`\u2620&nbsp;${nFormatter(totaldead - fullHistory[0].numDead, 0)}`);
         $(`#cost-total`).html(`&#128176;&nbsp;$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
+		
+		$(`#cases_this`).html(`${nFormatter(totalcases - fullHistory[0].numInfected, 1)}`);
+        $(`#deaths_this`).html(`${nFormatter(totaldead - fullHistory[0].numDead, 0)}`);
+        $(`#cost_this`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
 };
 
@@ -121,13 +125,27 @@ export const updatePreviousGameIndicators = (previousIndicators) => {
         monthHistory.reduce((acc, cur) => {
             return acc + cur.totalCost;
         }, 0);
-
+		
+	let totcasesSum = 0;
+	let totdeathsSum = 0;
+	let totcostSum = 0;
+	
     previousIndicators.forEach((turn, i) => {
         const turnNumber = i + 1;
-        $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totalCasesFn(turn.history), 1)}`);
-        $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totalDeathsFn(turn.history), 0)}`);
-        $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totalCostsFn(turn.history), 1)}`);
+		const totcases = totalCasesFn(turn.history);
+		const totdeaths = totalDeathsFn(turn.history);
+		const totcost = totalCostsFn(turn.history);
+		totcasesSum += totcases;
+		totdeathsSum += totdeaths;
+		totcostSum += totcost;
+        $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totcases, 1)}`);
+        $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totdeaths, 0)}`);
+        $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totcost, 1)}`);
     });
+	
+	$(`#cases_last`).html(`${nFormatter(totcasesSum)}`);
+    $(`#deaths_last`).html(`${nFormatter(totdeathsSum)}`);
+    $(`#cost_last`).html(`$ ${nFormatter(totcostSum)}`);
 };
 
 export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
