@@ -121,7 +121,11 @@ export const createGameUI = (
 
     // Create table footer - current turn
     const tableFooter = createEle('tfoot', tableRoot);
-    const indicators = [{name:'cases',symbol:'&#x1f3e5;'},{name:'deaths',symbol:'\u2620'},{name:'cost',symbol:'&#128176;'}];
+    const indicators = [
+		{name:'cases',symbol:'&#x1f3e5;',unit:''},
+		{name:'deaths',symbol:'\u2620',unit:''},
+		{name:'cost',symbol:'&#128176;',unit:'$'}
+	];
 
     // HOF to create the footer rows
     const createMonthlyIndictorCells = (isPreviousGameCell) => (indicator, indicatorNum) => {
@@ -129,7 +133,7 @@ export const createGameUI = (
         if (isPreviousGameCell && indicatorNum === 0) {
             footerRow.style.borderTop = '1px solid #999999';
         }
-        for (let i = 0; i < numberOfColumns + 1; i += 1) {
+        for (let i = 0; i < numberOfColumns + 2; i += 1) {
             const id = i > 0 ? `${isPreviousGameCell ? 'last-game-' : ''}month-${indicator.name}-${i}` : undefined;
 			const footerCell = createEle('td', footerRow, id);
 
@@ -138,8 +142,19 @@ export const createGameUI = (
                 - ${isPreviousGameCell ? 'last game' : 'this game'}`;
                 footerCell.className = 'noselect';
                 footerCell.style.textAlign = 'right';
-            } else {
-                footerCell.innerHTML = '-';
+            } else if(i === numberOfColumns + 1){
+				footerCell.innerHTML = `${indicator.unit} 0` ;
+                footerCell.style.textAlign = 'center';
+				footerCell.style.fontWeight = 'bold';
+				footerCell.style.paddingLeft = '20px';
+				footerCell.style.borderLeft = 'solid 1px #999999';
+				if(isPreviousGameCell){
+					footerCell.setAttribute("id",indicator.name+"_last");
+				} else{
+					footerCell.setAttribute("id",indicator.name+"_this");
+				}
+			} else {
+				footerCell.innerHTML = '-';
                 footerCell.style.textAlign = 'center';
             }
         }
