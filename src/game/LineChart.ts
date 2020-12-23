@@ -54,14 +54,15 @@ export const buildCasesChart = (
                             dashStyle: 'ShortDash',
                             width: 1,
                             label: {
-                                text: 'hospital capacity'
+                                text: 'hospital capacity',
+                                align: 'right'
                             }
                         }
                     ]
                 },
                 {
                     title: {
-                        text: 'USD',
+                        text: 'Hospitalizations/day',
                         style: {
                             color: 'red',
                             fontSize: '16px'
@@ -101,7 +102,7 @@ export const buildCasesChart = (
                 },
                 {
                     type: 'line',
-                    name: 'Costs',
+                    name: 'Hospitalizations/day',
                     data: totalCostSeries,
                     yAxis: 1,
                     color: 'red'

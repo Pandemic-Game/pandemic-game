@@ -24,7 +24,6 @@ const updateGraphs = (history) => {
     history.forEach((entry) => {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.totalCost });
         caseHistory.push({ x: targetDate, y: entry.numInfected });
         hospitalHistory.push({ x: targetDate, y: entry.numHospitalized });
     });
@@ -33,7 +32,6 @@ const updateGraphs = (history) => {
     for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
         const targetDate = new Date(Date.UTC(2020, 0, 1));
         targetDate.setDate(targetDate.getDate() + futureDay);
-        costHistory.push({ x: targetDate, y: null });
         caseHistory.push({ x: targetDate, y: null });
         hospitalHistory.push({ x: targetDate, y: null });
     }
@@ -41,7 +39,7 @@ const updateGraphs = (history) => {
     if (!casesChart) {
         casesChart = buildCasesChart('cases-graph', caseHistory, hospitalHistory, history[history.length - 1].hospitalCapacity);
     } else {
-        updateCasesChart(casesChart, caseHistory, costHistory);
+        updateCasesChart(casesChart, caseHistory, hospitalHistory);
     }
 };
 
