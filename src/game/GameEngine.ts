@@ -14,6 +14,7 @@ import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
 import { GameOptionsStore } from './GameOptions';
+import { PlayerContainmentPolicyChoice } from '@src/simulator/player-actions/PlayerActions2';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -110,7 +111,7 @@ export class GameEngine {
             };
 
             prevContainmentPolicies.forEach((it) => {
-                prevChoices[it.id as AvailableActions] = true;
+                prevChoices[it.containmentPolicy.id as AvailableActions] = true;
             });
 
             // Go back to the last turn
@@ -194,19 +195,22 @@ export class GameEngine {
 
     private collectPlayerActions(): PlayerActions {
         const result = {
-            containmentPolicies: [] as ContainmentPolicy[],
+            containmentPolicies: [] as PlayerContainmentPolicyChoice<any>[],
             capabilityImprovements: [] as CapabilityImprovements[],
             inGameEventChoices: [] as RecordedInGameEventChoice[]
         };
 
-        for (let k in this.currentlySelectedActions) {
+        /*for (let k in this.currentlySelectedActions) {
             if (this.currentlySelectedActions[k as AvailableActions]) {
                 const containmentPolicy = this.scenario.initialContainmentPolicies.find((cp) => cp.id === k);
                 if (containmentPolicy) {
-                    result.containmentPolicies.push(containmentPolicy);
+                    result.containmentPolicies.push({
+                        containmentPolicy,
+                        selectedOption: 
+                    });
                 }
             }
-        }
+        }*/
 
         return result;
     }

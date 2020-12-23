@@ -1,5 +1,6 @@
 import { InGameEvent } from '../in-game-events/InGameEvents';
-import { CapabilityImprovements, ContainmentPolicy } from '../player-actions/PlayerActions';
+import { CapabilityImprovements } from '../player-actions/PlayerActions';
+import { ContainmentPolicy2 } from '../player-actions/PlayerActions2';
 import { Indicators } from '../SimulatorState';
 import { VictoryCondition } from '../victory-conditions/VictoryConditon';
 /**
@@ -21,7 +22,7 @@ export interface Scenario {
     dynamics: string;
     mortality: number; // A number between 0 and 1 representing the mortality
     time_lumping: boolean;
-    initialContainmentPolicies: ContainmentPolicy[];
+    initialContainmentPolicies: ContainmentPolicy2<any>[];
     initialCapabilityImprovements: CapabilityImprovements[];
     availableInGameEvents: InGameEvent[];
     victoryConditions: VictoryCondition[];

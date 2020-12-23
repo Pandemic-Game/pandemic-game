@@ -1,4 +1,3 @@
-import { ContainmentPolicy } from './player-actions/PlayerActions';
 import {
     Indicators,
     NextTurnState,
@@ -14,6 +13,7 @@ import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
 import { InGameEvent } from './in-game-events/InGameEvents';
+import { ContainmentPolicy2, PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
 
 export class Simulator {
     private scenario: Scenario;
@@ -89,16 +89,22 @@ export class Simulator {
         stateAtTurnEnd.indicators.r = this.scenario.r0;
 
         // Factor in any new player actions.
-        const newContainmentPolicies: ContainmentPolicy[] = this.findNewContainmentPolicies(
+        const newContainmentPolicies: PlayerContainmentPolicyChoice<any>[] = this.findNewContainmentPolicies(
             playerActions.containmentPolicies
         );
-        for (const containmentPolicy of newContainmentPolicies) {
-            stateAtTurnEnd.indicators = containmentPolicy.immediateEffect(stateAtTurnEnd);
+        for (const playerChoice of newContainmentPolicies) {
+            stateAtTurnEnd.indicators = playerChoice.containmentPolicy.immediateEffect(
+                stateAtTurnEnd,
+                playerChoice.selectedOption
+            );
         }
 
         // Factor in the recurring effects of existing player actions.
-        for (const containmentPolicy of playerActions.containmentPolicies) {
-            stateAtTurnEnd.indicators = containmentPolicy.recurringEffect(stateAtTurnEnd);
+        for (const playerChoice of playerActions.containmentPolicies) {
+            stateAtTurnEnd.indicators = playerChoice.containmentPolicy.recurringEffect(
+                stateAtTurnEnd,
+                playerChoice.selectedOption
+            );
         }
 
         // Add the new containment policies to the history of player actions
@@ -218,7 +224,7 @@ export class Simulator {
         return {
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
-                containmentPolicies: this.scenario.initialContainmentPolicies
+                containmentPolicies: []
             },
             indicators: {
                 days: 0,
@@ -289,10 +295,14 @@ export class Simulator {
         return expectedNewCases;
     }
 
-    private findNewContainmentPolicies(containmentPoliciesOfTurn: ContainmentPolicy[]): ContainmentPolicy[] {
-        const previousPolicies = this.currentTurn.playerActions.containmentPolicies.map((it) => it.name);
-        return containmentPoliciesOfTurn.filter(
-            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.name) == -1
+    private findNewContainmentPolicies(
+        playerChoicesOnTurn: PlayerContainmentPolicyChoice<any>[]
+    ): PlayerContainmentPolicyChoice<any>[] {
+        const previousPolicies = this.currentTurn.playerActions.containmentPolicies.map(
+            (it) => it.containmentPolicy.id
+        );
+        return playerChoicesOnTurn.filter(
+            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.containmentPolicy.id) == -1
         );
     }
 

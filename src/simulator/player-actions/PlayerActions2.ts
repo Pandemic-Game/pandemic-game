@@ -1,5 +1,4 @@
 import { Indicators, WorldState } from '../SimulatorState';
-import { CapabilityImprovements } from './PlayerActions';
 
 interface PolicyOption<T> {
     label: string;
@@ -12,6 +11,14 @@ export interface ContainmentPolicy2<T> {
     options: PolicyOption<T>[];
     immediateEffect: (context: WorldState, selectedAction: T) => Indicators;
     recurringEffect: (context: WorldState, selectedAction: T) => Indicators;
+}
+
+/**
+ * Models a choice a player has made on a particular containment policy
+ */
+export interface PlayerContainmentPolicyChoice<T> {
+    selectedOption: T;
+    containmentPolicy: ContainmentPolicy2<T>;
 }
 
 export const StayAtHomeOrder: ContainmentPolicy2<boolean> = {
