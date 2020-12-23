@@ -17,15 +17,9 @@ export class WorldStateFactory {
                 deathCosts: 0,
                 totalCost: 0
             },
-            availablePlayerActions: {
-                capabilityImprovements: [],
-                containmentPolicies: [],
-            },
             nextInGameEvents: [],
             playerActions: {
-                capabilityImprovements: [],
                 containmentPolicies: [],
-                inGameEventChoices: []
             }
         }
     }

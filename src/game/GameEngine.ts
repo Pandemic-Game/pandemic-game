@@ -110,9 +110,9 @@ export class GameEngine {
                 business: false
             };
 
-            prevContainmentPolicies.forEach((it) => {
+            /*prevContainmentPolicies.forEach((it) => {
                 prevChoices[it.containmentPolicy.id as AvailableActions] = true;
-            });
+            });*/
 
             // Go back to the last turn
 

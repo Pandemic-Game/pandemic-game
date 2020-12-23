@@ -18,7 +18,7 @@ export interface ContainmentPolicy2<T> {
  */
 export interface PlayerContainmentPolicyChoice<T> {
     selectedOption: T;
-    containmentPolicy: ContainmentPolicy2<T>;
+    containmentPolicyId: string;
 }
 
 export const StayAtHomeOrder: ContainmentPolicy2<boolean> = {

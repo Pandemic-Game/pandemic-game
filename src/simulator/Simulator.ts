@@ -15,17 +15,26 @@ import cloneDeep from 'lodash/cloneDeep';
 import { InGameEvent } from './in-game-events/InGameEvents';
 import { ContainmentPolicy2, PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
 
+type PlayerChoiceForContainmentPolicy<T> = ContainmentPolicy2<T> & PlayerContainmentPolicyChoice<T>;
+
 export class Simulator {
     private scenario: Scenario;
     private scaleFactor: number;
     private currentTurn: WorldState;
     private timeline: TimelineEntry[];
+    private actions: Map<string, ContainmentPolicy2<any>>;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
         this.scaleFactor = scenario.gdpPerDay * 0.35;
         this.currentTurn = this.computeInitialWorldState();
         this.timeline = [];
+
+        // For now the simulator is operating under a model where the actions are not updated during a playthrough
+        this.actions = new Map<string, ContainmentPolicy2<any>>();
+        this.scenario.initialContainmentPolicies.forEach((policy: ContainmentPolicy2<any>) => {
+            this.actions.set(policy.id, policy);
+        });
     }
 
     reset(turn: number = 0): Simulator {
@@ -93,18 +102,14 @@ export class Simulator {
             playerActions.containmentPolicies
         );
         for (const playerChoice of newContainmentPolicies) {
-            stateAtTurnEnd.indicators = playerChoice.containmentPolicy.immediateEffect(
-                stateAtTurnEnd,
-                playerChoice.selectedOption
-            );
+            const containmentPolicy = this.actions.get(playerChoice.containmentPolicyId);
+            stateAtTurnEnd.indicators = containmentPolicy.immediateEffect(stateAtTurnEnd, playerChoice.selectedOption);
         }
 
         // Factor in the recurring effects of existing player actions.
         for (const playerChoice of playerActions.containmentPolicies) {
-            stateAtTurnEnd.indicators = playerChoice.containmentPolicy.recurringEffect(
-                stateAtTurnEnd,
-                playerChoice.selectedOption
-            );
+            const containmentPolicy = this.actions.get(playerChoice.containmentPolicyId);
+            stateAtTurnEnd.indicators = containmentPolicy.recurringEffect(stateAtTurnEnd, playerChoice.selectedOption);
         }
 
         // Add the new containment policies to the history of player actions
@@ -222,10 +227,6 @@ export class Simulator {
         const economicCosts = this.scenario.initialEconomicCosts;
         const medicalCosts = this.scenario.initialMedicalCosts;
         return {
-            availablePlayerActions: {
-                capabilityImprovements: this.scenario.initialCapabilityImprovements,
-                containmentPolicies: []
-            },
             indicators: {
                 days: 0,
                 numDead: 0,
@@ -240,9 +241,7 @@ export class Simulator {
                 totalCost: deathCosts + economicCosts + medicalCosts
             },
             playerActions: {
-                capabilityImprovements: [],
-                containmentPolicies: [],
-                inGameEventChoices: []
+                containmentPolicies: []
             },
             nextInGameEvents: []
         };
@@ -295,15 +294,14 @@ export class Simulator {
         return expectedNewCases;
     }
 
+    /**
+     * Finds new player choices that have been introduced this turn.
+     */
     private findNewContainmentPolicies(
         playerChoicesOnTurn: PlayerContainmentPolicyChoice<any>[]
     ): PlayerContainmentPolicyChoice<any>[] {
-        const previousPolicies = this.currentTurn.playerActions.containmentPolicies.map(
-            (it) => it.containmentPolicy.id
-        );
-        return playerChoicesOnTurn.filter(
-            (containmentPolicy) => previousPolicies.indexOf(containmentPolicy.containmentPolicy.id) == -1
-        );
+        const previousPolicies = this.currentTurn.playerActions.containmentPolicies.map((it) => it.containmentPolicyId);
+        return playerChoicesOnTurn.filter((it) => previousPolicies.indexOf(it.containmentPolicyId) === -1);
     }
 
     private pickNextGameEvents(): InGameEvent[] {

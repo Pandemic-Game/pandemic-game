@@ -1,8 +1,7 @@
-import { CapabilityImprovements } from './player-actions/PlayerActions';
-import { InGameEvent, RecordedInGameEventChoice } from './in-game-events/InGameEvents';
+import { InGameEvent } from './in-game-events/InGameEvents';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
-import { ContainmentPolicy2, PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
+import { PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
 
 /**
  * Represents the state of the simulation on a given turn.
@@ -24,18 +23,11 @@ export interface Indicators {
 /**
  * Represents the set of player actions in effect at a given point in time
  */
-
 export interface PlayerActions {
     containmentPolicies: PlayerContainmentPolicyChoice<any>[];
-    capabilityImprovements: CapabilityImprovements[];
-    inGameEventChoices: RecordedInGameEventChoice[];
 }
 
 export interface TurnHistoryEntry {
-    availablePlayerActions: {
-        containmentPolicies: PlayerContainmentPolicyChoice<any>[];
-        capabilityImprovements: CapabilityImprovements[];
-    };
     nextInGameEvents: InGameEvent[];
     playerActions: PlayerActions;
 }

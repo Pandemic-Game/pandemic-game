@@ -1,9 +1,8 @@
 import { RecordedInGameEventChoice } from "@src/simulator/in-game-events/InGameEvents";
-import { CloseBusinesses } from "@src/simulator/player-actions/CloseBusinesses";
 import { CloseSchools } from "@src/simulator/player-actions/CloseSchools";
 import { CloseTransit } from "@src/simulator/player-actions/CloseTransit";
 import { CapabilityImprovements, ContainmentPolicy } from "@src/simulator/player-actions/PlayerActions";
-import { RequireMasks } from "@src/simulator/player-actions/RequireMasks";
+import { BusinessClosings, GatheringSize, PlayerContainmentPolicyChoice, SchoolsAndUniveristyClosures, StayAtHomeOrder } from "@src/simulator/player-actions/PlayerActions2";
 import { Scenario } from "@src/simulator/scenarios/Scenarios";
 import { GDP_US } from "@src/simulator/scenarios/US";
 import { Simulator } from "@src/simulator/Simulator";
@@ -27,16 +26,14 @@ export const TestScenario: Scenario = {
     dynamics: 'SIS',
     mortality: 0.01,
     time_lumping: false,
-    initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
+    initialContainmentPolicies: [StayAtHomeOrder, GatheringSize, BusinessClosings, SchoolsAndUniveristyClosures],
     initialCapabilityImprovements: [],
     availableInGameEvents: [],
     victoryConditions: [TimeVictory]
 };
 
 const emptyPlayerAction = {
-    containmentPolicies: [] as ContainmentPolicy[],
-    capabilityImprovements: [] as CapabilityImprovements[],
-    inGameEventChoices: [] as RecordedInGameEventChoice[]
+    containmentPolicies: [] as PlayerContainmentPolicyChoice<any>[],
 }
 
 describe("The operation of the Simulator", () => {
@@ -128,13 +125,11 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario);
 
             // When a new player action is added in a turn
-            const actionUnderTest = { ...CloseTransit }
-            const spyImmediateEffect = jest.spyOn(actionUnderTest, 'immediateEffect')
-            const spyRecurringEffect = jest.spyOn(actionUnderTest, 'recurringEffect')
+            const actionUnderTest = { containmentPolicyId: GatheringSize.id, selectedOption: 1000 }
+            const spyImmediateEffect = jest.spyOn(GatheringSize, 'immediateEffect')
+            const spyRecurringEffect = jest.spyOn(GatheringSize, 'recurringEffect')
             simulator.nextTurn({
-                containmentPolicies: [actionUnderTest as ContainmentPolicy],
-                capabilityImprovements: [],
-                inGameEventChoices: []
+                containmentPolicies: [actionUnderTest as PlayerContainmentPolicyChoice<any>],
             });
             // Then its immediate effect is called
             expect(spyImmediateEffect).toHaveBeenCalled()
@@ -149,21 +144,17 @@ describe("The operation of the Simulator", () => {
             // Given a simulator
             const simulator = new Simulator(TestScenario);
 
+            const actionUnderTest = { containmentPolicyId: GatheringSize.id, selectedOption: 1000 }
             // When a new player action is added in a turn
             simulator.nextTurn({
-                containmentPolicies: [CloseTransit],
-                capabilityImprovements: [],
-                inGameEventChoices: []
+                containmentPolicies: [actionUnderTest],
             });
 
             // And it is active in the next turn as well
-            const actionUnderTest = { ...CloseTransit }
-            const spyImmediateEffect = jest.spyOn(actionUnderTest, 'immediateEffect')
-            const spyRecurringEffect = jest.spyOn(actionUnderTest, 'recurringEffect')
+            const spyImmediateEffect = jest.spyOn(GatheringSize, 'immediateEffect')
+            const spyRecurringEffect = jest.spyOn(GatheringSize, 'recurringEffect')
             simulator.nextTurn({
                 containmentPolicies: [actionUnderTest],
-                capabilityImprovements: [],
-                inGameEventChoices: []
             });
             // Then its immediate effect is called
             expect(spyRecurringEffect).toHaveBeenCalled()
@@ -199,12 +190,11 @@ describe("The operation of the Simulator", () => {
             // Given a simulator instance
             const simulator = new Simulator(TestScenario);
 
+            const actionUnderTest = { containmentPolicyId: GatheringSize.id, selectedOption: 1000 }
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [CloseTransit],
-                    capabilityImprovements: [],
-                    inGameEventChoices: []
+                    containmentPolicies: [actionUnderTest],
                 });
             }
             // When it is reset
@@ -222,12 +212,11 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario);
             const daysPerTurn = 10;
 
+            const actionUnderTest = { containmentPolicyId: GatheringSize.id, selectedOption: 1000 }
             // And it has been running for a few turns
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [CloseTransit],
-                    capabilityImprovements: [],
-                    inGameEventChoices: []
+                    containmentPolicies: [actionUnderTest],
                 }, daysPerTurn);
 
             }
@@ -249,11 +238,10 @@ describe("The operation of the Simulator", () => {
             const simulator = new Simulator(TestScenario);
 
             // And it has been running for a few turns
+            const actionUnderTest = { containmentPolicyId: GatheringSize.id, selectedOption: 1000 }
             for (let i = 0; i < 10; i++) {
                 simulator.nextTurn({
-                    containmentPolicies: [CloseTransit],
-                    capabilityImprovements: [],
-                    inGameEventChoices: []
+                    containmentPolicies: [actionUnderTest],
                 });
             }
             // And it is reset
@@ -261,11 +249,10 @@ describe("The operation of the Simulator", () => {
             const resetSimulator = simulator.reset(5)
 
             // Then the reset simulator works normally
+            const otherActionUnderTest = { containmentPolicyId: BusinessClosings.id, selectedOption: 'Most' }
             for (let i = 0; i < 6; i++) {
                 resetSimulator.nextTurn({
-                    containmentPolicies: [CloseSchools],
-                    capabilityImprovements: [],
-                    inGameEventChoices: []
+                    containmentPolicies: [otherActionUnderTest],
                 });
             }
             // And the histories difer
@@ -275,9 +262,10 @@ describe("The operation of the Simulator", () => {
             expect(resetState.history.length).toBe(11)
             expect(resetState.history.length).toEqual(originalState.history.length)
 
-            const newPolicyHistory = resetState.timeline.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
-            const originalPolicyHistory = originalState.timeline.map(it => it.playerActions.containmentPolicies.map(p => p.name).join(',')).join('|')
+            const newPolicyHistory = resetState.timeline.map(it => it.playerActions.containmentPolicies.map(p => `${p.containmentPolicyId}:${p.selectedOption}`).join(',')).join('|')
+            const originalPolicyHistory = originalState.timeline.map(it => it.playerActions.containmentPolicies.map(p => `${p.containmentPolicyId}:${p.selectedOption}`).join(',')).join('|')
             expect(newPolicyHistory).not.toEqual(originalPolicyHistory)
         })
     })
+
 })

@@ -51,15 +51,9 @@ export class IndicatorFactory {
 export class TurnHistoryEntryFactory {
     static empty(): TurnHistoryEntry {
         return {
-            availablePlayerActions: {
-                capabilityImprovements: [],
-                containmentPolicies: [],
-            },
             nextInGameEvents: [],
             playerActions: {
-                capabilityImprovements: [],
                 containmentPolicies: [],
-                inGameEventChoices: []
             }
         }
     }

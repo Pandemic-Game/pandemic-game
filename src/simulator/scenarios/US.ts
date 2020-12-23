@@ -1,8 +1,10 @@
 import { HospitalCapacityExceeded } from '../in-game-events/HospitalCapacityExceeded';
-import { CloseBusinesses } from '../player-actions/CloseBusinesses';
-import { CloseSchools } from '../player-actions/CloseSchools';
-import { CloseTransit } from '../player-actions/CloseTransit';
-import { RequireMasks } from '../player-actions/RequireMasks';
+import {
+    BusinessClosings,
+    GatheringSize,
+    SchoolsAndUniveristyClosures,
+    StayAtHomeOrder
+} from '../player-actions/PlayerActions2';
 import { TimeVictory } from '../victory-conditions/TimeVictory';
 import { Scenario } from './Scenarios';
 import { usHistory } from './US_runup';
@@ -25,7 +27,7 @@ export const US: Scenario = {
     dynamics: 'SIS',
     mortality: 0.01,
     time_lumping: false,
-    initialContainmentPolicies: [CloseBusinesses, CloseSchools, CloseTransit, RequireMasks],
+    initialContainmentPolicies: [StayAtHomeOrder, GatheringSize, BusinessClosings, SchoolsAndUniveristyClosures],
     initialCapabilityImprovements: [],
     availableInGameEvents: [HospitalCapacityExceeded],
     victoryConditions: [TimeVictory]
