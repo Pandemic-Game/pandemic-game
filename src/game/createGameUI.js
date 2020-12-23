@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
+import { doc } from 'prettier';
 
 /* 
 Shorthand functions to create DOM elements
@@ -41,6 +42,22 @@ export const createGameUI = (
     onUndo,
     onRestart,
 ) => {
+
+    const changeViewButton = document.getElementById('change-view-button');
+    changeViewButton.innerHTML = 'View Graphs';
+    changeViewButton.onclick = (e) =>  {
+        if ( changeViewButton.innerHTML == 'View Graphs')  {
+            document.getElementById('events-box').style.display = 'none';
+            document.getElementById('actions-panel').style.display = 'none';
+            document.getElementById('cases-graph').style.display = 'inline';
+            changeViewButton.innerHTML = 'View Events and Actions';
+        } else {
+            document.getElementById('events-box').style.display = 'inline';
+            document.getElementById('actions-panel').style.display = 'inline';
+            document.getElementById('cases-graph').style.display = 'none';
+            changeViewButton.innerHTML = 'View Graphs';
+        }
+    }
 
     const tableRoot = $(`#player-actions-container`)[0];
 
@@ -101,7 +118,6 @@ export const createGameUI = (
     const td = createEle('td', tr);
     const btn = createEle('button', td, `advance-button`);
     btn.name = 'Go forwards in time';
-    btn.type = 'button';
     btn.style.position = 'relative';
     btn.style.zIndex = '200';
     btn.style.height = 'auto';
