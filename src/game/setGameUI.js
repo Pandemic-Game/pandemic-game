@@ -121,25 +121,25 @@ export const updatePreviousGameIndicators = (previousIndicators) => {
         monthHistory.reduce((acc, cur) => {
             return acc + cur.totalCost;
         }, 0);
-		
-	let totcasesSum = 0;
-	let totdeathsSum = 0;
-	let totcostSum = 0;
-	
+
+    let totcasesSum = 0;
+    let totdeathsSum = 0;
+    let totcostSum = 0;
+
     previousIndicators.forEach((turn, i) => {
         const turnNumber = i + 1;
-		const totcases = totalCasesFn(turn.history);
-		const totdeaths = totalDeathsFn(turn.history);
-		const totcost = totalCostsFn(turn.history);
-		totcasesSum += totcases;
-		totdeathsSum += totdeaths;
-		totcostSum += totcost;
+        const totcases = totalCasesFn(turn.history);
+        const totdeaths = totalDeathsFn(turn.history);
+        const totcost = totalCostsFn(turn.history);
+        totcasesSum += totcases;
+        totdeathsSum += totdeaths;
+        totcostSum += totcost;
         $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totcases, 1)}`);
         $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totdeaths, 0)}`);
         $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totcost, 1)}`);
     });
-	
-	$(`#cases_last`).html(`${nFormatter(totcasesSum)}`);
+
+    $(`#cases_last`).html(`${nFormatter(totcasesSum)}`);
     $(`#deaths_last`).html(`${nFormatter(totdeathsSum)}`);
     $(`#cost_last`).html(`$ ${nFormatter(totcostSum)}`);
 };
