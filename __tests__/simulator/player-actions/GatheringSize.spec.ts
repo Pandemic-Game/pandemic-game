@@ -36,7 +36,7 @@ describe("The behaviour and effect of the gathering size order", () => {
 
     it("Does not affect the value of R when the gathering size is unlimited", () => {
         const initialState = cloneDeep(testContext);
-        const updatedState = GatheringSize.immediateEffect(initialState, 'Infinity')
+        const updatedState = GatheringSize.recurringEffect(initialState, 'Infinity')
         expect(updatedState).toEqual(initialState.indicators);
     })
 

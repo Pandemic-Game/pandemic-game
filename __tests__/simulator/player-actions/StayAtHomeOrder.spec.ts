@@ -21,7 +21,7 @@ describe("The behaviour and effect of the stay at home order", () => {
 
     it("Does not affect the value of R when not active", () => {
         const initialState = cloneDeep(testContext);
-        const updatedState = StayAtHomeOrder.immediateEffect(initialState, false)
+        const updatedState = StayAtHomeOrder.recurringEffect(initialState, false)
         expect(updatedState).toEqual(initialState.indicators);
     })
 

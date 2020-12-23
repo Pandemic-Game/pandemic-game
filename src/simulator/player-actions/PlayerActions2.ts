@@ -23,11 +23,11 @@ export const StayAtHomeOrder: ContainmentPolicy2<boolean> = {
     ],
     immediateEffect: (context: WorldState, selectedAction: boolean) => context.indicators,
     recurringEffect: (context: WorldState, selectedAction: boolean) => {
+        const updatedWorldState = { ...context.indicators };
         if (selectedAction) {
-            const updatedWorldState = { ...context.indicators };
             updatedWorldState.r = updatedWorldState.r * 0.228;
-            return updatedWorldState;
         }
+        return updatedWorldState;
     }
 };
 
@@ -43,10 +43,9 @@ export const GatheringSize: ContainmentPolicy2<GatheringSizeOpts> = {
     ],
     immediateEffect: (context: WorldState, selectedAction: GatheringSizeOpts) => context.indicators,
     recurringEffect: (context: WorldState, selectedAction: GatheringSizeOpts) => {
+        const updatedWorldState = { ...context.indicators };
         if (selectedAction !== 'Infinity') {
-            const updatedWorldState = { ...context.indicators };
             let multiplicativeFactor = 0;
-
             switch (selectedAction) {
                 case 10:
                     multiplicativeFactor += 0.076;
@@ -57,8 +56,8 @@ export const GatheringSize: ContainmentPolicy2<GatheringSizeOpts> = {
             }
 
             updatedWorldState.r = updatedWorldState.r * (1 - multiplicativeFactor);
-            return updatedWorldState;
         }
+        return updatedWorldState;
     }
 };
 
@@ -73,8 +72,8 @@ export const BusinessClosings: ContainmentPolicy2<BusinessClosingsOpts> = {
     ],
     immediateEffect: (context: WorldState, selectedAction: BusinessClosingsOpts) => context.indicators,
     recurringEffect: (context: WorldState, selectedAction: BusinessClosingsOpts) => {
+        const updatedWorldState = { ...context.indicators };
         if (selectedAction !== 'None') {
-            const updatedWorldState = { ...context.indicators };
             let multiplicativeFactor = 0;
 
             switch (selectedAction) {
@@ -85,8 +84,8 @@ export const BusinessClosings: ContainmentPolicy2<BusinessClosingsOpts> = {
             }
 
             updatedWorldState.r = updatedWorldState.r * (1 - multiplicativeFactor);
-            return updatedWorldState;
         }
+        return updatedWorldState;
     }
 };
 
@@ -99,10 +98,10 @@ export const SchoolsAndUniveristyClosures: ContainmentPolicy2<boolean> = {
     ],
     immediateEffect: (context: WorldState, selectedAction: boolean) => context.indicators,
     recurringEffect: (context: WorldState, selectedAction: boolean) => {
+        const updatedWorldState = { ...context.indicators };
         if (selectedAction) {
-            const updatedWorldState = { ...context.indicators };
             updatedWorldState.r = updatedWorldState.r * 0.621;
-            return updatedWorldState;
         }
+        return updatedWorldState;
     }
 };

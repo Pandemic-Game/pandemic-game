@@ -31,7 +31,7 @@ describe("The behaviour and effect of the business closings order", () => {
 
     it("Does not affect the value of R when no businesses are closed", () => {
         const initialState = cloneDeep(testContext);
-        const updatedState = BusinessClosings.immediateEffect(initialState, 'None')
+        const updatedState = BusinessClosings.recurringEffect(initialState, 'None')
         expect(updatedState).toEqual(initialState.indicators);
     })
 

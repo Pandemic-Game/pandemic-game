@@ -21,7 +21,7 @@ describe("The behaviour and effect of school and university closing order", () =
 
     it("Does not affect the value of R when not active", () => {
         const initialState = cloneDeep(testContext);
-        const updatedState = SchoolsAndUniveristyClosures.immediateEffect(initialState, false)
+        const updatedState = SchoolsAndUniveristyClosures.recurringEffect(initialState, false)
         expect(updatedState).toEqual(initialState.indicators);
     })
 
