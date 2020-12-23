@@ -54,7 +54,8 @@ export class GameEngine {
         const onEndTurn = () => {
             const month = months[this.simulator.lastTurn() % months.length];
             const playerActions = this.collectPlayerActions();
-            const nextTurn = this.simulator.nextTurn(playerActions, month.numDays);
+            const timeStep = 10;
+            const nextTurn = this.simulator.nextTurn(playerActions, this.scenario.game_time_step);
             this.onNextTurn(nextTurn);
         };
 
@@ -77,7 +78,7 @@ export class GameEngine {
         );
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
-        updateIndicators(0, history, history, this.scenario.hospitalCapacity);
+        updateIndicators(0, history, history);
     }
 
     private undoLastTurn() {
@@ -111,7 +112,7 @@ export class GameEngine {
                 this.scenario.initialContainmentPolicies
             );
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
-            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
+            updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory);
         }
     }
 	
@@ -145,14 +146,14 @@ export class GameEngine {
             nextTurn.newInGameEvents,
             this.scenario.initialContainmentPolicies
         );
-        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
+        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
     }
 
     /**
      * Prepares the win screen.
      */
     private prepareWinScreen(currentTurn: number, history: Indicators[], nextTurn: VictoryState) {
-        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
+        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
 
         // Show the win screen
         const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;

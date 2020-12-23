@@ -16,6 +16,127 @@ import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
 
+const updateGraphs = (history) => {
+    const fullYear = 365;
+    const costHistory = [];
+    const caseHistory = [];
+    const hospitalHistory = [];
+    history.forEach((entry) => {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + entry.days);
+        costHistory.push({ x: targetDate, y: entry.totalCost });
+        caseHistory.push({ x: targetDate, y: entry.numInfected });
+        hospitalHistory.push({ x: targetDate, y: entry.numHospitalized });
+    });
+    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
+
+    for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
+        const targetDate = new Date(Date.UTC(2020, 0, 1));
+        targetDate.setDate(targetDate.getDate() + futureDay);
+        costHistory.push({ x: targetDate, y: null });
+        caseHistory.push({ x: targetDate, y: null });
+        hospitalHistory.push({ x: targetDate, y: null });
+    }
+
+    if (!casesChart) {
+        casesChart = buildCasesChart('cases-graph', caseHistory, hospitalHistory, history[history.length - 1].hospitalCapacity);
+    } else {
+        updateCasesChart(casesChart, caseHistory, costHistory);
+    }
+};
+
+const updateIndicatorPanel = (turnNumber, monthHistory) => {
+    $('#turn').html(nFormatter(turnNumber,0));
+    $(`#date`).html(nFormatter(monthHistory.days, 0));
+    $(`#deaths-month`).html(nFormatter(monthHistory.numDead, 0));
+    $(`#cases-hospitalized`).html(nFormatter(monthHistory.numHospitalized, 0));
+    $(`#gdp`).html(nFormatter(monthHistory.GDP, 0));
+    //$(`#public-support`).html(nFormatter(monthHistory., 0));
+    $(`#hospital-capacity`).html(nFormatter(monthHistory.hospitalCapacity, 0));
+    // $(`#test-capacity`).html(nFormatter(monthHistory., 0));
+    // $(`#positively-tested`).html(nFormatter(monthHistory., 0));
+    // $(`#tracing-capacity`).html(nFormatter(monthHistory., 0));
+    // $(`#isolated-cases`).html(nFormatter(monthHistory., 0));
+}
+
+/**
+ * Updates all the on-screen indicators including graphs.
+ * @param turnNumber - The number of the current turn
+ * @param fullHistory - An array of Indicator, with the full game history
+ * @param lastTurnHistory - An array with of Indicator with the results of the last turn
+ * @param hospitalCapacity - Number of hospital capacity
+ */
+export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory) => {
+    updateIndicatorPanel(turnNumber,fullHistory[fullHistory.length-1]);
+    updateGraphs(fullHistory);
+
+};
+
+// Hide and disable all buttons
+const resetControls = () => {
+    // Disable and hide all choices
+    $('.player-action')
+        .prop('disabled', true) // Disable
+        .attr('data-active', 'inactive') // Reset activation status
+        .animate({ opacity: 0.1 }, 'slow') // Hide
+        .addClass('btn-light') // Reset active styling
+        .removeClass('btn-danger')
+        .removeClass('btn-success');
+};
+
+export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents, initialContainmentPolicies) => {
+    // If game initialised or reset re-init controls
+    if (playerTurn === 0) {
+        // Reset controls
+       //resetControls();
+
+    }
+    // Style current choices
+    $(`[id^=""]`).each((_idx, domNode) => {
+        // Enable and style by activation
+        const target = $(domNode);
+        const choiceIsActive = dictOfActivePolicies[target.data('action')];
+
+        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
+        // eslint-disable-next-line no-nested-ternary
+        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
+        target
+            .html(label)
+            .removeClass('btn-light')
+            .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
+            .addClass(choiceIsActive ? 'btn-success' : 'btn-light') // Green = active, red = inactive
+            .prop('disabled', false) // Enable
+            .animate({ opacity: 1 }, 'slow'); // Show
+    });
+    
+    $('#events-box').html('');
+    inGameEvents.forEach((evt) => {
+        $('#events-box').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
+    });
+};
+
+export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
+    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#win-total-dead`).html(nFormatter(totalDeath, 1));
+    $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
+    $('#win-screen').modal('show');
+
+    const prevGamesContainer = $('#prev-games-container');
+    if (prevGames.length > 0) {
+        prevGamesContainer.removeClass('d-none');
+        const costRow = $('#past-cost-row');
+        const deadRow = $('#past-dead-row');
+        const casesRow = $('#past-cases-row');
+        prevGames.forEach((pastGame) => {
+            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+            deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
+            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
+        });
+    } else {
+        $('#first-game-message').removeClass('d-none');
+    }
+};
+
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
@@ -34,63 +155,6 @@ const updateCumulativeIndicators = (fullHistory) => {
         $(`#cost-total`).html(`$ ${nFormatter(totalcosts - fullHistory[0].totalCost, 1)}`);
     }
 };
-
-const updateGraphs = (history, hospitalCapacity) => {
-    const fullYear = 365;
-    const costHistory = [];
-    const caseHistory = [];
-    history.forEach((entry) => {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + entry.days);
-        costHistory.push({ x: targetDate, y: entry.totalCost });
-        caseHistory.push({ x: targetDate, y: entry.numInfected });
-    });
-    const lastDay = history.length > 0 ? history[history.length - 1].days + 1 : 1;
-
-    for (let futureDay = lastDay; futureDay <= fullYear; futureDay += 1) {
-        const targetDate = new Date(Date.UTC(2020, 0, 1));
-        targetDate.setDate(targetDate.getDate() + futureDay);
-        costHistory.push({ x: targetDate, y: null });
-        caseHistory.push({ x: targetDate, y: null });
-    }
-
-    if (!casesChart) {
-        casesChart = buildCasesChart('cases-graph', caseHistory, costHistory, hospitalCapacity);
-    } else {
-        updateCasesChart(casesChart, caseHistory, costHistory);
-    }
-};
-
-const updateMonthlyIndicators = (turnNumber, monthHistory) => {
-    const totalCases = monthHistory.reduce((acc, cur) => {
-        return acc + cur.numInfected;
-    }, 0);
-    const totalDeaths = monthHistory.reduce((acc, cur) => {
-        return acc + cur.numDead;
-    }, 0);
-    const totalCosts = monthHistory.reduce((acc, cur) => {
-        return acc + cur.totalCost;
-    }, 0);
-    $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
-    $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
-    $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
-    
-};
-
-const updateIndicatorPanel = (turnNumber, monthHistory) => {
-    $(`#date`).html(nFormatter(turnNumber, 0));
-    $(`#deaths-month`).html(nFormatter(monthHistory[turnNumber-1].numDead, 0));
-    $(`#cases-hospitalized`).html(nFormatter(monthHistory[turnNumber-1].numHospitalized, 0));
-    $(`#gdp`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    //$(`#public-support`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    $(`#hospital-capacity`).html(nFormatter(monthHistory[turnNumber-1].hospitalCapacity, 0));
-    // $(`#test-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    // $(`#positively-tested`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    // $(`#tracing-capacity`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-    // $(`#isolated-cases`).html(nFormatter(monthHistory[turnNumber-1].GDP, 0));
-
-
-}
 
 export const adjustIndicator = (turnNumber,animate) => {
     const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
@@ -148,82 +212,19 @@ export const adjustIndicator = (turnNumber,animate) => {
     }
 };
 
-/**
- * Updates all the on-screen indicators including graphs.
- * @param turnNumber - The number of the current turn
- * @param fullHistory - An array of Indicator, with the full game history
- * @param lastTurnHistory - An array with of Indicator with the results of the last turn
- * @param hospitalCapacity - Number of hospital capacity
- */
-export const updateIndicators = (turnNumber, fullHistory, lastTurnHistory, hospitalCapacity) => {
-    updateIndicatorPanel(turnNumber,lastTurnHistory)
-    updateCumulativeIndicators(fullHistory);
-    updateGraphs(fullHistory, hospitalCapacity);
-    updateMonthlyIndicators(turnNumber, lastTurnHistory);
-    adjustIndicator(turnNumber,true);
-};
-
-export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
-    $(`#win-total-cases`).html(nFormatter(totalCases, 1));
-	$(`#win-total-dead`).html(nFormatter(totalDeath, 1));
-    $(`#win-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
-    $('#win-screen').modal('show');
-
-    const prevGamesContainer = $('#prev-games-container');
-    if (prevGames.length > 0) {
-        prevGamesContainer.removeClass('d-none');
-        const costRow = $('#past-cost-row');
-		const deadRow = $('#past-dead-row');
-        const casesRow = $('#past-cases-row');
-        prevGames.forEach((pastGame) => {
-            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
-			deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
-            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
-        });
-    } else {
-        $('#first-game-message').removeClass('d-none');
-    }
-};
-
-// Hide and disable all buttons
-const resetControls = () => {
-    // Disable and hide all choices
-    $('.player-action')
-        .prop('disabled', true) // Disable
-        .attr('data-active', 'inactive') // Reset activation status
-        .animate({ opacity: 0.1 }, 'slow') // Hide
-        .addClass('btn-light') // Reset active styling
-        .removeClass('btn-danger')
-        .removeClass('btn-success');
-};
-
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents, initialContainmentPolicies) => {
-    // If game initialised or reset re-init controls
-    if (playerTurn === 0) {
-        // Reset controls
-       // resetControls();
-
-    }
-    // Style current choices
-    $(`[id^=""]`).each((_idx, domNode) => {
-        // Enable and style by activation
-        const target = $(domNode);
-        const choiceIsActive = dictOfActivePolicies[target.data('action')];
-
-        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
-        // eslint-disable-next-line no-nested-ternary
-        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
-        target
-            .html(label)
-            .removeClass('btn-light')
-            .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
-            .addClass(choiceIsActive ? 'btn-success' : 'btn-light') // Green = active, red = inactive
-            .prop('disabled', false) // Enable
-            .animate({ opacity: 1 }, 'slow'); // Show
-    });
+const updateMonthlyIndicators = (turnNumber, monthHistory) => {
+    const totalCases = monthHistory.reduce((acc, cur) => {
+        return acc + cur.numInfected;
+    }, 0);
+    const totalDeaths = monthHistory.reduce((acc, cur) => {
+        return acc + cur.numDead;
+    }, 0);
+    const totalCosts = monthHistory.reduce((acc, cur) => {
+        return acc + cur.totalCost;
+    }, 0);
+    $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
+    $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
+    $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
     
-    $('#events-box').html('');
-    inGameEvents.forEach((evt) => {
-        $('#events-box').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
-    });
 };
+

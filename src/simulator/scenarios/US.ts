@@ -27,5 +27,6 @@ export const US: Scenario = {
     symptom_rate: 0.1,
     start_GDP: 20540000000,
     GDP_normal_fluctuation: 205400000,
-    GDP_bounce_back_rate: 0.1
+    GDP_bounce_back_rate: 0.1,
+    game_time_step: 10
 };

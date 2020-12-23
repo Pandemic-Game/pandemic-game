@@ -24,5 +24,7 @@ export interface Scenario {
     symptom_rate : number;
     start_GDP: number;
     GDP_normal_fluctuation: number;
-    GDP_bounce_back_rate: number 
+    GDP_bounce_back_rate: number;
+    game_time_step: number;
+
 }
