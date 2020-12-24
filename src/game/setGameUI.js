@@ -15,6 +15,7 @@ import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
+let lastMonthlyValues;
 
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
@@ -74,9 +75,65 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     const totalCosts = monthHistory.reduce((acc, cur) => {
         return acc + cur.totalCost;
     }, 0);
-    $(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 1)}`);
-    $(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
-    $(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
+	if(lastMonthlyValues){
+		console.log(lastMonthlyValues,totalCases,totalDeaths,totalCosts,1.1*lastMonthlyValues.cases > totalCases,lastMonthlyValues.cases < 1.1*totalCases);
+	}
+	if(lastMonthlyValues && (lastMonthlyValues.cases > 1.1*totalCases)){
+		$(`#month-cases-${turnNumber}`)[0].style.color="#00A000";
+		if(lastMonthlyValues.cases > 1.5*totalCases){
+			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value extreme-negative'></span>`);
+		} else{
+			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value negative'></span>`);
+		}
+	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.cases < totalCases)){
+		$(`#month-cases-${turnNumber}`)[0].style.color="#C00000";
+		if(1.5*lastMonthlyValues.cases < totalCases){
+			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value extreme-positive'></span>`);
+		} else{
+			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value positive'></span>`);
+		}
+	} else{
+		$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}`);
+	}
+	if(lastMonthlyValues && (lastMonthlyValues.deaths > 1.1*totalDeaths)){
+		$(`#month-deaths-${turnNumber}`)[0].style.color="#00A000";
+		if(lastMonthlyValues.deaths > 1.5*totalDeaths){
+			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value extreme-negative'></span>`);
+		} else{
+			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value negative'></span>`);
+		}
+	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.deaths < totalDeaths)){
+		$(`#month-deaths-${turnNumber}`)[0].style.color="#C00000";
+		if(1.5*lastMonthlyValues.deaths < totalDeaths){
+			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value extreme-positive'></span>`);
+		} else{
+			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value positive'></span>`);
+		}
+	} else{
+		$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
+	}
+	if(lastMonthlyValues && (lastMonthlyValues.cost > 1.1*totalCosts)){
+		$(`#month-cost-${turnNumber}`)[0].style.color="#00A000";
+		if(lastMonthlyValues.cost > 1.5*totalCosts){
+			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value extreme-negative'></span>`);
+		} else{
+			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value negative'></span>`);
+		}
+	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.cost < totalCosts)){
+		$(`#month-cost-${turnNumber}`)[0].style.color="#C00000";
+		if(1.5*lastMonthlyValues.cost < totalCosts){
+			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value extreme-positive'></span>`);
+		} else{
+			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value positive'></span>`);
+		}
+	} else{
+		$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
+	}
+	lastMonthlyValues = {
+		"cases": totalCases,
+		"deaths": totalDeaths,
+		"cost": totalCosts,
+	}
 };
 
 export const adjustIndicator = (turnNumber, animate) => {
