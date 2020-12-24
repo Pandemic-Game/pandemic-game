@@ -9,8 +9,8 @@ export interface ContainmentPolicy2<T> {
     id: string;
     name: string;
     options: PolicyOption<T>[];
-    immediateEffect: (context: WorldState, selectedAction: T) => Indicators;
-    recurringEffect: (context: WorldState, selectedAction: T) => Indicators;
+    immediateEffect: (context: WorldState, selectedOption: T) => Indicators;
+    recurringEffect: (context: WorldState, selectedOption: T) => Indicators;
 }
 
 /**
@@ -28,10 +28,10 @@ export const StayAtHomeOrder: ContainmentPolicy2<boolean> = {
         { label: 'Yes', value: true },
         { label: 'No', value: false }
     ],
-    immediateEffect: (context: WorldState, selectedAction: boolean) => context.indicators,
-    recurringEffect: (context: WorldState, selectedAction: boolean) => {
+    immediateEffect: (context: WorldState, selectedOption: boolean) => context.indicators,
+    recurringEffect: (context: WorldState, selectedOption: boolean) => {
         const updatedWorldState = { ...context.indicators };
-        if (selectedAction) {
+        if (selectedOption) {
             updatedWorldState.r = updatedWorldState.r * 0.228;
         }
         return updatedWorldState;
@@ -48,12 +48,12 @@ export const GatheringSize: ContainmentPolicy2<GatheringSizeOpts> = {
         { label: '100', value: 100 },
         { label: '10', value: 10 }
     ],
-    immediateEffect: (context: WorldState, selectedAction: GatheringSizeOpts) => context.indicators,
-    recurringEffect: (context: WorldState, selectedAction: GatheringSizeOpts) => {
+    immediateEffect: (context: WorldState, selectedOption: GatheringSizeOpts) => context.indicators,
+    recurringEffect: (context: WorldState, selectedOption: GatheringSizeOpts) => {
         const updatedWorldState = { ...context.indicators };
-        if (selectedAction !== 'Infinity') {
+        if (selectedOption !== 'Infinity') {
             let multiplicativeFactor = 0;
-            switch (selectedAction) {
+            switch (selectedOption) {
                 case 10:
                     multiplicativeFactor += 0.076;
                 case 100:
@@ -77,13 +77,13 @@ export const BusinessClosings: ContainmentPolicy2<BusinessClosingsOpts> = {
         { label: 'Some', value: 'Some' },
         { label: 'Most', value: 'Most' }
     ],
-    immediateEffect: (context: WorldState, selectedAction: BusinessClosingsOpts) => context.indicators,
-    recurringEffect: (context: WorldState, selectedAction: BusinessClosingsOpts) => {
+    immediateEffect: (context: WorldState, selectedOption: BusinessClosingsOpts) => context.indicators,
+    recurringEffect: (context: WorldState, selectedOption: BusinessClosingsOpts) => {
         const updatedWorldState = { ...context.indicators };
-        if (selectedAction !== 'None') {
+        if (selectedOption !== 'None') {
             let multiplicativeFactor = 0;
 
-            switch (selectedAction) {
+            switch (selectedOption) {
                 case 'Most':
                     multiplicativeFactor += 0.089;
                 case 'Some':
@@ -103,10 +103,10 @@ export const SchoolsAndUniveristyClosures: ContainmentPolicy2<boolean> = {
         { label: 'Yes', value: true },
         { label: 'No', value: false }
     ],
-    immediateEffect: (context: WorldState, selectedAction: boolean) => context.indicators,
-    recurringEffect: (context: WorldState, selectedAction: boolean) => {
+    immediateEffect: (context: WorldState, selectedOption: boolean) => context.indicators,
+    recurringEffect: (context: WorldState, selectedOption: boolean) => {
         const updatedWorldState = { ...context.indicators };
-        if (selectedAction) {
+        if (selectedOption) {
             updatedWorldState.r = updatedWorldState.r * 0.621;
         }
         return updatedWorldState;

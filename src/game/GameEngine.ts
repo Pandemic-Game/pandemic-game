@@ -1,8 +1,6 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } from '../simulator/SimulatorState';
-import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
-import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import {
     setControlsToTurn,
     showWinScreen,
@@ -16,22 +14,13 @@ import { GameHistory } from './GameHistory';
 import { GameOptionsStore } from './GameOptions';
 import { PlayerContainmentPolicyChoice } from '@src/simulator/player-actions/PlayerActions2';
 
-interface CurrentUISelection {
-    transport: boolean;
-    masks: boolean;
-    schools: boolean;
-    business: boolean;
-}
-
-type AvailableActions = 'transport' | 'masks' | 'schools' | 'business';
-
 /***
  * Class that interfaces the UI code with the simulator. It also keeps track of the history of past games.
  */
 export class GameEngine {
     private scenario: Scenario;
     private simulator: Simulator;
-    private currentlySelectedActions: CurrentUISelection;
+    private currentlySelectedActions: Map<string, any>;
     private gameHistory: GameHistory;
     private gameOptions: GameOptionsStore;
 
@@ -40,18 +29,12 @@ export class GameEngine {
         this.simulator = new Simulator(scenario);
         this.gameHistory = new GameHistory();
         this.gameOptions = new GameOptionsStore();
-
-        this.currentlySelectedActions = {
-            transport: false,
-            masks: false,
-            schools: false,
-            business: false
-        };
+        this.currentlySelectedActions = new Map<string, any>();
     }
 
     start() {
-        const onPlayerSelectsAction = (action: AvailableActions) => {
-            this.currentlySelectedActions[action] = !this.currentlySelectedActions[action];
+        const onPlayerSelectsAction = (containmentPolicyId: string, selectedOption: any) => {
+            this.currentlySelectedActions.set(containmentPolicyId, selectedOption);
         };
 
         const toggleWelcomeScreen = (showWelcomeScreenAtStart: boolean) => {
@@ -103,16 +86,11 @@ export class GameEngine {
         if (targetTurn >= 0) {
             // Map the previous player actions to the format used in the frontend
             const prevContainmentPolicies = lastState.currentTurn.playerActions.containmentPolicies;
-            const prevChoices: CurrentUISelection = {
-                transport: false,
-                masks: false,
-                schools: false,
-                business: false
-            };
+            const prevChoices = new Map<string, any>();
 
-            /*prevContainmentPolicies.forEach((it) => {
-                prevChoices[it.containmentPolicy.id as AvailableActions] = true;
-            });*/
+            prevContainmentPolicies.forEach((it) => {
+                prevChoices.set(it.containmentPolicyId, it.selectedOption);
+            });
 
             // Go back to the last turn
 
@@ -195,22 +173,15 @@ export class GameEngine {
 
     private collectPlayerActions(): PlayerActions {
         const result = {
-            containmentPolicies: [] as PlayerContainmentPolicyChoice<any>[],
-            capabilityImprovements: [] as CapabilityImprovements[],
-            inGameEventChoices: [] as RecordedInGameEventChoice[]
+            containmentPolicies: [] as PlayerContainmentPolicyChoice<any>[]
         };
 
-        /*for (let k in this.currentlySelectedActions) {
-            if (this.currentlySelectedActions[k as AvailableActions]) {
-                const containmentPolicy = this.scenario.initialContainmentPolicies.find((cp) => cp.id === k);
-                if (containmentPolicy) {
-                    result.containmentPolicies.push({
-                        containmentPolicy,
-                        selectedOption: 
-                    });
-                }
-            }
-        }*/
+        for (let k in this.currentlySelectedActions) {
+            result.containmentPolicies.push({
+                selectedOption: this.currentlySelectedActions.get(k),
+                containmentPolicyId: k
+            });
+        }
 
         return result;
     }
