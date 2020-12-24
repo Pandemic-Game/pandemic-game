@@ -178,7 +178,7 @@ const resetControls = () => {
         .removeClass('btn-success');
 };
 
-export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents, initialContainmentPolicies) => {
+export const setControlsToTurn = (playerTurn, activePoliciesMap, inGameEvents) => {
     // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
@@ -196,16 +196,19 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     $(`[id^="turn${playerTurn}-"]`).each((_idx, domNode) => {
         // Enable and style by activation
         const target = $(domNode);
-        const choiceIsActive = dictOfActivePolicies[target.data('action')];
+        const activeChoice = activePoliciesMap.get(target.data('action'));
 
-        const choice = initialContainmentPolicies.find((it) => it.id === target.data('action'));
-        // eslint-disable-next-line no-nested-ternary
-        const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
+        if (activeChoice) {
+            target.val(`${activeChoice}`).change();
+        } else {
+            // Use the first option - default
+            const firstOpt = target.children()[0];
+            if (firstOpt) {
+                target.val(`${firstOpt.value}`).change();
+            }
+        }
+
         target
-            .html(label)
-            .removeClass('btn-light')
-            .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
-            .addClass(choiceIsActive ? 'btn-success' : 'btn-light') // Green = active, red = inactive
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });

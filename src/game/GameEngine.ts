@@ -12,7 +12,8 @@ import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
 import { GameOptionsStore } from './GameOptions';
-import { PlayerContainmentPolicyChoice } from '@src/simulator/player-actions/PlayerActions2';
+import { PlayerContainmentPolicyChoice } from '@src/simulator/player-actions/PlayerActions';
+import { isNumber } from 'highcharts';
 
 /***
  * Class that interfaces the UI code with the simulator. It also keeps track of the history of past games.
@@ -65,7 +66,7 @@ export class GameEngine {
             onUndo,
             onPlayAgain
         );
-        setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
+        setControlsToTurn(0, this.currentlySelectedActions, []);
         const history = this.simulator.history(); // In the first turn total history is the last month history
         updateIndicators(0, history, history, this.scenario.hospitalCapacity);
 
@@ -99,12 +100,7 @@ export class GameEngine {
             const simulatorState = this.simulator.state();
             const updatedTurn = this.simulator.lastTurn();
             // Reset the controls
-            setControlsToTurn(
-                updatedTurn,
-                this.currentlySelectedActions,
-                simulatorState.currentTurn.nextInGameEvents,
-                this.scenario.initialContainmentPolicies
-            );
+            setControlsToTurn(updatedTurn, this.currentlySelectedActions, simulatorState.currentTurn.nextInGameEvents);
             const lastTurnHistory = updatedTurn > 0 ? simulatorState.timeline[updatedTurn - 1].history : [];
             updateIndicators(updatedTurn, simulatorState.history, lastTurnHistory, this.scenario.hospitalCapacity);
         }
@@ -129,12 +125,7 @@ export class GameEngine {
      * Prepares the UI for the next turn of the game
      */
     private prepareNextTurn(currentTurn: number, nextTurn: NextTurnState, history: Indicators[]) {
-        setControlsToTurn(
-            currentTurn,
-            this.currentlySelectedActions,
-            nextTurn.newInGameEvents,
-            this.scenario.initialContainmentPolicies
-        );
+        setControlsToTurn(currentTurn, this.currentlySelectedActions, nextTurn.newInGameEvents);
         updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators, this.scenario.hospitalCapacity);
     }
 
@@ -176,12 +167,28 @@ export class GameEngine {
             containmentPolicies: [] as PlayerContainmentPolicyChoice<any>[]
         };
 
-        for (let k in this.currentlySelectedActions) {
+        this.currentlySelectedActions.forEach((v, k) => {
+            // do some data type conversions
+            let convertedValue = v; // default is string
+
+            // Ensure the types are correctly cast for the simulator.
+            if (typeof v === 'string') {
+                if (v === 'true') {
+                    convertedValue = true;
+                } else if (v === 'false') {
+                    convertedValue = false;
+                } else {
+                    const numericConversion = parseInt(v, 10);
+                    if (!isNaN(numericConversion)) {
+                        convertedValue = numericConversion;
+                    }
+                }
+            }
             result.containmentPolicies.push({
-                selectedOption: this.currentlySelectedActions.get(k),
+                selectedOption: convertedValue,
                 containmentPolicyId: k
             });
-        }
+        });
 
         return result;
     }

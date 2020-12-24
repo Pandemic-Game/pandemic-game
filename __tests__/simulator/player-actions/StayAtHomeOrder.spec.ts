@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { WorldState } from "@src/simulator/SimulatorState";
 import { WorldStateFactory } from './TestHelpers';
-import { StayAtHomeOrder } from '@src/simulator/player-actions/PlayerActions2';
+import { StayAtHomeOrder } from '@src/simulator/player-actions/PlayerActions';
 
 describe("The behaviour and effect of the stay at home order", () => {
 

@@ -1,8 +1,4 @@
-import { RecordedInGameEventChoice } from "@src/simulator/in-game-events/InGameEvents";
-import { CloseSchools } from "@src/simulator/player-actions/CloseSchools";
-import { CloseTransit } from "@src/simulator/player-actions/CloseTransit";
-import { CapabilityImprovements, ContainmentPolicy } from "@src/simulator/player-actions/PlayerActions";
-import { BusinessClosings, GatheringSize, PlayerContainmentPolicyChoice, SchoolsAndUniveristyClosures, StayAtHomeOrder } from "@src/simulator/player-actions/PlayerActions2";
+import { BusinessClosings, GatheringSize, PlayerContainmentPolicyChoice, SchoolsAndUniveristyClosures, StayAtHomeOrder } from "@src/simulator/player-actions/PlayerActions";
 import { Scenario } from "@src/simulator/scenarios/Scenarios";
 import { GDP_US } from "@src/simulator/scenarios/US";
 import { Simulator } from "@src/simulator/Simulator";
@@ -27,7 +23,6 @@ export const TestScenario: Scenario = {
     mortality: 0.01,
     time_lumping: false,
     initialContainmentPolicies: [StayAtHomeOrder, GatheringSize, BusinessClosings, SchoolsAndUniveristyClosures],
-    initialCapabilityImprovements: [],
     availableInGameEvents: [],
     victoryConditions: [TimeVictory]
 };

@@ -1,7 +1,7 @@
 import { WorldState } from "@src/simulator/SimulatorState";
 import { WorldStateFactory } from "./TestHelpers";
 import cloneDeep from 'lodash/cloneDeep';
-import { GatheringSize, GatheringSizeOpts } from "@src/simulator/player-actions/PlayerActions2";
+import { GatheringSize, GatheringSizeOpts } from "@src/simulator/player-actions/PlayerActions";
 
 
 describe("The behaviour and effect of the gathering size order", () => {

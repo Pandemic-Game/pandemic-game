@@ -4,7 +4,7 @@ import {
     GatheringSize,
     SchoolsAndUniveristyClosures,
     StayAtHomeOrder
-} from '../player-actions/PlayerActions2';
+} from '../player-actions/PlayerActions';
 import { TimeVictory } from '../victory-conditions/TimeVictory';
 import { Scenario } from './Scenarios';
 import { usHistory } from './US_runup';
@@ -28,7 +28,6 @@ export const US: Scenario = {
     mortality: 0.01,
     time_lumping: false,
     initialContainmentPolicies: [StayAtHomeOrder, GatheringSize, BusinessClosings, SchoolsAndUniveristyClosures],
-    initialCapabilityImprovements: [],
     availableInGameEvents: [HospitalCapacityExceeded],
     victoryConditions: [TimeVictory]
 };

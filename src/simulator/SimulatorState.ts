@@ -1,7 +1,7 @@
 import { InGameEvent } from './in-game-events/InGameEvents';
 import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
-import { PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
+import { PlayerContainmentPolicyChoice } from './player-actions/PlayerActions';
 
 /**
  * Represents the state of the simulation on a given turn.

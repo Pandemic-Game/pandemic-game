@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { WorldState } from "@src/simulator/SimulatorState";
 import { WorldStateFactory } from './TestHelpers';
-import { SchoolsAndUniveristyClosures } from '@src/simulator/player-actions/PlayerActions2';
+import { SchoolsAndUniveristyClosures } from '@src/simulator/player-actions/PlayerActions';
 
 describe("The behaviour and effect of school and university closing order", () => {
 

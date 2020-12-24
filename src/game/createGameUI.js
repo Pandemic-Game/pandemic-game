@@ -63,19 +63,13 @@ export const createGameUI = (
     const btnClickHandler = (e) => {
         // Style as active/inactive
         const target = $(e.target);
-        target.toggleClass('btn-light');
-        target.toggleClass('btn-success');
-
-        // Change label text on click
-        const label = target.html();
-        if (label === target.attr('data-activeLabel')) {
-            target.html(target.attr('data-inactiveLabel'));
-        } else {
-            target.html(target.attr('data-activeLabel'));
-        }
+        // target.toggleClass('btn-light');
+        // target.toggleClass('btn-success');
 
         // On player selects action pass action to event
-        onPlayerSelectsAction(target.attr('data-action'));
+        // console.log(target);
+        // console.log(`Setting ${target.attr('data-action')} to ${target.val()}`);
+        onPlayerSelectsAction(target.attr('data-action'), target.val());
     };
 
     // Create the table body
@@ -105,17 +99,23 @@ export const createGameUI = (
 
         for (let i = 0; i < numberOfColumns; i += 1) {
             const td = createEle('td', tr);
-            const btn = createEle('button', td, `turn${i}-${action.id}`);
-            btn.className = `player-action m-2 btn btn-sm`;
-            btn.style.position = 'relative';
-            btn.style.zIndex = '200';
-            btn.style.height = 'auto';
-            btn.style.width = buttonLengths[i];
-            btn.setAttribute('data-action', action.id);
-            btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
-            btn.setAttribute('data-activeLabel', action.activeLabel);
-            btn.innerHTML = action.inactiveLabel;
-            btn.onclick = btnClickHandler;
+            const select = createEle('select', td, `turn${i}-${action.id}`);
+            select.className = `player-action m-2 btn btn-sm`;
+            select.style.position = 'relative';
+            select.style.zIndex = '200';
+            select.style.height = 'auto';
+            select.style.background = 'white';
+            select.style.width = buttonLengths[i];
+            select.setAttribute('data-action', action.id);
+            select.innerHTML = action.options
+                .map(
+                    (opt) =>
+                        `<option value="${opt.value}" ${opt.default ? 'selected' : ''} data-action='${action.id}'>
+                        ${opt.label}
+                        </option>`
+                )
+                .join('\n');
+            select.onclick = btnClickHandler;
         }
     }
 
@@ -149,9 +149,9 @@ export const createGameUI = (
                 footerCell.style.paddingLeft = '20px';
                 footerCell.style.borderLeft = 'solid 1px #999999';
                 if (isPreviousGameCell) {
-                    footerCell.setAttribute('id', indicator.name + '_last');
+                    footerCell.setAttribute('id', `${indicator.name}_last`);
                 } else {
-                    footerCell.setAttribute('id', indicator.name + '_this');
+                    footerCell.setAttribute('id', `${indicator.name}_this`);
                 }
             } else {
                 footerCell.innerHTML = '-';

@@ -13,16 +13,16 @@ import { Scenario } from './scenarios/Scenarios';
 import { VictoryCondition } from './victory-conditions/VictoryConditon';
 import cloneDeep from 'lodash/cloneDeep';
 import { InGameEvent } from './in-game-events/InGameEvents';
-import { ContainmentPolicy2, PlayerContainmentPolicyChoice } from './player-actions/PlayerActions2';
+import { ContainmentPolicy, PlayerContainmentPolicyChoice } from './player-actions/PlayerActions';
 
-type PlayerChoiceForContainmentPolicy<T> = ContainmentPolicy2<T> & PlayerContainmentPolicyChoice<T>;
+type PlayerChoiceForContainmentPolicy<T> = ContainmentPolicy<T> & PlayerContainmentPolicyChoice<T>;
 
 export class Simulator {
     private scenario: Scenario;
     private scaleFactor: number;
     private currentTurn: WorldState;
     private timeline: TimelineEntry[];
-    private actions: Map<string, ContainmentPolicy2<any>>;
+    private actions: Map<string, ContainmentPolicy<any>>;
 
     constructor(scenario: Scenario) {
         this.scenario = scenario;
@@ -31,8 +31,8 @@ export class Simulator {
         this.timeline = [];
 
         // For now the simulator is operating under a model where the actions are not updated during a playthrough
-        this.actions = new Map<string, ContainmentPolicy2<any>>();
-        this.scenario.initialContainmentPolicies.forEach((policy: ContainmentPolicy2<any>) => {
+        this.actions = new Map<string, ContainmentPolicy<any>>();
+        this.scenario.initialContainmentPolicies.forEach((policy: ContainmentPolicy<any>) => {
             this.actions.set(policy.id, policy);
         });
     }
