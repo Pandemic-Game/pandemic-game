@@ -122,9 +122,9 @@ export const createGameUI = (
     // Create table footer - current turn
     const tableFooter = createEle('tfoot', tableRoot);
     const indicators = [
-		{name:'cases',symbol:'&#x1f3e5;',unit:''},
-		{name:'deaths',symbol:'\u2620',unit:''},
-		{name:'cost',symbol:'&#128176;',unit:'$'}
+		{name:'cases',symbol:'Cases',unit:''},
+		{name:'deaths',symbol:'Deaths',unit:''},
+		{name:'cost',symbol:'Cost',unit:'$'}
 	];
 
     // HOF to create the footer rows
@@ -138,8 +138,12 @@ export const createGameUI = (
 			const footerCell = createEle('td', footerRow, id);
 
             if (i === 0) {
-                footerCell.innerHTML = `${indicator.symbol} 
-                - ${isPreviousGameCell ? 'last game' : 'this game'}`;
+		if (indicatorNum === 0) {
+		    footerCell.innerHTML = `${isPreviousGameCell ? 'Last trial' : 'This trial'}: ${indicator.symbol}`;
+		}
+		else {
+		    footerCell.innerHTML = `${indicator.symbol}`;
+		}
                 footerCell.className = 'noselect';
                 footerCell.style.textAlign = 'right';
             } else if(i === numberOfColumns + 1){
