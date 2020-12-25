@@ -177,7 +177,8 @@ export class Simulator {
         let actionR = candidateState.indicators.r;
         const prevCases = lastResult.numInfected;
 
-	debugger;
+    /* Disabled debugger for testing in browser console because this line pauses it */
+	//debugger;
 
         // Don't allow cases to exceed hospital capacity
         const hospitalCapacity = lastResult.hospitalCapacity;

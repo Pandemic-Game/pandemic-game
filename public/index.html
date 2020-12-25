@@ -7,85 +7,111 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
     integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
   <link rel="stylesheet" href="public/style/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
   <title>Pandemic simulator</title>
 </head>
 
 <body>
 
-  <div class="container-fluid" style="width:1380px;">
-        <!-- Metrics Panels -->
-        <div id="metrics-panel">
-          <div class="p-2 row">
-            <div class="col-sm-1">
-              <h4>Turn:</h4>
-              <h4 id="turn">0</h4>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="date">0</h4>
-              <h4>Days</h4>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="deaths-month">0</h4>
-              <p>Deaths</p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="cases-hospitalized">0</h4>
-              <p>Hospitalized Cases</p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="gdp">0</h4>
-              <p>GDP</p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="public-support">0</h4>
-              <p>Public support </p>
-            </div>
-            <div class="col-sm-1">
-              <button id="change-view-button"></button>
-            </div>
-          </div>
-        </div>
+  <div class="container-fluid w-100 vh-100">
 
-        <div id="indicator-panel">
-          <div class="p-2 row">
-            <div class="col-sm-1">
-              <h4 id="hospital-capacity">-</h4>
-              <p> Hospital Capacity </p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="test-capacity">0</h4>
-              <p>Test Capacity </p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="positively-tested">-</h4>
-              <p>Positively Tested </p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="tracing-capacity">0</h4>
-              <p>Contact Tracing Capacity </p>
-            </div>
-            <div class="col-sm-1">
-              <h4 id="isolated-cases">-</h4>
-              <p>Isolated contacts </p>
-            </div>
-          </div>
-        </div>
+    <!-- Navbar -->
+    <div class="w-100 h-20 p-2 d-flex flex-row justify-content-around align-items-center">
+      <!-- Toggle view button -->
+      <h5>Pandemic game</h5>
+      <button class='btn btn-primary m-2' id="change-view-button">Research center</button>
+    </div>
 
+    <!-- View 1 -->
+    <div id='view1' class='w-100 h-80'>
+    <div class="w-100 h-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
-      <!-- events panel -->  
-      <div id="events-box" class="events-panel">  </div>
-      <!-- actions panel -->
-      <div class="row" id="actions-panel">
-        <div class="col-xs-1" style="width:32px">
-          <div class="rotated-text" style="top: 160px">Actions</div>
-        </div>
-        <div class="col">
-          <table id="player-actions-container"></table>
+      <!-- Metrics Panels -->
+      <p><strong>Stats</strong></p>
+      <div id="metrics-panel" class='p-1 m-1'>
+        <div class="d-flex flex-row justify-content-evenly">
+          <p> Turn:
+            <br><span id="turn">0</span>
+          </p>
+          <p> Days:
+            <br><span id="date">0</span>
+          </p>
+          <p> Deaths:
+            <br><span id="deaths-month">0</span>
+          </p>
+          <p> Hospitalized Cases:
+            <br><span id="cases-hospitalized">0</span>
+          </p>
+          <p> GDP:
+            <br><span id="gdp">0</span>
+          </p>
+          <p> Public support:
+            <br><span id="public-support">0</span>
+          </p>
         </div>
       </div>
-      <div id="cases-graph"  style="width:100%;height:250px;display:none;"></div>
 
-  </div>
+      <!-- events panel -->  
+      <p><strong>Events</strong></p>
+      <div 
+        id="events-box" 
+        class="p-2 m-2 w-100 events-panel d-flex flex-column align-items-end" 
+        style='padding: 1rem; overflow: scroll; border: 1px solid lightblue; height: 30vh; border-radius: 5px;'>  
+      </div>
+
+      <!-- actions panel -->
+      <p><strong>Policies</strong></p>
+      <div class="row m-2" id="actions-panel">
+          <div id="player-actions-container"></div>
+      </div>
+
+      <!-- end turn button -->
+      <button id='advance-button' class='w-100 btn btn-lg btn-primary mt-auto'>
+        Advance 
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+            <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+        </svg>
+      </button>
+
+    </div> 
+    </div><!-- /view1 -->
+
+    <!-- View 2 -->
+    <div id='view2' style='display:none' class='w-100 h-100'>
+    <div class="p-2 w-100 h-80 d-flex flex-column justify-content-center align-items-center">
+      
+      <!-- Indicators -->
+      <p><strong>Treatment and testing facilities</strong></p>
+      <div id="indicator-panel">
+        <div class="d-flex flex-row justify-content-evenly">
+            <p> Hospital Capacity
+              <br><span id="hospital-capacity">0</span>
+            </p>
+            <p> Test Capacity
+              <br><span id="test-capacity">0</span>
+            </p>
+            <p> Positively Tested
+              <br><span id="positively-tested">0</span>
+            </p>
+            <p> Contact Tracing Capacity
+              <br><span id="tracing-capacity">0</span>
+            </p>
+            <p> Isolated contacts
+              <br><span id="isolated-cases">0</span>
+            </p>
+        </div>
+      </div>
+
+      <!-- Graph -->
+      <p><strong>Data modelling</strong></p>
+      <div id="cases-graph"  style="width:100%; height:250px;"></div>
+    
+    </div>
+    </div> <!-- /view2 -->
+    
+
+  </div> <!-- /container -->
 
     <!-- Win screen modal -->
     <div class="modal" tabindex="-1" id='win-screen' data-backdrop="static" data-keyboard="false">

@@ -13,6 +13,7 @@ Sets UI display given the player's in-game turn and actions
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
+
 // Object that will keep track of the chart instance
 let casesChart;
 
@@ -83,6 +84,7 @@ const resetControls = () => {
 };
 
 export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents, initialContainmentPolicies) => {
+    
     // If game initialised or reset re-init controls
     if (playerTurn === 0) {
         // Reset controls
@@ -100,16 +102,30 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
         const label = choice ? (choiceIsActive ? choice.activeLabel : choice.inactiveLabel) : '';
         target
             .html(label)
-            .removeClass('btn-light')
-            .removeClass(choiceIsActive ? 'btn-light' : 'btn-success')
-            .addClass(choiceIsActive ? 'btn-success' : 'btn-light') // Green = active, red = inactive
+            .removeClass(choiceIsActive ? 'player-action-inactive' : 'player-action-active')
+            .addClass(choiceIsActive ? 'player-action-active' : 'player-action-inactive') // style active choices in style.css
             .prop('disabled', false) // Enable
             .animate({ opacity: 1 }, 'slow'); // Show
     });
     
-    $('#events-box').html('');
+    // Add message for each event
     inGameEvents.forEach((evt) => {
-        $('#events-box').append(`<div class="${evt.cssClass}" data-event="${evt.name}">${evt.description}</div>`);
+
+        // Compose message
+        let message = `
+            <em class='text-muted'>$date</em>
+            <p><strong>${evt.name}</strong><br></p>
+            ${evt.description}
+        `
+
+        // Send message to player event box
+        let p = document.createElement('P');
+        p.innerHTML = message;
+        p.className = `speech-bubble-left mr-auto ${evt.cssClass}`;
+        document.getElementById('events-box').appendChild(p);
+    
+        // Scroll down to message
+        $("#events-box").animate({ scrollTop: $("#events-box")[0].scrollHeight }, 1000);
     });
 };
 

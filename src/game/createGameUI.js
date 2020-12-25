@@ -43,32 +43,47 @@ export const createGameUI = (
     onRestart,
 ) => {
 
-    const changeViewButton = document.getElementById('change-view-button');
-    changeViewButton.innerHTML = 'View Graphs';
-    changeViewButton.onclick = (e) =>  {
-        if ( changeViewButton.innerHTML == 'View Graphs')  {
-            document.getElementById('events-box').style.display = 'none';
-            document.getElementById('actions-panel').style.display = 'none';
-            document.getElementById('cases-graph').style.display = 'inline';
-            changeViewButton.innerHTML = 'View Events and Actions';
-        } else {
-            document.getElementById('events-box').style.display = 'inline';
-            document.getElementById('actions-panel').style.display = 'inline';
-            document.getElementById('cases-graph').style.display = 'none';
-            changeViewButton.innerHTML = 'View Graphs';
+    /* Create buttons */
+
+    // Create button to toggle views
+    $('#change-view-button').click(function(){
+
+        $('#view1').toggle();
+        $('#view2').toggle();
+        
+        let label = $('#change-view-button').text();
+        if(label === 'Control room'){
+            $('#change-view-button').text('Research center');
+        }else{
+            $('#change-view-button').text('Control room');
         }
-    }
+    })
+    
+    // End turn button event handler
+    $(`#advance-button`).on('click', () => {
+        onEndTurn();
+    });
 
+    // Restart button event handler (not currently on DOM)
+    $(`#restart-btn`).on('click', () => {
+        const isChecked = $('#hide-welcome').is(':checked');
+        showWelcomeScreenAtStart(!isChecked);
+        onRestart();
+    });
+
+
+    /* Create player actions */
+
+    // Create buttons container
     const tableRoot = $(`#player-actions-container`)[0];
+    tableRoot.className = 'w-100 d-flex flex-column justify-content-center align-items-middle';
 
-    // Create table 
-    const header = createEle('tr', tableRoot);
-
+    // Create buttons for player policies
     const btnClickHandler = (e) => {
         // Style as active/inactive
         const target = $(e.target);
-        target.toggleClass('btn-light');
-        target.toggleClass('btn-success');
+        target.toggleClass('player-action-inactive');
+        target.toggleClass('player-action-active');
 
         // Change label text on click
         const label = target.html();
@@ -81,54 +96,20 @@ export const createGameUI = (
         // On player selects action pass action to event
         onPlayerSelectsAction(target.attr('data-action'));
     };
-
-    // Create the table body
-    const tableBody = createEle('tbody', tableRoot);
     
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
-        const tr = createEle('tr', tableBody);
-        const title = createEle('td', tr);
-        title.innerHTML = action.name;
-        title.className = 'noselect';
-        title.style.textAlign = 'right';
-        title.style.width = '115px';
 
-        const td = createEle('td', tr);
-        const btn = createEle('button', td, `${action.id}`);
-        btn.className = `player-action m-2 btn btn-sm`;
+        const btn = createEle('button', tableRoot, `${action.id}`);
+        btn.className = `player-action m-2 btn btn-sm player-action-inactive`;
         btn.style.position = 'relative';
         btn.style.zIndex = '200';
         btn.style.height = 'auto';
-        btn.style.width = 250;
         btn.setAttribute('data-action', action.id);
-        btn.setAttribute('data-inactiveLabel', action.inactiveLabel);
-        btn.setAttribute('data-activeLabel', action.activeLabel);
-        btn.innerHTML = action.inactiveLabel;
+        btn.setAttribute('data-inactiveLabel', `${action.inactiveLabel} ${action.name}`);
+        btn.setAttribute('data-activeLabel', `${action.activeLabel} ${action.name}`);
+        btn.innerHTML = `${action.inactiveLabel} ${action.name}`;
         btn.onclick = btnClickHandler;
 
     }
-
-    const tr = createEle('tr', tableBody);
-    const title = createEle('td', tr);
-    title.innerHTML = 'advance-button';
-    title.className = 'noselect';
-    title.style.textAlign = 'right';
-    title.style.width = '115px';
-    const td = createEle('td', tr);
-    const btn = createEle('button', td, `advance-button`);
-    btn.name = 'Go forwards in time';
-    btn.style.position = 'relative';
-    btn.style.zIndex = '200';
-    btn.style.height = 'auto';
-    btn.style.width = '80px'; // '100%';
-    btn.innerHTML = 'Advance' ; 
-    btn.onclick = onEndTurn; // END TURN EVENT (in GameEngine.ts)
-
-    // Add extra event handlers
-    $(`#restart-btn`).on('click', () => {
-        const isChecked = $('#hide-welcome').is(':checked');
-        showWelcomeScreenAtStart(!isChecked);
-        onRestart();
-    });
 };
