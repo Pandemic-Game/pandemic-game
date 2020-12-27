@@ -164,12 +164,6 @@ export const createGameUI = (
         }
     };
 
-    // Create monthly indicator cells for current playthough
-    indicators.forEach(createMonthlyIndictorCells(false));
-
-    // Create monthly indicator cells for next playthroug
-    indicators.forEach(createMonthlyIndictorCells(true));
-
     const footerRow = createEle('tr', tableFooter);
 
     for (let i = 0; i < numberOfColumns + 1; i += 1) {
@@ -179,11 +173,12 @@ export const createGameUI = (
         const btnGrp = createEle('DIV', footerCell);
         btnGrp.className = 'btn-group';
         btnGrp.role = 'group';
-
         if (!(i === 0)) {
             const btn = createEle('button', btnGrp, `endTurn-btn-${i}`);
             btn.className = `btn btn-sm btn-light turn-btn-grp`;
             btn.style.width = '80px'; // '100%';
+			btn.style.zIndex = '200';
+			btn.style.marginBottom = '30px';
             btn.name = 'Go forwards in time';
             btn.type = 'button';
             btn.innerHTML = `
@@ -197,6 +192,7 @@ export const createGameUI = (
             const btn = createEle('button', btnGrp, `undo-btn`);
             btn.className = `btn btn-sm btn-light undo-btn-grp`;
             btn.style.width = '80px'; // '100%';
+			btn.style.marginBottom = '30px';
             btn.name = 'Go backwards in time';
             btn.type = 'button';
             btn.innerHTML = `
@@ -208,6 +204,14 @@ export const createGameUI = (
             btn.onclick = onUndo; // UNDO EVENT (in GameEngine.ts)
         }
     }
+	
+	
+	
+	// Create monthly indicator cells for current playthough
+    indicators.forEach(createMonthlyIndictorCells(false));
+
+    // Create monthly indicator cells for next playthroug
+    indicators.forEach(createMonthlyIndictorCells(true));
 
     // Add extra event handlers
     $(`#restart-btn`).on('click', () => {
