@@ -13,36 +13,35 @@
 <body>
   <div id="turn-indicator" style="
 	width: 92px;
-	height: 674px;
-  background: linear-gradient(-90deg, rgba(255,250,0,0) 0%, rgba(255,250,0,1) 100%);
+	height: 784px;
+    background: linear-gradient(-90deg, rgba(255,250,0,0) 0%, rgba(255,250,0,1) 100%);
 	opacity: 0.5;
 	position: absolute;
 	z-index: 100;
-	top: 60px;"></div>
+	top: 80px;"></div>
   <div class="container-fluid" style="width:1380px;">
-    <!-- consequences panel -->
+	<div id="events-holder" style="height: 80px; width:100%"></div>
+    <!-- actions panel -->
+    <div class="row">
+	  <div class="col-xs-1" style="width:32px">
+        <div class="rotated-text" style="top: 150px">Actions</div>
+      </div>
+	  <!-- in game events panel-->
+      <div class="col">
+        <table id="player-actions-container"></table>
+      </div>
+    </div>
+	<!-- consequences panel -->
     <div class="row">
       <div class="col-xs-1" style="width:32px;">
-        <div class="rotated-text" style="top: 250px">Consequences</div>
+        <div class="rotated-text" style="top: 150px">Consequences</div>
       </div>
       <div class="col">
         <!-- Cases panel -->
-        <div id="indicator-panel">
-          <!-- in game events panel-->
-          <div id="events-holder" style="height: 80px;"></div>
-
+        <div id="indicator-panel" style="padding-top:25px">
           <!-- Graph panel-->
           <div id="cases-graph" style="width:100%;height:250px;"></div>
         </div>
-      </div>
-    </div>
-    <!-- actions panel -->
-    <div class="row">
-      <div class="col-xs-1" style="width:32px">
-        <div class="rotated-text" style="top: 160px">Actions</div>
-      </div>
-      <div class="col">
-        <table id="player-actions-container"></table>
       </div>
     </div>
 
