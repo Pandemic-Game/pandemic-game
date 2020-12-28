@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
+//import 'popper.js';
+import 'bootstrap/js/dist/modal';
+import { initialisePlayerResearch } from './research';
 import { doc } from 'prettier';
 
 /* 
@@ -70,6 +73,9 @@ export const createGameUI = (
         showWelcomeScreenAtStart(!isChecked);
         onRestart();
     });
+
+    /* Create research */
+    initialisePlayerResearch(); // research.js
 
 
     /* Create player actions */

@@ -12,6 +12,8 @@ Sets UI display given the player's in-game turn and actions
 
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
+import { calculateElectability } from './electability';
+import { writeMessageToEventBox } from './eventsBox';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 
 // Object that will keep track of the chart instance
@@ -110,22 +112,7 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     
     // Add message for each event
     inGameEvents.forEach((evt) => {
-
-        // Compose message
-        let message = `
-            <em class='text-muted'>$date</em>
-            <p><strong>${evt.name}</strong><br></p>
-            ${evt.description}
-        `
-
-        // Send message to player event box
-        let p = document.createElement('P');
-        p.innerHTML = message;
-        p.className = `speech-bubble-left mr-auto ${evt.cssClass}`;
-        document.getElementById('events-box').appendChild(p);
-    
-        // Scroll down to message
-        $("#events-box").animate({ scrollTop: $("#events-box")[0].scrollHeight }, 1000);
+        writeMessageToEventBox(evt);
     });
 };
 
@@ -173,34 +160,6 @@ const updateCumulativeIndicators = (fullHistory) => {
 export const adjustIndicator = (turnNumber,animate) => {
     const basePosition = document.getElementsByClassName('container-fluid')[0].getBoundingClientRect().left;
     if (turnNumber < 12) {
-        /* const monthPositions = [
-            '405px',
-            '496px',
-            '584px',
-            '675px',
-            '764px',
-            '858px',
-            '948px',
-            '1043px',
-            '1136px',
-            '1228px',
-            '1320px',
-            '1411px'
-        ]; */
-        /*const monthPositions = [
-            `${basePosition + 165}px`,
-            `${basePosition + 256}px`,
-            `${basePosition + 344}px`,
-            `${basePosition + 435}px`,
-            `${basePosition + 525}px`,
-            `${basePosition + 618}px`,
-            `${basePosition + 708}px`,
-            `${basePosition + 803}px`,
-            `${basePosition + 896}px`,
-            `${basePosition + 988}px`,
-            `${basePosition + 1080}px`,
-            `${basePosition + 1171}px`
-        ]*/;
 		const monthPositions = [
             basePosition + 165,
             basePosition + 256,
@@ -227,6 +186,18 @@ export const adjustIndicator = (turnNumber,animate) => {
 };
 
 const updateMonthlyIndicators = (turnNumber, monthHistory) => {
+
+    // Electability indicator
+    /*
+        NOTE: PLACEHOLDER NUMBERS BELOW (20,30,40)
+        Integrate into game engine to dynamically get these values as: 
+            - monthHistory.publicSupport
+            - monthHistory.businessSupport
+            - monthHistory.healthcareSupport
+    */
+    $(`#score-electability`).html(calculateElectability(20, 30, 40));
+
+    // Other indicators
     const totalCases = monthHistory.reduce((acc, cur) => {
         return acc + cur.numInfected;
     }, 0);

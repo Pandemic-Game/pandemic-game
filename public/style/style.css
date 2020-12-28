@@ -59,7 +59,12 @@ h4{
 	font-size: 12px;
 }
 
-/* Controls */
+/* Controls - research */
+.intel{
+	display: none;
+}
+
+/* Controls - player actions*/
 .turn-btn-grp{
 	color: red;
 }

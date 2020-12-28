@@ -20,6 +20,14 @@
     <div class="w-100 h-20 p-2 d-flex flex-row justify-content-around align-items-center">
       <!-- Toggle view button -->
       <h5>Pandemic game</h5>
+      
+      <div class="d-flex flex-row justify-content-evenly">
+        <p class='p-2'>Days in office: <span id="date">0</span></p>
+        <p class='p-2'>Electability 
+          <span id="score-electability">30%</span> 
+        </p>
+      </div>
+
       <button class='btn btn-primary m-2' id="change-view-button">Research center</button>
     </div>
 
@@ -28,28 +36,7 @@
     <div class="w-100 h-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
       <!-- Metrics Panels -->
-      <p><strong>Stats</strong></p>
       <div id="metrics-panel" class='p-1 m-1'>
-        <div class="d-flex flex-row justify-content-evenly">
-          <p> Turn:
-            <br><span id="turn">0</span>
-          </p>
-          <p> Days:
-            <br><span id="date">0</span>
-          </p>
-          <p> Deaths:
-            <br><span id="deaths-month">0</span>
-          </p>
-          <p> Hospitalized Cases:
-            <br><span id="cases-hospitalized">0</span>
-          </p>
-          <p> GDP:
-            <br><span id="gdp">0</span>
-          </p>
-          <p> Public support:
-            <br><span id="public-support">0</span>
-          </p>
-        </div>
       </div>
 
       <!-- events panel -->  
@@ -61,11 +48,15 @@
       </div>
 
       <!-- actions panel -->
-      <p><strong>Policies</strong></p>
-      <div class="row m-2" id="actions-panel">
-          <div id="player-actions-container"></div>
+      <div class="m-2 w-100 d-flex flex-row justify-content-evenly" id="actions-panel">
+          <div id="player-actions-container" class='col-md-6 d-flex flex-column content-justify-center align-items-center'>
+            <p><strong>Policies</strong></p>
+          </div>
+          <div id="player-research-container" class='col-md-6 d-flex flex-column content-justify-center align-items-center'>
+            <p><strong>Research investments</strong></p>
+          </div>
       </div>
-
+      
       <!-- end turn button -->
       <button id='advance-button' class='w-100 btn btn-lg btn-primary mt-auto'>
         Advance 
@@ -82,11 +73,53 @@
     <div class="p-2 w-100 h-80 d-flex flex-column justify-content-center align-items-center">
       
       <!-- Indicators -->
-      <p><strong>Treatment and testing facilities</strong></p>
       <div id="indicator-panel">
+
+        <!-- Unlockable research intel indicators -->
+        <p><strong>Available data reports</strong></p>
+        <hr>
+        <p> Hospital Capacity
+          <br><span id="hospital-capacity">0</span>
+        </p>
         <div class="d-flex flex-row justify-content-evenly">
-            <p> Hospital Capacity
-              <br><span id="hospital-capacity">0</span>
+          <p id='intel-deaths' class='intel'> Deaths:
+            <br><span id="deaths-month">0</span>
+          </p>
+          <p id='intel-hospitalisations' class='intel'> Hospitalized Cases:
+            <br><span id="cases-hospitalized">0</span>
+          </p>
+          <p id='intel-cases' class='intel'> Positively Tested
+            <br><span id="positively-tested">0</span>
+          </p>
+          <p id='intel-gdp' class='intel'> GDP:
+            <br><span id="gdp">0</span>
+          </p>
+        </div>
+        <br>
+
+        <!-- Electability indicators -->
+        <p><strong>Support and electability</strong></p>
+        <hr>
+        <div class="d-flex flex-row justify-content-evenly">
+          <p class='p-2'>Total support (electability):
+            <span id="score-electability">30%</span> 
+          </p>
+          <p id='intel-businessSupport'> Public support:
+            <br><span id="public-support">20</span>%
+          </p>
+          <p id='intel-publicSupport'> Business support:
+            <br><span id="public-support">30</span>%
+          </p>
+          <p id='intel-healthcareSupport'> Healthcare support:
+            <br><span id="public-support">40</span>%
+          </p>
+        </div>
+        <br>
+
+        <!-- Temporarily removed unused elements
+        <div class="d-flex flex-row justify-content-evenly">
+            <p> Turn:
+              <br><span id="turn">0</span>
             </p>
             <p> Test Capacity
               <br><span id="test-capacity">0</span>
@@ -100,12 +133,15 @@
             <p> Isolated contacts
               <br><span id="isolated-cases">0</span>
             </p>
-        </div>
+          </div>
+          -->
+
       </div>
 
       <!-- Graph -->
-      <p><strong>Data modelling</strong></p>
-      <div id="cases-graph"  style="width:100%; height:250px;"></div>
+      <p id='cases-graph-label' class='intel'><strong>Data modelling</strong></p>
+      <hr>
+      <div id="cases-graph" class='intel'  style="width:100%; height:250px;"></div>
     
     </div>
     </div> <!-- /view2 -->
