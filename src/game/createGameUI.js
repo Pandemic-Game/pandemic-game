@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
-//import 'popper.js';
 import 'bootstrap/js/dist/modal';
 import { initialisePlayerResearch } from './research';
 import { doc } from 'prettier';
+import * as d3 from 'd3';
 
 /* 
 Shorthand functions to create DOM elements
@@ -25,6 +25,56 @@ const createEle = (type, parentEle, id = null) => {
     return ele;
 };
 
+/* 
+Function to create D3 pie chart
+
+    Arguments
+    --------
+    data = list of values to display in pie (array)
+        data structure:
+            [
+                public support (int),
+                business support (int),
+                healthcare support (int)
+            ]
+*/
+
+function createElectabilityPie(data) {
+
+    // Create SVG canvas
+    const svg = d3.select('#svg-pie');
+    svg.attr('viewBox', '0 0 200 200');
+
+    const g = svg.append('g').attr('transform', 'translate(100,100)'); // Create pie element in center
+
+    // Creating Pie generator
+    const pie = d3.pie();
+    pie.sort(null); // Disable sorting by size for consistent view
+
+    // Creating arc
+    const arc = d3.arc().innerRadius(40).outerRadius(100); // Size of pie
+
+    // Grouping different arcs
+    const arcs = g.selectAll('arc').data(pie(data)).enter().append('g');
+
+    // Appending path
+    arcs.append('path')
+        .attr('fill', (data, i) => {
+            return [['#166cec', 'gold', 'crimson', 'lightgrey'][i]];
+        })
+        .attr('d', arc);
+    
+    // Text labels
+    arcs.append('text')
+        .attr("transform", function(d) {
+        var _d = arc.centroid(d);
+            return "translate(" + _d + ")";
+        })
+        .attr('stroke', 'black')
+        .attr('text-anchor', 'middle')
+        .text((d) => d.data);
+}
+
 /*
 
 Create Game UI
@@ -44,24 +94,11 @@ export const createGameUI = (
     onEndTurn,
     onUndo,
     onRestart,
+    electability
 ) => {
 
     /* Create buttons */
 
-    // Create button to toggle views
-    $('#change-view-button').click(function(){
-
-        $('#view1').toggle();
-        $('#view2').toggle();
-        
-        let label = $('#change-view-button').text();
-        if(label === 'Control room'){
-            $('#change-view-button').text('Research center');
-        }else{
-            $('#change-view-button').text('Control room');
-        }
-    })
-    
     // End turn button event handler
     $(`#advance-button`).on('click', () => {
         onEndTurn();
@@ -74,9 +111,38 @@ export const createGameUI = (
         onRestart();
     });
 
+    // View control button event handlers for home screen
+    $(`#view-btn-electability`).on('click', () => {
+        $(`#view-electability`).show();
+        $(`#view-graph`).hide();
+        $(`#view-stats`).hide();
+    });
+    $(`#view-btn-graph`).on('click', () => {
+        $(`#view-electability`).hide();
+        $(`#view-graph`).show();
+        $(`#view-stats`).hide();
+    });
+    $(`#view-btn-stats`).on('click', () => {
+        $(`#view-electability`).hide();
+        $(`#view-graph`).hide();
+        $(`#view-stats`).show();
+    });
+    
+    // Player controls panel button event handlers for home screen
+    $(`#controls-btn-policies`).on('click', () => {
+        $(`#controls-policies`).show();
+        $(`#controls-research`).hide();
+    });
+    $(`#controls-btn-research`).on('click', () => {
+        $(`#controls-policies`).hide();
+        $(`#controls-research`).show();
+    });
+
     /* Create research */
     initialisePlayerResearch(); // research.js
 
+    /* Create electability view pie chart */
+    createElectabilityPie(electability);
 
     /* Create player actions */
 

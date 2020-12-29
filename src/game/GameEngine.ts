@@ -7,6 +7,7 @@ import { setControlsToTurn, showWinScreen, updateIndicators, adjustIndicator } f
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
+import { supporterValues } from './electability';
 import { GameOptions, GameOptionsStore } from './GameOptions';
 
 interface CurrentUISelection {
@@ -74,7 +75,13 @@ export class GameEngine {
             onPlayerSelectsAction,
             onEndTurn,
             onUndo,
-            onPlayAgain
+            onPlayAgain,
+            [
+                this.simulator.currentTurn.indicators.publicSupport,
+                this.simulator.currentTurn.indicators.businessSupport,
+                this.simulator.currentTurn.indicators.healthcareSupport,
+                this.simulator.currentTurn.indicators.noSupport
+            ]
         );
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history

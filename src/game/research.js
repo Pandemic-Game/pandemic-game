@@ -53,8 +53,9 @@ export const initialisePlayerResearch = (
             name: 'Produce statistical models',
             description: 'see a graph of the current cases and economy',
             function: function(){
-                $('#cases-graph').show();
-                $('#cases-graph-label').show();
+                $('#view-btn-graph-label').text('Graph');
+                $('#view-btn-graph').prop('disabled', false);
+                
             },
             enabledAtStart: false,
             cost: 1,

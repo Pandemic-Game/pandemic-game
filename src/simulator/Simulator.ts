@@ -177,8 +177,7 @@ export class Simulator {
         let actionR = candidateState.indicators.r;
         const prevCases = lastResult.numInfected;
 
-    /* Disabled debugger for testing in browser console because this line pauses it */
-	//debugger;
+	    //debugger; // Debugger disabled for testing in browser because this line pauses it 
 
         // Don't allow cases to exceed hospital capacity
         const hospitalCapacity = lastResult.hospitalCapacity;
@@ -187,7 +186,6 @@ export class Simulator {
         actionR = cappedActionR;
 
         // Compute next state
-
         const currentDay = lastResult.days + 1;
         const lag = 20;
         const long_enough = history.length >= lag;
@@ -202,8 +200,7 @@ export class Simulator {
         const new_num_hospitalized = new_num_symptomized < hospitalCapacity ? new_num_symptomized : hospitalCapacity;
         // Deaths from infections started 20 days ago
         const mortality = this.scenario.mortality;
-	console.log("history.length");
-	console.log(history.length);
+        
         const new_deaths_lagging = long_enough ? history[history.length - lag].numInfected * mortality : 0;
         
         // compute economics 
@@ -227,7 +224,11 @@ export class Simulator {
             economicCosts: economicCosts,
             medicalCosts: medicalCosts,
             totalCost: deathCosts + economicCosts + medicalCosts,
-            GDP: new_gdp
+            GDP: new_gdp,
+            publicSupport: candidateState.indicators.publicSupport,
+            businessSupport: candidateState.indicators.businessSupport,
+            healthcareSupport: candidateState.indicators.healthcareSupport,
+            noSupport: candidateState.indicators.noSupport,
         };
     }
 
@@ -254,7 +255,11 @@ export class Simulator {
                 medicalCosts: medicalCosts,
                 numHospitalized: 0,
                 totalCost: deathCosts + economicCosts + medicalCosts,
-                GDP: this.scenario.start_GDP
+                GDP: this.scenario.start_GDP,
+                publicSupport: 5,
+                businessSupport: 5,
+                healthcareSupport: 5,
+                noSupport: 15,
             },
             playerActions: {
                 capabilityImprovements: [],

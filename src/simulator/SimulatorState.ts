@@ -20,6 +20,10 @@ export interface Indicators {
     deathCosts: number;
     totalCost: number;
     GDP: number;
+    publicSupport: number;
+    businessSupport: number;
+    healthcareSupport: number;
+    noSupport: number;
 }
 
 /**

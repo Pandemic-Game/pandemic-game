@@ -65,6 +65,7 @@
     "@popperjs/core": "^2.6.0",
     "bootstrap": "^4.5.3",
     "bootstrap-icons": "^1.2.1",
+    "d3": "^6.3.1",
     "highcharts": "^8.2.2",
     "jquery": "^3.5.1",
     "jstat": "^1.9.4",

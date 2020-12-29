@@ -21,21 +21,31 @@ Events box / Player messages
 */
 
 import * as $ from 'jquery';
+import * as bootstrap from 'bootstrap';
 
 export const writeMessageToEventBox = (evt) => {
 
-    // Compose message
-    const message = `
-        <p><strong>${evt.name}</strong><br></p>
-        ${evt.description}
-    `;
+    // Show event dialog
+    const modal = new bootstrap.Modal(document.getElementById('modal-event'));
+    modal.show();
 
     // Send message to player event box
+    document.getElementById('event-title').innerHTML = evt.name;
+    document.getElementById('event-content').innerHTML = evt.description;
+
+    // Give player action choices
+    document.getElementById('event-responses').innerHTML = '';
+    const btn = document.createElement('BUTTON');
+    btn.innerHTML = 'Continue';
+    btn.className = `btn btn-success`;
+    btn.onclick = function(){modal.hide();}
+    document.getElementById('event-responses').appendChild(btn);
+
+    /* Deprecated functions for events as messages in chat log
+    document.getElementById('events-box').innerHTML = '';
     const p = document.createElement('P');
     p.innerHTML = message;
     p.className = `speech-bubble-left mr-auto ${evt.cssClass}`;
     document.getElementById('events-box').appendChild(p);
-
-    // Scroll down to message
-    $('#events-box').animate({ scrollTop: $('#events-box')[0].scrollHeight }, 1000);
+    $('#events-box').animate({ scrollTop: $('#events-box')[0].scrollHeight }, 1000); */
 };

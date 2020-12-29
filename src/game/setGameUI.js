@@ -12,7 +12,6 @@ Sets UI display given the player's in-game turn and actions
 
 import * as $ from 'jquery';
 import { nFormatter } from '../lib/util';
-import { calculateElectability } from './electability';
 import { writeMessageToEventBox } from './eventsBox';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 
@@ -47,14 +46,17 @@ const updateGraphs = (history) => {
 };
 
 const updateIndicatorPanel = (turnNumber, monthHistory) => {
-    $('#turn').html(nFormatter(turnNumber,0));
-    $(`#date`).html(nFormatter(monthHistory.days, 0));
-    $(`#deaths-month`).html(nFormatter(monthHistory.numDead, 0));
+
+    // Show indicator values to player
+    $(`#date`).html(nFormatter(monthHistory.days, 0)); // Date
+    $(`#gdp`).html(nFormatter(monthHistory.GDP, 0)); // Economy
+    $(`#deaths-month`).html(nFormatter(monthHistory.numDead, 0)); // Healthcare
     $(`#cases-hospitalized`).html(nFormatter(monthHistory.numHospitalized, 0));
-    $(`#gdp`).html(nFormatter(monthHistory.GDP, 0));
-    //$(`#public-support`).html(nFormatter(monthHistory., 0));
     $(`#hospital-capacity`).html(nFormatter(monthHistory.hospitalCapacity, 0));
-    // $(`#test-capacity`).html(nFormatter(monthHistory., 0));
+    $(`#public-support`).html(nFormatter(monthHistory.publicSupport, 0)); // Electability
+    $(`#business-support`).html(nFormatter(monthHistory.businessSupport, 0));
+    $(`#healthcare-support`).html(nFormatter(monthHistory.healthcareSupport, 0));
+    // $(`#test-capacity`).html(nFormatter(monthHistory., 0)); // Not yet implemented
     // $(`#positively-tested`).html(nFormatter(monthHistory., 0));
     // $(`#tracing-capacity`).html(nFormatter(monthHistory., 0));
     // $(`#isolated-cases`).html(nFormatter(monthHistory., 0));
