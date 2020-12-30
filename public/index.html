@@ -22,6 +22,13 @@
       <div class="d-flex flex-row justify-content-evenly">
         <p class='p-2'>Days in office: <span id="date">0</span></p>
       </div>
+      
+      <button id='advance-button' class='btn btn-dark mt-auto'>
+        Advance 
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+            <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+        </svg>
+      </button>
 
     </div>
 
@@ -30,18 +37,18 @@
       <div class="w-100 h-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
         <!-- Views -->
-        <div class="w-100 h-50 p-2 d-flex flex-column justify-content-center align-items-center">
+        <div class="mb-4 w-100 h-50 p-2 d-flex flex-column justify-content-center align-items-center">
 
           <!-- Toggle view buttons-->
           <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
             <input type="radio" class="btn-check" name="view-btns" id="view-btn-electability" autocomplete="off" checked>
-            <label class="btn btn-outline-primary" for="view-btn-electability">Electability</label>
+            <label class="btn btn-outline-dark" for="view-btn-electability">Electability</label>
           
             <input type="radio" class="btn-check" name="view-btns" id="view-btn-graph" autocomplete="off" disabled>
-            <label class="btn btn-outline-primary" for="view-btn-graph" id='view-btn-graph-label'>locked</label>
+            <label class="btn btn-outline-dark" for="view-btn-graph" id='view-btn-graph-label'>locked</label>
           
             <input type="radio" class="btn-check" name="view-btns" id="view-btn-stats" autocomplete="off">
-            <label class="btn btn-outline-primary" for="view-btn-stats">Stats</label>
+            <label class="btn btn-outline-dark" for="view-btn-stats">Stats</label>
           </div>
 
           <!-- Electability -->
@@ -52,9 +59,9 @@
 
               <div class='p-2'>
                 <p><strong>Number of key supporters</strong></p>
-                <p style='color: #166cec; text-shadow: 0px 0px 1px black'>Public <span id="public-support">0</span></p>
-                <p style='color: gold; text-shadow: 0px 0px 1px black'>Businesses <span id="business-support">0</span></p>
-                <p style='color: crimson; text-shadow: 0px 0px 1px black'>Healthcare <span id="healthcare-support">0</span></p>
+                <h5 style='color: #3090a1;'>Public <span id="public-support">0</span></h5>
+                <h5 style='color: #774779;'>Businesses <span id="business-support">0</span></h5>
+                <h5 style='color: #ef4f4f;'>Healthcare <span id="healthcare-support">0</span></h5>
               </div>
 
             </div>
@@ -74,24 +81,12 @@
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
               <!-- Available data reports - unlockable through research -->
-              <p><strong>Available data reports</strong></p>
-              <hr>
-              <p> Hospital Capacity: <span id="hospital-capacity">0</span> beds</p>
-              <div class="d-flex flex-row justify-content-evenly">
-
-                <p id='intel-deaths' class='intel'> Deaths:
-                  <br><span id="deaths-month">0</span>
-                </p>
-                <p id='intel-hospitalisations' class='intel'> Hospitalized Cases:
-                  <br><span id="cases-hospitalized">0</span>
-                </p>
-                <p id='intel-cases' class='intel'> Positively Tested
-                  <br><span id="positively-tested">0</span>
-                </p>
-                <p id='intel-gdp' class='intel'> GDP:
-                  <br><span id="gdp">0</span>
-                </p>
-                
+              <div class="d-flex flex-column justify-content-evenly">
+                <p> Hospital Capacity: <span id="hospital-capacity">0</span> beds</p>
+                <p id='intel-deaths' class='intel'> Deaths: <span id="deaths-month">0</span></p>
+                <p id='intel-hospitalisations' class='intel'> Hospitalized Cases: <span id="cases-hospitalized">0</span></p>
+                <p id='intel-cases' class='intel'> Positively Tested <span id="positively-tested">0</span></p>
+                <p id='intel-gdp' class='intel'> GDP: <span id="gdp">0</span></p>
               </div>
 
               <!-- Temporarily removed unused elements
@@ -125,33 +120,25 @@
           <!-- Toggle view buttons-->
           <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
             <input type="radio" class="btn-check" name="controls" id="controls-btn-policies" autocomplete="off" checked>
-            <label class="btn btn-outline-primary" for="controls-btn-policies">Policies</label>
+            <label class="btn btn-outline-dark" for="controls-btn-policies">Policies</label>
           
             <input type="radio" class="btn-check" name="controls" id="controls-btn-research" autocomplete="off">
-            <label class="btn btn-outline-primary" for="controls-btn-research">Research</label>
+            <label class="btn btn-outline-dark" for="controls-btn-research">Research</label>
           </div>
 
           <!-- Policies player actions -->
-          <div id='controls-policies'>
-            <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
-              <div id="player-actions-container" class='col-md-6 d-flex flex-column content-justify-center align-items-center'></div>
+          <div class='w-100' id='controls-policies'>
+            <div class="p-2 d-flex flex-column justify-content-center align-items-center">
+              <div id="player-actions-container" class='d-flex flex-column content-justify-center align-items-center'></div>
             </div>
           </div>
 
           <!-- Research investment player actions -->
-          <div class='intel' id='controls-research'>
+          <div class='intel w-100' id='controls-research'>
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
-              <div id="player-research-container" class='col-md-6 d-flex flex-column content-justify-center align-items-center'></div>
+              <div id="player-research-container" class='d-flex flex-column content-justify-center align-items-center'></div>
             </div>
           </div>
-
-          <!-- End turn button -->
-          <button id='advance-button' class='w-100 btn btn-lg btn-primary mt-auto'>
-            Advance 
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-            </svg>
-          </button>
 
         </div> <!-- /controls -->
 

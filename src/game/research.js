@@ -104,7 +104,7 @@ export const initialisePlayerResearch = (
         const btn = document.createElement('BUTTON');
         btn.innerHTML = research.name;
         btn.id = research.id;
-        btn.className = 'm-1 btn btn-sm btn-success';
+        btn.className = 'm-1 btn btn-sm btn-success player-action';
         document.getElementById('player-research-container').appendChild(btn);
 
         // Enable / disable at start

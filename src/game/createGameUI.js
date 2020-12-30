@@ -60,7 +60,7 @@ function createElectabilityPie(data) {
     // Appending path
     arcs.append('path')
         .attr('fill', (data, i) => {
-            return [['#166cec', 'gold', 'crimson', 'lightgrey'][i]];
+            return [['#7bcecc', '#774779', '#ef4f4f', 'ghostwhite'][i]];
         })
         .attr('d', arc);
     
@@ -148,7 +148,6 @@ export const createGameUI = (
 
     // Create buttons container
     const tableRoot = $(`#player-actions-container`)[0];
-    tableRoot.className = 'w-100 d-flex flex-column justify-content-center align-items-middle';
 
     // Create buttons for player policies
     const btnClickHandler = (e) => {
@@ -174,9 +173,6 @@ export const createGameUI = (
 
         const btn = createEle('button', tableRoot, `${action.id}`);
         btn.className = `player-action m-2 btn btn-sm player-action-inactive`;
-        btn.style.position = 'relative';
-        btn.style.zIndex = '200';
-        btn.style.height = 'auto';
         btn.setAttribute('data-action', action.id);
         btn.setAttribute('data-inactiveLabel', `${action.inactiveLabel} ${action.name}`);
         btn.setAttribute('data-activeLabel', `${action.activeLabel} ${action.name}`);
