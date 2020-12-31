@@ -11,6 +11,7 @@ Sets UI display given the player's in-game turn and actions
 */
 
 import * as $ from 'jquery';
+import * as d3 from 'd3';
 import { nFormatter } from '../lib/util';
 import { writeMessageToEventBox } from './eventsBox';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
@@ -140,6 +141,35 @@ export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     }
 };
 
+export const showLoseScreen = (totalCost, totalCases, totalDeath, prevGames, electability) => {
+
+    // Show electability
+    $('#lose-electability').html(electability);
+    $('#view-electability').clone(true).prependTo('#lose-electability-pie');
+
+    // Show current game stats
+    $(`#lose-total-cases`).html(nFormatter(totalCases, 1));
+    $(`#lose-total-dead`).html(nFormatter(totalDeath, 1));
+    $(`#lose-total-costs`).html(`$ ${nFormatter(totalCost, 1)}`);
+    $('#lose-screen').modal('show');
+
+    // Show previous game stats
+    const prevGamesContainer = $('#prev-games-container');
+    if (prevGames.length > 0) {
+        prevGamesContainer.removeClass('d-none');
+        const costRow = $('#past-cost-row');
+        const deadRow = $('#past-dead-row');
+        const casesRow = $('#past-cases-row');
+        prevGames.forEach((pastGame) => {
+            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
+            deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`)
+            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
+        });
+    } else {
+        $('#first-game-message').removeClass('d-none');
+    }
+};
+
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
         console.warn('History should not be empty. Indicators will not be renderer correctly');
@@ -215,3 +245,49 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     
 };
 
+export const setElectabilityPie = (electability) => {
+
+    // Convert electability stats to list of pie data
+    const data = [
+        electability.publicSupport,
+        electability.businessSupport,
+        electability.healthcareSupport,
+        electability.maxSupporters -
+            electability.publicSupport -
+            electability.businessSupport -
+            electability.healthcareSupport
+    ];
+
+    // Create SVG canvas
+    const svg = d3.select('#svg-pie');
+    svg.attr('viewBox', '0 0 200 200');
+
+    const g = svg.append('g').attr('transform', 'translate(100,100)'); // Create pie element in center
+
+    // Creating Pie generator
+    const pie = d3.pie();
+    pie.sort(null); // Disable sorting by size for consistent view
+
+    // Creating arc
+    const arc = d3.arc().innerRadius(40).outerRadius(100); // Size of pie
+
+    // Grouping different arcs
+    const arcs = g.selectAll('arc').data(pie(data)).enter().append('g');
+
+    // Appending path
+    arcs.append('path')
+        .attr('fill', (data, i) => {
+            return [['#7bcecc', '#774779', '#ef4f4f', 'ghostwhite'][i]];
+        })
+        .attr('d', arc);
+    
+    // Text labels
+    arcs.append('text')
+        .attr("transform", function(d) {
+        var _d = arc.centroid(d);
+            return "translate(" + _d + ")";
+        })
+        .attr('stroke', 'black')
+        .attr('text-anchor', 'middle')
+        .text((d) => d.data);
+};

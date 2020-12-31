@@ -26,8 +26,7 @@ import * as bootstrap from 'bootstrap';
 export const writeMessageToEventBox = (evt) => {
 
     // Show event dialog
-    const modal = new bootstrap.Modal(document.getElementById('modal-event'));
-    modal.show();
+    $('#modal-event').modal('show');
 
     // Send message to player event box
     document.getElementById('event-title').innerHTML = evt.name;
@@ -38,7 +37,9 @@ export const writeMessageToEventBox = (evt) => {
     const btn = document.createElement('BUTTON');
     btn.innerHTML = 'Continue';
     btn.className = `btn btn-success`;
-    btn.onclick = function(){modal.hide();}
+    btn.onclick = function () {
+        $('#modal-event').modal('hide');
+    };
     document.getElementById('event-responses').appendChild(btn);
 
     /* Deprecated functions for events as messages in chat log

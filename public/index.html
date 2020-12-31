@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
   <link rel="stylesheet" href="public/style/style.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400&display=swap" rel="stylesheet">
@@ -68,7 +69,7 @@
           </div>
       
           <!-- Graph -->
-          <div class='intel' id='view-graph'>
+          <div class='hidden' id='view-graph'>
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
               <div id="cases-graph" style="width:100%; height:250px;"></div>
@@ -77,16 +78,16 @@
           </div>
 
           <!-- Indicators -->
-          <div class='intel' id="view-stats">
+          <div class='hidden' id="view-stats">
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
 
               <!-- Available data reports - unlockable through research -->
               <div class="d-flex flex-column justify-content-evenly">
                 <p> Hospital Capacity: <span id="hospital-capacity">0</span> beds</p>
-                <p id='intel-deaths' class='intel'> Deaths: <span id="deaths-month">0</span></p>
-                <p id='intel-hospitalisations' class='intel'> Hospitalized Cases: <span id="cases-hospitalized">0</span></p>
-                <p id='intel-cases' class='intel'> Positively Tested <span id="positively-tested">0</span></p>
-                <p id='intel-gdp' class='intel'> GDP: <span id="gdp">0</span></p>
+                <p id='intel-deaths' class='hidden'> Deaths: <span id="deaths-month">0</span></p>
+                <p id='intel-hospitalisations' class='hidden'> Hospitalized Cases: <span id="cases-hospitalized">0</span></p>
+                <p id='intel-cases' class='hidden'> Positively Tested <span id="positively-tested">0</span></p>
+                <p id='intel-gdp' class='hidden'> GDP: <span id="gdp">0</span></p>
               </div>
 
               <!-- Temporarily removed unused elements
@@ -134,7 +135,7 @@
           </div>
 
           <!-- Research investment player actions -->
-          <div class='intel w-100' id='controls-research'>
+          <div class='hidden w-100' id='controls-research'>
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
               <div id="player-research-container" class='d-flex flex-column content-justify-center align-items-center'></div>
             </div>
@@ -220,7 +221,61 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="restart-btn">Play again</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="restart-btn">Play again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lose screen modal -->
+  <div class="modal" tabindex="-1" id='lose-screen' data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">You were voted out of office...</h4>
+        </div>
+        <div class="modal-body">
+
+          <!-- Electability -->
+          <div id='lose-electability-pie'></div>
+
+          <!-- Results for the current game-->
+          <div class="d-flex justify-content-center">
+            <div width="300px" class="alert alert-secondary">
+              <h5>This game:</h5>
+              <div>
+                <p><span class="font-weight-bold">Total cases: </span><span id="lose-total-cases"></span></p>
+                <p><span class="font-weight-bold">Total deaths: </span><span id="lose-total-dead"></span></p>
+                <p><span class="font-weight-bold">Total cost: </span><span id="lose-total-costs"></span></p>
+              </div>
+            </div>
+          </div>
+          <br />
+          <!-- Results for up to the last three games -->
+          <div id="prev-games-container" class="d-none">
+            <h5>You previous games:</h5>
+            <table class="table table-condensed">
+              <tbody>
+                <tr id="past-cases-row">
+                  <td class="font-weight-bold">Total cases</td>
+                </tr>
+                <tr id="past-dead-row">
+                  <td class="font-weight-bold">Total deaths</td>
+                </tr>
+                <tr id="past-cost-row">
+                  <td class="font-weight-bold">Total cost</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center"></div>
+          </div>
+          <!-- First game message-->
+          <div id="first-game-message" class="d-none font-weight-bold">
+            If you play again you will be able to compare your score with up to three previous games.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="restart-btn">Play again</button>
         </div>
       </div>
     </div>

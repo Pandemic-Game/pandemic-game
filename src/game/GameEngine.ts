@@ -3,12 +3,12 @@ import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } fr
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
 import { createGameUI } from './createGameUI';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
-import { setControlsToTurn, showWinScreen, updateIndicators, adjustIndicator } from './setGameUI';
+import { setControlsToTurn, showWinScreen, showLoseScreen, updateIndicators, adjustIndicator, setElectabilityPie } from './setGameUI';
 import { months } from '../lib/util';
 import { Simulator } from '../simulator/Simulator';
 import { GameHistory } from './GameHistory';
-import { supporterValues } from './electability';
 import { GameOptions, GameOptionsStore } from './GameOptions';
+import { Dictionary } from 'highcharts';
 
 interface CurrentUISelection {
     transport: boolean;
@@ -76,12 +76,12 @@ export class GameEngine {
             onEndTurn,
             onUndo,
             onPlayAgain,
-            [
-                this.simulator.currentTurn.indicators.publicSupport,
-                this.simulator.currentTurn.indicators.businessSupport,
-                this.simulator.currentTurn.indicators.healthcareSupport,
-                this.simulator.currentTurn.indicators.noSupport
-            ]
+            { // electability
+                maxSupporters: this.simulator.currentTurn.indicators.maxSupporters,
+                publicSupport: this.simulator.currentTurn.indicators.publicSupport,
+                businessSupport: this.simulator.currentTurn.indicators.businessSupport,
+                healthcareSupport: this.simulator.currentTurn.indicators.healthcareSupport
+            }
         );
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
@@ -106,11 +106,11 @@ export class GameEngine {
             });
 
             // Go back to the last turn
-
             this.simulator = this.simulator.reset(targetTurn);
             this.currentlySelectedActions = prevChoices;
             const simulatorState = this.simulator.state();
             const updatedTurn = this.simulator.lastTurn();
+
             // Reset the controls
             setControlsToTurn(
                 updatedTurn,
@@ -132,14 +132,38 @@ export class GameEngine {
      * Processes the next turn of the game that can be either a next turn or a victory state
      */
     private onNextTurn(nextTurn: NextTurnState | VictoryState) {
+
+        // Save current game state
         const history = this.simulator.history();
         const currentTurn = this.simulator.lastTurn();
+
+        // Show this turn to the player
         if (isNextTurn(nextTurn)) {
+
+            // Check that player's electability is high enough
+            const indicators = this.simulator.currentTurn.indicators;
+            if(indicators.publicSupport <= 0 || indicators.businessSupport <= 0 || indicators.healthcareSupport <= 0){
+                
+                // Player's electability fell too low this turn. Render the lose screen
+                this.prepareLoseScreen(
+                    currentTurn, 
+                    history, 
+                    nextTurn,
+                    indicators.maxSupporters, 
+                    indicators.publicSupport, 
+                    indicators.businessSupport, 
+                    indicators.healthcareSupport
+                );
+            }
+
             // Just another turn. Update the controls and indicators
             this.prepareNextTurn(currentTurn, nextTurn, history);
+
         } else {
-            // Render the win screen
+
+            // Player stayed in office until the end date. Render the win screen
             this.prepareWinScreen(currentTurn, history, nextTurn);
+
         }
     }
 
@@ -147,20 +171,42 @@ export class GameEngine {
      * Prepares the UI for the next turn of the game
      */
     private prepareNextTurn(currentTurn: number, nextTurn: NextTurnState, history: Indicators[]) {
+        
+        // Set controls
         setControlsToTurn(
             currentTurn,
             this.currentlySelectedActions,
             nextTurn.newInGameEvents,
             this.scenario.initialContainmentPolicies
         );
+
+        // Update indicators for economy and cases
         updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
+
+        // Update pie chart
+        const indicators = this.simulator.currentTurn.indicators;
+        setElectabilityPie({
+            maxSupporters: indicators.maxSupporters,
+            publicSupport: indicators.publicSupport,
+            businessSupport: indicators.businessSupport,
+            healthcareSupport: indicators.healthcareSupport
+        });
     }
 
     /**
      * Prepares the win screen.
      */
     private prepareWinScreen(currentTurn: number, history: Indicators[], nextTurn: VictoryState) {
+        
+        // Update indicators and chart
         updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
+        const indicators = this.simulator.currentTurn.indicators;
+        setElectabilityPie({ // Update pie chart
+            maxSupporters: indicators.maxSupporters,
+            publicSupport: indicators.publicSupport,
+            businessSupport: indicators.businessSupport,
+            healthcareSupport: indicators.healthcareSupport
+        });
 
         // Show the win screen
         const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
@@ -179,6 +225,49 @@ export class GameEngine {
         });
 
         showWinScreen(totalCost, totalCases, totalDead, prevGames);
+    }
+
+    private prepareLoseScreen(
+        currentTurn: number, 
+        history: Indicators[], 
+        nextTurn: VictoryState, 
+        maxSupporters: number,
+        publicSupport: number,
+        businessSupport: number,
+        healthcareSupport: number) {
+
+        // Update indicators and chart
+        updateIndicators(currentTurn, history, nextTurn.lastTurnIndicators);
+        const indicators = this.simulator.currentTurn.indicators;
+        setElectabilityPie({ // Update pie chart
+            maxSupporters: indicators.maxSupporters,
+            publicSupport: indicators.publicSupport,
+            businessSupport: indicators.businessSupport,
+            healthcareSupport: indicators.healthcareSupport
+        });
+
+        // Show the lose screen
+        const totalCasesReducer = (acc: number, it: Indicators) => acc + it.numInfected;
+        const totalCases = history.reduce(totalCasesReducer, 0);
+		const totalDeadReducer = (acc: number, it: Indicators) => acc + it.numDead;
+        const totalDead = history.reduce(totalDeadReducer, 0);
+        const totalCostReducer = (acc: number, it: Indicators) => acc + it.totalCost;
+        const totalCost = history.reduce(totalCostReducer, 0);
+
+        const prevGames = this.gameHistory.getPreviousGames().map((it) => {
+            return {
+                totalCases: it.history.reduce(totalCasesReducer, 0),
+                totalCost: it.history.reduce(totalCostReducer, 0),
+				totalDead: it.history.reduce(totalDeadReducer, 0),
+            };
+        });
+
+        showLoseScreen(totalCost, totalCases, totalDead, prevGames, {
+            maxSupporters: maxSupporters,
+            publicSupport: publicSupport,
+            businessSupport: businessSupport,
+            healthcareSupport: healthcareSupport
+        });
     }
 
     /**

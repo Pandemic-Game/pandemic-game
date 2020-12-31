@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import * as $ from 'jquery';
+import * as d3 from 'd3';
 import 'bootstrap/js/dist/modal';
 import { initialisePlayerResearch } from './research';
 import { doc } from 'prettier';
-import * as d3 from 'd3';
 
 /* 
 Shorthand functions to create DOM elements
@@ -142,7 +142,15 @@ export const createGameUI = (
     initialisePlayerResearch(); // research.js
 
     /* Create electability view pie chart */
-    createElectabilityPie(electability);
+    createElectabilityPie([
+        electability.publicSupport,
+        electability.businessSupport,
+        electability.healthcareSupport,
+        electability.maxSupporters -
+            electability.publicSupport -
+            electability.businessSupport -
+            electability.healthcareSupport
+    ]);
 
     /* Create player actions */
 

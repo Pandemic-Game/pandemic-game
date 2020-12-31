@@ -134,10 +134,10 @@ export class Simulator {
         this.currentTurn.nextInGameEvents = this.pickNextGameEvents();
 
         console.log("history: ")
-	console.log(this.mutableHistory())
+        console.log(this.mutableHistory())
 
-	console.log("timeline: ")
-	console.log(this.timeline)
+        console.log("timeline: ")
+        console.log(this.timeline)
 
         // Check if victory conditions are met.
         const victoryCondition = this.isVictorious();
@@ -211,6 +211,10 @@ export class Simulator {
         const deathCosts = this.computeDeathCost(new_deaths_lagging);
         const economicCosts = this.computeEconomicCosts(actionR);
         const medicalCosts = this.computeHospitalizationCosts(new_num_infected);
+
+        // Compute electability
+        const electability = this.computeElectability(50, new_gdp, new_num_infected);
+
         return {
             days: currentDay,
             numDead: new_deaths_lagging,
@@ -225,10 +229,10 @@ export class Simulator {
             medicalCosts: medicalCosts,
             totalCost: deathCosts + economicCosts + medicalCosts,
             GDP: new_gdp,
-            publicSupport: candidateState.indicators.publicSupport,
-            businessSupport: candidateState.indicators.businessSupport,
-            healthcareSupport: candidateState.indicators.healthcareSupport,
-            noSupport: candidateState.indicators.noSupport,
+            maxSupporters: candidateState.indicators.maxSupporters,
+            publicSupport: electability.publicSupport,
+            businessSupport: electability.businessSupport,
+            healthcareSupport: electability.healthcareSupport
         };
     }
 
@@ -237,6 +241,10 @@ export class Simulator {
         const deathCosts = this.computeDeathCost(0);
         const economicCosts = this.computeEconomicCosts(this.scenario.r0);
         const medicalCosts = this.computeHospitalizationCosts(this.scenario.initialNumInfected);
+
+        // Compute electability at start
+        const electability = this.computeElectability(50, this.scenario.start_GDP, this.scenario.initialNumInfected);
+
         return {
             availablePlayerActions: {
                 capabilityImprovements: this.scenario.initialCapabilityImprovements,
@@ -256,10 +264,10 @@ export class Simulator {
                 numHospitalized: 0,
                 totalCost: deathCosts + economicCosts + medicalCosts,
                 GDP: this.scenario.start_GDP,
-                publicSupport: 5,
-                businessSupport: 5,
-                healthcareSupport: 5,
-                noSupport: 15,
+                maxSupporters: 30,
+                publicSupport: electability.publicSupport,
+                businessSupport: electability.businessSupport,
+                healthcareSupport: electability.healthcareSupport
             },
             playerActions: {
                 capabilityImprovements: [],
@@ -299,6 +307,37 @@ export class Simulator {
             return GDP + gdp_growth;
         } else {
             return GDP * (1 + this.scenario.GDP_bounce_back_rate);
+        }
+    }
+
+    private computeElectability(wellbeing: number, GDP: number, num_infected: number) {
+        const publicSupport = Math.min(
+            10,
+            Math.max(
+                0,
+                0 + ( wellbeing / 10 )
+            )
+        );
+        const businessSupport =  Math.min(
+            10,
+            Math.max(
+                0,
+                10 - ( ( 20500000000 - GDP ) / 1000000000 ) // Lose one business supporter for each 1,000,000,000 drop in GDP
+            )
+        );
+        const healthcareSupport =  Math.min(
+            10,
+            Math.max(
+                0,
+                10 - ( num_infected / 100000 ) // Lose one healthcare supporter for each 100000 cases
+            )
+        );
+        return {
+            publicSupport: Math.round(publicSupport),
+            businessSupport: Math.round(businessSupport),
+            healthcareSupport: Math.round(healthcareSupport),
+            totalSupport: Math.round(publicSupport + businessSupport + healthcareSupport),
+            noSupport: Math.round(30 - publicSupport + businessSupport + healthcareSupport),
         }
     }
 
