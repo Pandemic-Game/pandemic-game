@@ -43,22 +43,26 @@ box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.75);
 }
 
 .current-value::after{
-	content:" ";
+	content:" →";
 }
 
 .current-value.positive::after{
-	content:" ↗";
+	content:" ➚";
+	color:#C00000;
 }
 
 .current-value.extreme-positive::after{
 	content:" ↑";
+	color:#C00000;
 }
 
 .current-value.negative::after{
-	content:" ↘";
+	color:#00A000;
+	content:" ➘";
 }
 
 .current-value.extreme-negative::after{
+	color:#00A000;
 	content:" ↓";
 }
 

@@ -47,15 +47,17 @@ export const createGameUI = (
         $('#welcome-screen').modal('show');
     }
 
-    const tableRoot = $(`#player-actions-container`)[0];
+    const tableActionRoot = $(`#player-actions-container`)[0];
+	const tableCasesRoot = $(`#player-cases-container`)[0];
 
     // Create table footer
-    const header = createEle('tr', tableRoot);
+    const header = createEle('tr', tableActionRoot);
     createEle('th', header);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < numberOfColumns; i++) {
         const date = createEle('th', header);
         date.innerHTML = `${months[i].name}<br/>2021`; // Numbered months not named
+		date.setAttribute("id",`month_${i}`);
         date.className = 'noselect';
         date.style.textAlign = 'center';
     }
@@ -79,7 +81,7 @@ export const createGameUI = (
     };
 
     // Create the table body
-    const tableBody = createEle('tbody', tableRoot);
+    const tableBody = createEle('tbody', tableActionRoot);
     const buttonLengths = [
         '75px',
         '65px',
@@ -120,7 +122,7 @@ export const createGameUI = (
     }
 
     // Create table footer - current turn
-    const tableFooter = createEle('tfoot', tableRoot);
+    const tableFooter = createEle('tbody', tableCasesRoot);
     const indicators = [
 		{name:'cases',symbol:'Cases',unit:''},
 		{name:'deaths',symbol:'Deaths',unit:''},
@@ -135,15 +137,16 @@ export const createGameUI = (
         }
         for (let i = 0; i < numberOfColumns + 2; i += 1) {
             const id = i > 0 ? `${isPreviousGameCell ? 'last-game-' : ''}month-${indicator.name}-${i}` : undefined;
-			const footerCell = createEle('td', footerRow, id);
-
+			const idMiddle = i > 0 ? `${isPreviousGameCell ? 'last-game-' : ''}middle-${indicator.name}-${i}` : undefined;
+			const footerCell = createEle('td', footerRow, id);	
+			let middleCell;
             if (i === 0) {
-		if (indicatorNum === 0) {
-		    footerCell.innerHTML = `${isPreviousGameCell ? 'Last trial' : 'This trial'}: ${indicator.symbol}`;
-		}
-		else {
-		    footerCell.innerHTML = `${indicator.symbol}`;
-		}
+				if (indicatorNum === 0) {
+					footerCell.innerHTML = `${isPreviousGameCell ? 'Last trial' : 'This trial'}: ${indicator.symbol}`;
+					footerCell.style.width = '155px';
+				} else {
+					footerCell.innerHTML = `${indicator.symbol}`;
+				}
                 footerCell.className = 'noselect';
                 footerCell.style.textAlign = 'right';
             } else if(i === numberOfColumns + 1){
@@ -160,6 +163,11 @@ export const createGameUI = (
 			} else {
 				footerCell.innerHTML = '-';
                 footerCell.style.textAlign = 'center';
+				footerCell.style.width = (document.getElementById("month_"+(i-1)).offsetWidth-30)+"px";
+				middleCell = createEle('td', footerRow, idMiddle);
+				middleCell.style.textAlign = 'center';
+				middleCell.style.width = "30px";
+				middleCell.innerHTML = '&nbsp;';
             }
         }
     };
@@ -188,6 +196,7 @@ export const createGameUI = (
                 </svg>
             `;
             btn.onclick = onEndTurn; // END TURN EVENT (in GameEngine.ts)
+			createEle('td', footerRow);
         } else {
             const btn = createEle('button', btnGrp, `undo-btn`);
             btn.className = `btn btn-sm btn-light undo-btn-grp`;
