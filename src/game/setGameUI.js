@@ -78,56 +78,60 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
 	if(lastMonthlyValues){
 		console.log(lastMonthlyValues,totalCases,totalDeaths,totalCosts,1.1*lastMonthlyValues.cases > totalCases,lastMonthlyValues.cases < 1.1*totalCases);
 	}
+	$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}`);
 	if(lastMonthlyValues && (lastMonthlyValues.cases > 1.1*totalCases)){
 		$(`#month-cases-${turnNumber}`)[0].style.color="#00A000";
 		if(lastMonthlyValues.cases > 1.5*totalCases){
-			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value extreme-negative'></span>`);
+			$(`#middle-cases-${turnNumber-1}`).html("<span class='current-value extreme-negative'></span>");
 		} else{
-			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value negative'></span>`);
+			$(`#middle-cases-${turnNumber-1}`).html("<span class='current-value negative'></span>");
 		}
 	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.cases < totalCases)){
 		$(`#month-cases-${turnNumber}`)[0].style.color="#C00000";
 		if(1.5*lastMonthlyValues.cases < totalCases){
-			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value extreme-positive'></span>`);
+			$(`#middle-cases-${turnNumber-1}`).html("<span class='current-value extreme-positive'></span>");
 		} else{
-			$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}<span class='current-value positive'></span>`);
+			$(`#middle-cases-${turnNumber-1}`).html("<span class='current-value positive'></span>");
 		}
 	} else{
-		$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}`);
+		$(`#middle-cases-${turnNumber-1	}`).html("<span class='current-value'></span>");
 	}
+	$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
 	if(lastMonthlyValues && (lastMonthlyValues.deaths > 1.1*totalDeaths)){
 		$(`#month-deaths-${turnNumber}`)[0].style.color="#00A000";
 		if(lastMonthlyValues.deaths > 1.5*totalDeaths){
-			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value extreme-negative'></span>`);
+			$(`#middle-deaths-${turnNumber-1}`).html("<span class='current-value extreme-negative'></span>");
 		} else{
-			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value negative'></span>`);
+			$(`#middle-deaths-${turnNumber-1}`).html("<span class='current-value negative'></span>");
 		}
 	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.deaths < totalDeaths)){
 		$(`#month-deaths-${turnNumber}`)[0].style.color="#C00000";
 		if(1.5*lastMonthlyValues.deaths < totalDeaths){
-			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value extreme-positive'></span>`);
+			$(`#middle-deaths-${turnNumber-1}`).html("<span class='current-value extreme-positive'></span>");
 		} else{
-			$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}<span class='current-value positive'></span>`);
+			$(`#middle-deaths-${turnNumber-1}`).html("<span class='current-value positive'></span>");
 		}
 	} else{
-		$(`#month-deaths-${turnNumber}`).html(`${nFormatter(totalDeaths, 0)}`);
+		$(`#middle-deaths-${turnNumber-1	}`).html("<span class='current-value'></span>");
 	}
+	$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
 	if(lastMonthlyValues && (lastMonthlyValues.cost > 1.1*totalCosts)){
 		$(`#month-cost-${turnNumber}`)[0].style.color="#00A000";
 		if(lastMonthlyValues.cost > 1.5*totalCosts){
-			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value extreme-negative'></span>`);
+			$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value extreme-negative'></span>");
 		} else{
-			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value negative'></span>`);
+			$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value negative'></span>");
 		}
 	} else if(lastMonthlyValues && (1.1*lastMonthlyValues.cost < totalCosts)){
 		$(`#month-cost-${turnNumber}`)[0].style.color="#C00000";
+		
 		if(1.5*lastMonthlyValues.cost < totalCosts){
-			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value extreme-positive'></span>`);
+			$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value extreme-positive'></span>");
 		} else{
-			$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}<span class='current-value positive'></span>`);
+			$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value positive'></span>");
 		}
 	} else{
-		$(`#month-cost-${turnNumber}`).html(`${nFormatter(totalCosts, 1)}`);
+		$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value'></span>");
 	}
 	lastMonthlyValues = {
 		"cases": totalCases,
