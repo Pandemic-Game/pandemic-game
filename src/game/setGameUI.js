@@ -15,7 +15,7 @@ import { nFormatter } from '../lib/util';
 import { buildCasesChart, updateCasesChart } from './LineChart.ts';
 // Object that will keep track of the chart instance
 let casesChart;
-let lastMonthlyValues;
+let monthlyValues=[];
 
 const updateCumulativeIndicators = (fullHistory) => {
     if (fullHistory.length === 0) {
@@ -66,7 +66,8 @@ const updateGraphs = (history, hospitalCapacity) => {
 };
 
 const updateMonthlyIndicators = (turnNumber, monthHistory) => {
-    const totalCases = monthHistory.reduce((acc, cur) => {
+    const lastMonthlyValues = monthlyValues[monthlyValues.length-1];
+	const totalCases = monthHistory.reduce((acc, cur) => {
         return acc + cur.numInfected;
     }, 0);
     const totalDeaths = monthHistory.reduce((acc, cur) => {
@@ -75,9 +76,7 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     const totalCosts = monthHistory.reduce((acc, cur) => {
         return acc + cur.totalCost;
     }, 0);
-	if(lastMonthlyValues){
-		console.log(lastMonthlyValues,totalCases,totalDeaths,totalCosts,1.1*lastMonthlyValues.cases > totalCases,lastMonthlyValues.cases < 1.1*totalCases);
-	}
+	console.log(lastMonthlyValues);
 	$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}`);
 	if(lastMonthlyValues && (lastMonthlyValues.cases > 1.1*totalCases)){
 		$(`#month-cases-${turnNumber}`)[0].style.color="#00A000";
@@ -133,11 +132,11 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
 	} else{
 		$(`#middle-cost-${turnNumber-1	}`).html("<span class='current-value'></span>");
 	}
-	lastMonthlyValues = {
+	monthlyValues.push({
 		"cases": totalCases,
 		"deaths": totalDeaths,
 		"cost": totalCosts,
-	}
+	});
 };
 
 export const adjustIndicator = (turnNumber, animate) => {
@@ -187,17 +186,76 @@ export const updatePreviousGameIndicators = (previousIndicators) => {
 	let totdeathsSum = 0;
 	let totcostSum = 0;
 	
+	let oldCases;
+	let oldDeath;
+	let oldCost;
+	
+	let totcases;
+	let totdeaths;
+	let totcost;
+	
     previousIndicators.forEach((turn, i) => {
         const turnNumber = i + 1;
-		const totcases = totalCasesFn(turn.history);
-		const totdeaths = totalDeathsFn(turn.history);
-		const totcost = totalCostsFn(turn.history);
+		oldCases = totcases;
+		oldDeath = totdeaths;
+		oldCost = totcost;
+		totcases = totalCasesFn(turn.history);
+		totdeaths = totalDeathsFn(turn.history);
+		totcost = totalCostsFn(turn.history);
 		totcasesSum += totcases;
 		totdeathsSum += totdeaths;
 		totcostSum += totcost;
         $(`#last-game-month-cases-${turnNumber}`).html(`${nFormatter(totcases, 1)}`);
         $(`#last-game-month-deaths-${turnNumber}`).html(`${nFormatter(totdeaths, 0)}`);
         $(`#last-game-month-cost-${turnNumber}`).html(`${nFormatter(totcost, 1)}`);
+		//-------
+		if(oldCases && (oldCases > 1.1*totcases)){
+			if(oldCases > 1.5*totcases){
+				$(`#last-game-middle-cases-${turnNumber-1}`).html("<span class='current-value extreme-negative'></span>");
+			} else{
+				$(`#last-game-middle-cases-${turnNumber-1}`).html("<span class='current-value negative'></span>");
+			}
+		} else if(oldCases && (1.1*oldCases < totcases)){
+			if(1.5*oldCases < totcases){
+				$(`#last-game-middle-cases-${turnNumber-1}`).html("<span class='current-value extreme-positive'></span>");
+			} else{
+				$(`#last-game-middle-cases-${turnNumber-1}`).html("<span class='current-value positive'></span>");
+			}
+		} else{
+			$(`#last-game-middle-cases-${turnNumber-1	}`).html("<span class='current-value'></span>");
+		}
+		if(oldDeath && (oldDeath > 1.1*totdeaths)){
+			if(oldDeath > 1.5*totdeaths){
+				$(`#last-game-middle-deaths-${turnNumber-1}`).html("<span class='current-value extreme-negative'></span>");
+			} else{
+				$(`#last-game-middle-deaths-${turnNumber-1}`).html("<span class='current-value negative'></span>");
+			}
+		} else if(oldDeath && (1.1*oldDeath < totdeaths)){
+			if(1.5*oldDeath < totdeaths){
+				$(`#last-game-middle-deaths-${turnNumber-1}`).html("<span class='current-value extreme-positive'></span>");
+			} else{
+				$(`#last-game-middle-deaths-${turnNumber-1}`).html("<span class='current-value positive'></span>");
+			}
+		} else{
+			$(`#last-game-middle-deaths-${turnNumber-1}`).html("<span class='current-value'></span>");
+		}
+		if(oldCost && (oldCost > 1.1*totcost)){
+			if(oldCost > 1.5*totcost){
+				$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value extreme-negative'></span>");
+			} else{
+				$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value negative'></span>");
+			}
+		} else if(oldCost && (1.1*oldCost < totcost)){
+			if(1.5*oldCost < totcost){
+				$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value extreme-positive'></span>");
+			} else{
+				$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value positive'></span>");
+			}
+		} else{
+			$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value'></span>");
+		}
+		
+		//--------
     });
 	
 	$(`#cases_last`).html(`${nFormatter(totcasesSum)}`);
@@ -230,6 +288,7 @@ export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
 // Hide and disable all buttons
 const resetControls = () => {
     // Disable and hide all choices
+	monthlyValues.pop();
     $('.player-action')
         .prop('disabled', true) // Disable
         .attr('data-active', 'inactive') // Reset activation status
@@ -286,6 +345,9 @@ export const setControlsToTurn = (playerTurn, dictOfActivePolicies, inGameEvents
     $(`[id^="month-deaths-${playerTurn + 1}"]`).html('-');
     $(`[id^="month-cases-${playerTurn + 1}"]`).html('-');
     $(`[id^="month-cost-${playerTurn + 1}"]`).html('-');
+	$(`[id^="middle-deaths-${playerTurn}"]`).html('&nbsp;');
+    $(`[id^="middle-cases-${playerTurn}"]`).html('&nbsp;');
+    $(`[id^="middle-cost-${playerTurn}"]`).html('&nbsp;');
 
     $('#events-holder').html('');
     inGameEvents.forEach((evt) => {
