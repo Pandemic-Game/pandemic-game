@@ -76,7 +76,6 @@ const updateMonthlyIndicators = (turnNumber, monthHistory) => {
     const totalCosts = monthHistory.reduce((acc, cur) => {
         return acc + cur.totalCost;
     }, 0);
-	console.log(lastMonthlyValues);
 	$(`#month-cases-${turnNumber}`).html(`${nFormatter(totalCases, 0)}`);
 	if(lastMonthlyValues && (lastMonthlyValues.cases > 1.1*totalCases)){
 		$(`#month-cases-${turnNumber}`)[0].style.color="#00A000";
@@ -254,8 +253,6 @@ export const updatePreviousGameIndicators = (previousIndicators) => {
 		} else{
 			$(`#last-game-middle-cost-${turnNumber-1}`).html("<span class='current-value'></span>");
 		}
-		
-		//--------
     });
 	
 	$(`#cases_last`).html(`${nFormatter(totcasesSum)}`);
@@ -272,14 +269,15 @@ export const showWinScreen = (totalCost, totalCases, totalDeath, prevGames) => {
     const prevGamesContainer = $('#prev-games-container');
     if (prevGames.length > 0) {
         prevGamesContainer.removeClass('d-none');
-        const costRow = $('#past-cost-row');
-        const deadRow = $('#past-dead-row');
-        const casesRow = $('#past-cases-row');
-        prevGames.forEach((pastGame) => {
-            casesRow.append(`<td>${nFormatter(pastGame.totalCases, 1)}</td>`);
-            deadRow.append(`<td>${nFormatter(pastGame.totalDead, 1)}</td>`);
-            costRow.append(`<td>$ ${nFormatter(pastGame.totalCost, 1)}</td>`);
-        });
+		for(let i1 = 0; i1 < Math.min(prevGames.length,3); i1++){
+			const pastGame = prevGames[i1];
+			const costRow = $(`#prev${i1+1}-total-cases`);
+			const deadRow = $(`#prev${i1+1}-total-dead`);
+			const casesRow = $(`#prev${i1+1}-total-costs`);
+            casesRow.append(`${nFormatter(pastGame.totalCases, 1)}`);
+            deadRow.append(`${nFormatter(pastGame.totalDead, 1)}`);
+            costRow.append(`$ ${nFormatter(pastGame.totalCost, 1)}`);
+        }
     } else {
         $('#first-game-message').removeClass('d-none');
     }

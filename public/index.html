@@ -59,33 +59,14 @@
 
             <!-- Results for the current game-->
             <div class="d-flex justify-content-center">
-              <div width="300px" class="alert alert-secondary">
-                <h5>This trial:</h5>
-                <div>
-                  <p><span class="font-weight-bold">Total cases: </span><span id="win-total-cases"></span></p>
-                  <p><span class="font-weight-bold">Total deaths: </span><span id="win-total-dead"></span></p>
-                  <p><span class="font-weight-bold">Total cost: </span><span id="win-total-costs"></span></p>
-                </div>
+              <div width="500px" class="alert alert-secondary">
+                <table class="win_table"><tbody>
+					<tr class="borderbottom"><th></th><th>This game</th><th>Previous Game 1</th><th>Previous Game 2</th><th>Previous Game 3</th></tr>
+					<tr class="bordertop borderbottom"><th>Total cases:</th><td id="win-total-cases"></td><td id="prev1-total-cases"></td><td id="prev2-total-cases"></td><td id="prev3-total-cases"></td></tr>
+					<tr class="bordertop borderbottom"><th>Total deaths:</th><td id="win-total-dead"></td><td id="prev1-total-dead"></td><td id="prev2-total-dead"></td><td id="prev3-total-dead"></td></tr>
+					<tr class="bordertop"><th>Total cases:</th><td id="win-total-costs"></td><td id="prev1-total-costs"></td><td id="prev2-total-costs"></td><td id="prev3-total-costs"></td></tr>
+                </tbody></table>
               </div>
-            </div>
-            <br />
-            <!-- Results for up to the last three games -->
-            <div id="prev-games-container" class="d-none">
-              <h5>You previous trial:</h5>
-              <table class="table table-condensed">
-                <tbody>
-                  <tr id="past-cases-row">
-                    <td class="font-weight-bold">Total cases</td>
-                  </tr>
-                  <tr id="past-dead-row">
-                    <td class="font-weight-bold">Total deaths</td>
-                  </tr>
-                  <tr id="past-cost-row">
-                    <td class="font-weight-bold">Total cost</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="d-flex justify-content-between align-items-center"></div>
             </div>
             <!-- First game message-->
             <div id="first-game-message" class="d-none font-weight-bold">
