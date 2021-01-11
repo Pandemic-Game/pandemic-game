@@ -1,7 +1,9 @@
 import { Scenario } from '../simulator/scenarios/Scenarios';
 import { NextTurnState, PlayerActions, Indicators, isNextTurn, VictoryState } from '../simulator/SimulatorState';
 import { RecordedInGameEventChoice } from '../simulator/in-game-events/InGameEvents';
+import { WelcomeEvent, HowToPlayEvent, HowToWinEvent } from '../simulator/in-game-events/WelcomeEvent';
 import { createGameUI } from './createGameUI';
+import { writeMessageToMessageBox } from './eventsBox';
 import { CapabilityImprovements, ContainmentPolicy } from '../simulator/player-actions/PlayerActions';
 import { setControlsToTurn, showWinScreen, showLoseScreen, updateIndicators, adjustIndicator, setElectabilityPie } from './setGameUI';
 import { months } from '../lib/util';
@@ -86,6 +88,25 @@ export class GameEngine {
         setControlsToTurn(0, this.currentlySelectedActions, [], this.scenario.initialContainmentPolicies);
         const history = this.simulator.history(); // In the first turn total history is the last month history
         updateIndicators(0, history, history);
+
+
+        // Send welcome messages
+        setTimeout(function(){
+
+            writeMessageToMessageBox(WelcomeEvent);
+            
+            setTimeout(function(){
+
+                writeMessageToMessageBox(HowToWinEvent);
+
+                setTimeout(function(){
+
+                    writeMessageToMessageBox(HowToPlayEvent);
+
+
+                }, 1000)
+            }, 1000)
+        }, 1000)
     }
 
     private undoLastTurn() {

@@ -13,32 +13,49 @@
 
 <body>
 
-  <div class="container-fluid w-100 vh-100">
+	<!-- Container -->
+	<div 
+	class="w-100 vh-90 d-flex flex-column justify-content-center align-items-center" 
+	style='max-width: 100vw; max-height: 90vh;' 
+	id='homescreen' 
+	>
 
-    <!-- Navbar -->
-    <div class="w-100 h-15 p-2 d-flex flex-row justify-content-around align-items-center">
-      
-      <h5>Pandemic game</h5>
-      
-      <div class="d-flex flex-row justify-content-evenly">
-        <p class='p-2'>Days in office: <span id="date">0</span></p>
-      </div>
-      
-      <button id='advance-button' class='btn btn-dark mt-auto'>
-        Advance 
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-            <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-        </svg>
-      </button>
+		<!-- Top information panel -->
+		<div id='view-electability'>
 
-    </div>
+			<!-- Date -->
+			<p class='p-2 text-'>Date: <span id="date">0</span></p>
 
-    <!-- Homescreen -->
-    <div id='homescreen' class='w-100 h-70'>
-      <div class="w-100 h-100 p-2 d-flex flex-column justify-content-center align-items-center">
+			<!-- Electability pie -->
+			<div class="w-100 p-2 d-flex flex-row justify-content-center align-items-center">
 
-        <!-- Views -->
-        <div class="mb-4 w-100 h-50 p-2 d-flex flex-column justify-content-center align-items-center">
+				<svg id='svg-pie' height='200px' width='200px'></svg>
+
+				<div class='p-2'>
+					<p><strong>Supporters</strong></p>
+					<h5 style='color: #3090a1;'>Public <span id="public-support">0</span></h5>
+					<h5 style='color: #774779;'>Businesses <span id="business-support">0</span></h5>
+					<h5 style='color: #ef4f4f;'>Healthcare <span id="healthcare-support">0</span></h5>
+				</div>
+
+			</div>
+
+		</div> <!-- /top information panel -->
+
+		<!-- Bottom news messages panel -->
+		<div id='view-messages'>
+			
+			<div 
+				id='events-box' 
+				style='height: 60vh; max-height: 60vh; max-width: 800px; overflow: auto; border: 1px lightgrey; padding: 2rem;'>
+			</div>
+
+		</div>
+
+	</div><!-- /container -->
+
+  <!-- Unused components -->
+  <div style='display: none'>
 
           <!-- Toggle view buttons-->
           <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -52,22 +69,6 @@
             <label class="btn btn-outline-dark" for="view-btn-stats">Stats</label>
           </div>
 
-          <!-- Electability -->
-          <div id='view-electability'>
-            <div class="w-100 p-2 d-flex flex-row justify-content-center align-items-center">
-
-              <svg id='svg-pie' height='200px' width='200px'></svg>
-
-              <div class='p-2'>
-                <p><strong>Number of key supporters</strong></p>
-                <h5 style='color: #3090a1;'>Public <span id="public-support">0</span></h5>
-                <h5 style='color: #774779;'>Businesses <span id="business-support">0</span></h5>
-                <h5 style='color: #ef4f4f;'>Healthcare <span id="healthcare-support">0</span></h5>
-              </div>
-
-            </div>
-          </div>
-      
           <!-- Graph -->
           <div class='hidden' id='view-graph'>
             <div class="w-100 p-2 d-flex flex-column justify-content-center align-items-center">
@@ -90,30 +91,8 @@
                 <p id='intel-gdp' class='hidden'> GDP: <span id="gdp">0</span></p>
               </div>
 
-              <!-- Temporarily removed unused elements
-              <div class="d-flex flex-row justify-content-evenly">
-                  <p> Turn:
-                    <br><span id="turn">0</span>
-                  </p>
-                  <p> Test Capacity
-                    <br><span id="test-capacity">0</span>
-                  </p>
-                  <p> Positively Tested
-                    <br><span id="positively-tested">0</span>
-                  </p>
-                  <p> Contact Tracing Capacity
-                    <br><span id="tracing-capacity">0</span>
-                  </p>
-                  <p> Isolated contacts
-                    <br><span id="isolated-cases">0</span>
-                  </p>
-                </div>
-                -->
-
             </div> <!-- /stats -->
           </div>
-
-        </div> <!-- /views -->
 
         <!-- Controls -->
         <div class="w-100 h-50 p-2 d-flex flex-column justify-content-center align-items-center">
@@ -142,10 +121,7 @@
           </div>
 
         </div> <!-- /controls -->
-
-    </div><!-- /homescreen -->
-
-  </div> <!-- /container -->
+  </div>
   
   <!-- Event modal -->
   <div class="modal" tabindex="-1" id='modal-event'>
@@ -160,18 +136,17 @@
             <!-- Event details and response options -->
             <div id="event-content" class='p-2 d-flex flex-column content-justify-center align-items-center'></div>
             <div id="event-responses" class='p-2 d-flex flex-column content-justify-center align-items-center'></div>
-
-              <!-- deprecated contents for events as chat messages
-              <p><strong>Events</strong></p>
-              <div 
-                id="events-box" 
-                class="p-2 m-2 w-100 events-panel d-flex flex-column align-items-end" 
-                style='padding: 1rem; overflow: scroll; border: 1px solid lightblue; height: 30vh; border-radius: 5px;'>  
-              </div> -->  
             
           </div>
         </div>
-        <div class="modal-footer"></div>
+        <div class="modal-footer">
+			<button id='advance-button' class='btn btn-dark mt-auto'>
+				Advance 
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+					<path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+				</svg>
+			</button>
+		</div>
       </div>
     </div>
   </div>

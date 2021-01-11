@@ -3,6 +3,7 @@ import * as $ from 'jquery';
 import * as d3 from 'd3';
 import 'bootstrap/js/dist/modal';
 import { initialisePlayerResearch } from './research';
+import { writeMessageToMessageBox } from './eventsBox';
 import { doc } from 'prettier';
 
 /* 
@@ -175,7 +176,7 @@ export const createGameUI = (
         // On player selects action pass action to event
         onPlayerSelectsAction(target.attr('data-action'));
     };
-    
+
     // eslint-disable-next-line no-restricted-syntax
     for (const action of listOfPlayerActions) {
 
@@ -186,6 +187,24 @@ export const createGameUI = (
         btn.setAttribute('data-activeLabel', `${action.activeLabel} ${action.name}`);
         btn.innerHTML = `${action.inactiveLabel} ${action.name}`;
         btn.onclick = btnClickHandler;
-
     }
+
+    // Trigger start event
+    writeMessageToEventBox({
+        name: 'Welcome!',
+        description: `Your first event. What is your response?`,
+        happensOnce: false,
+        cssClass: 'alert alert-primary',
+        canActivate: true, // IF lockdown measures are active
+        choices: [
+            {
+                label: 'Okay.',
+                function: 'exampleFunc'
+            },
+            {
+                label: 'Okay.',
+                function: 'exampleFunc'
+            }
+        ]
+    });
 };
